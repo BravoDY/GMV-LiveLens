@@ -24,7 +24,21 @@ logger = logging.getLogger(__name__)
 MYSQL_HOST = os.environ.get("MYSQL_HOST", "")
 MYSQL_PORT = int(os.environ.get("MYSQL_PORT", "3306"))
 MYSQL_USER = os.environ.get("MYSQL_USER", "")
-MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "")
+def _resolve_mysql_password() -> str:
+    """从环境变量或密钥文件读取 MySQL 密码。环境变量优先（兼容旧配置），
+    回退读取 data/.mysql_password（已由 .gitignore 排除）。"""
+    pwd = os.environ.get("MYSQL_PASSWORD", "")
+    if pwd:
+        return pwd
+    key_file = DATA_DIR / ".mysql_password"
+    try:
+        if key_file.exists():
+            return key_file.read_text(encoding="utf-8").strip()
+    except OSError:
+        pass
+    return ""
+
+MYSQL_PASSWORD = _resolve_mysql_password()
 MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "")
 MYSQL_SOURCE_TABLE = os.environ.get("MYSQL_SOURCE_TABLE", "descente_al店铺整体取数源")
 

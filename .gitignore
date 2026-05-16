@@ -50,3 +50,6 @@ Desktop.ini
 *.tmp
 *.bin
 test.png
+
+# === MySQL 密钥文件 ===
+data/.mysql_password
