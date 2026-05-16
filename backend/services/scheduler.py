@@ -82,7 +82,11 @@ class CaptureScheduler:
             pages = client.list_pages()
             restored_task, _decision = edge_binding.restore_task_binding_from_pages(task, session_id, pages)
             return restored_task
-        except Exception:
+        except Exception as exc:
+            logger.warning(
+                "edge_bind_restore_failed task_id=%s session=%s platform=%s shop=%s error=%s",
+                task.id, session_id, task.platform, task.shop_name, exc,
+            )
             return task
 
     async def _notify(self) -> None:
