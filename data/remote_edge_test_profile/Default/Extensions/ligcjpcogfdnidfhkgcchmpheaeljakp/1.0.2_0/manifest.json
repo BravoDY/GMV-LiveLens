@@ -1,0 +1,44 @@
+{
+   "action": {
+      "default_icon": {
+         "128": "icons/disabled128.png",
+         "16": "icons/disabled16.png",
+         "300": "icons/disabled300.png",
+         "48": "icons/disabled48.png"
+      },
+      "default_popup": "html/popup.html",
+      "default_title": "__MSG_extName__"
+   },
+   "author": "Superior Allow Copy",
+   "background": {
+      "service_worker": "js/background.js"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "js/content.js" ],
+      "match_about_blank": true,
+      "matches": [ "http://*/*", "https://*/*" ],
+      "run_at": "document_start"
+   } ],
+   "default_locale": "en",
+   "description": "__MSG_extShortDesc__",
+   "host_permissions": [ "\u003Call_urls>" ],
+   "icons": {
+      "128": "icons/icon128.png",
+      "16": "icons/icon16.png",
+      "300": "icons/icon300.png",
+      "48": "icons/icon48.png"
+   },
+   "incognito": "split",
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAknsDGweSFuBOuYxS53Rf2QZ72yzBftJQ8+6I1Lpr16Oslb/lHXv2g7X3m2hECBtk1Va4LBrWF9S0O0OedBJdY7xSMHE6yZJnqajiS3Xj5koHyEBxKvchnZUr2LG5KSH+by80wcskXdfTGioxAG1vhs1/tzEQpmRxcoD8Q2pskCnmHFBS/6dqvQ5S+n8fEFYFBppAmaDvlwrZA8l74iWAV6f68C7V/Km8f+sD1vZlKnkerTgkYnFgPblJSFWO04Fr4GTwKA4cJKj2GBqjTHkMGo5Yua7lHX1Kl/h7+nso1L5plOvHkElrNriqek87A3bJXuhB91Sf4GhQwDHOP6kqPwIDAQAB",
+   "manifest_version": 3,
+   "minimum_chrome_version": "88.0",
+   "name": "__MSG_extName__",
+   "permissions": [ "alarms", "declarativeNetRequest", "scripting", "storage" ],
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "1.0.2",
+   "web_accessible_resources": [ {
+      "matches": [ "https://*/*" ],
+      "resources": [ "/web_accessible_resources/*" ]
+   } ]
+}

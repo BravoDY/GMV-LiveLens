@@ -1,0 +1,44 @@
+{
+   "action": {
+      "default_icon": "assets/icon19_normal.png",
+      "default_popup": "popup.html",
+      "default_title": "迅雷Chrome支持"
+   },
+   "background": {
+      "service_worker": "service-worker-loader.js",
+      "type": "module"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "css": [ "assets/content.css", "assets/Jsq-8833d7eb.css", "assets/content-51f2f1f6.css" ],
+      "js": [ "assets/content.js-loader-9a2f598c.js" ],
+      "matches": [ "http://*/*", "https://*/*", "ftp://*/*" ],
+      "run_at": "document_start"
+   } ],
+   "default_locale": "zh_CN",
+   "description": "__MSG_description__",
+   "host_permissions": [ "\u003Call_urls>", "http://*/*", "https://*/*" ],
+   "icons": {
+      "128": "assets/install_logo.png",
+      "16": "assets/menu_logo.png",
+      "48": "assets/extension_logo.png"
+   },
+   "incognito": "split",
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmOEUyqC+gYGiZWmus5fvl38p2ys9H70W1ZlfxCYYd3yRS7K55cXvb5xMy81MzT1ec8TIPN3yhWaiegLMkakBMBniUOvHnhgruZY/L6/FY/oa2KTlr6Ew1mkGVZJblLTqN4Ov62UixERKLydbzzWHv5DWZ2n1pJ90XrhFUoD3vc6OAMDi4Za5Me7uy0r79RLFWGh66vf/Jkt8oyeKoRJHAB3/1x5pWp1u/Wb/PmUNuqjVxBxU/P8I4gCUNaOxCCg/yxrgoqjkvebwrkoD5rQFGtWGCJUTV9+yC1bt9gNVAz0AM1bfjG/QGlbaiUuW14W7sHA74VnDy8aFXRBmOHP/UwIDAQAB",
+   "manifest_version": 3,
+   "name": "迅雷下载支持",
+   "optional_permissions": [  ],
+   "options_page": "options.html",
+   "permissions": [ "contextMenus", "cookies", "tabs", "webRequest", "downloads", "nativeMessaging", "storage", "scripting", "notifications" ],
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "3.52.14",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "assets/*" ],
+      "use_dynamic_url": false
+   }, {
+      "matches": [ "ftp://*/*", "http://*/*", "https://*/*" ],
+      "resources": [ "assets/runtime-dom.esm-bundler-90e72f46.js", "assets/util-ff1b650c.js", "assets/index-9000aff5.js", "assets/Jsq-4d01198b.js", "assets/stat-e9139785.js", "assets/tool-13238bfa.js", "assets/content.js-e4490f5d.js" ],
+      "use_dynamic_url": false
+   } ]
+}

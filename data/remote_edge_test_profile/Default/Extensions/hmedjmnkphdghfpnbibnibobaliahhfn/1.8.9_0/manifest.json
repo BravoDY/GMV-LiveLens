@@ -1,0 +1,71 @@
+{
+   "background": {
+      "scripts": [ "publicsuffixlist.js", "forge.min.js", "CookieJar.js", "background.js" ]
+   },
+   "browser_action": {
+      "default_icon": {
+         "19": "assets/Icon19.png",
+         "38": "assets/Icon38.png"
+      },
+      "default_popup": "views.html",
+      "default_title": "SessionBox"
+   },
+   "commands": {
+      "_execute_browser_action": {
+         "suggested_key": {
+            "default": "Ctrl+Shift+S"
+         }
+      },
+      "bulk_temporary_session": {
+         "description": "__MSG_OPEN_BULK_TEMPORARY__",
+         "suggested_key": {
+            "default": "Ctrl+Shift+D"
+         }
+      },
+      "new_session": {
+         "description": "__MSG_NEW_SESSION_COMMAND__",
+         "suggested_key": {
+            "default": "Ctrl+Shift+X"
+         }
+      },
+      "new_temporary_session": {
+         "description": "__MSG_NEW_TEMPORARY_SESSION_COMMAND__",
+         "suggested_key": {
+            "default": "Ctrl+Shift+A"
+         }
+      }
+   },
+   "content_scripts": [ {
+      "js": [ "website-connector.content-script.js" ],
+      "matches": [ "https://sessionbox.io/*" ],
+      "run_at": "document_start"
+   }, {
+      "all_frames": true,
+      "js": [ "virtual-session.content-script.js" ],
+      "matches": [ "\u003Call_urls>" ],
+      "run_at": "document_start"
+   }, {
+      "js": [ "updater.content-script.js", "overlay.content-script.js", "incognito.content-script.js" ],
+      "matches": [ "\u003Call_urls>" ],
+      "run_at": "document_start"
+   } ],
+   "content_security_policy": "script-src 'self' https://*.firebaseio.com https://ssl.google-analytics.com https://apis.google.com https://www.google-analytics.com https://www.googleapis.com; object-src 'self' https://*.firebaseio.com https://www.googleapis.com",
+   "default_locale": "en",
+   "description": "__MSG_PROMO_SHORT__",
+   "icons": {
+      "128": "assets/Icon128.png",
+      "16": "assets/Icon16.png",
+      "48": "assets/Icon48.png"
+   },
+   "incognito": "spanning",
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxnAxqamY8IEB4FN14u2haVLiGyry7Tp2SMQFOU7Q0jrHP7Ff1qKcYDsfompiJy5ZLhupvtxnlZnI6AqWFlYASJjofSTizvBLNW3wvxsuSr/ZY3SIvKvRhdxk7PP4+LZ6Sbd7VVIuhWa2uWnQK97ydcwDSOWUf0Xr0pA6S9WVodwwpIoG2/ev5DC+Z5ivmeiDfjN8HnB1TXaVj8egMuHIgBlf3fzixY7GS+et22hxwJ6WE7SnWo74z3RkisqzRFvz8kSI3CBB0lOY8awqKjlALJRpdi5ggokV8+YUFv2WdJPouRdBpJ0YPSqtPDSirhwHax3eplbIClJGCU5l/KalQQIDAQAB",
+   "manifest_version": 2,
+   "minimum_chrome_version": "45",
+   "name": "SessionBox - Multi login to any website",
+   "optional_permissions": [ "bookmarks", "notifications" ],
+   "permissions": [ "tabs", "activeTab", "idle", "background", "webNavigation", "webRequest", "webRequestBlocking", "proxy", "cookies", "storage", "contextMenus", "unlimitedStorage", "\u003Call_urls>" ],
+   "short_name": "SessionBox",
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "1.8.9",
+   "web_accessible_resources": [ "assets/VirtualSessionHelper.js", "assets/C6Fix.js", "assets/Icons/box.svg", "views.html", "views.css", "views.js", "assets/actions/*", "assets/Fonts/*" ]
+}

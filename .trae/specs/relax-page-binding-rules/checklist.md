@@ -1,0 +1,7 @@
+- [x] `backend/main.py` 中的 `_task_runtime_for_bound_page` 不再返回 `edge_login_page_bound` 或 `edge_page_bound` 状态。
+- [x] `backend/main.py` 中的 `_build_task_page_candidates` 在页面已绑定的情况下，只返回 `page_selected` 状态。
+- [x] `backend/main.py` 中的“旧页签”相关报错文案已被优化，移除了“旧”字的误导性表述。
+- [x] `frontend/config.js` 中的 `setupFlowState` 函数已移除 `login_required` 和 `target_page_required` 的拦截逻辑。
+- [x] 无论绑定何种 URL 页面，前端采集配置面板都能直接进入“生成预览”步骤。
+- [x] 已完成全面冒烟测试：包括异常 URL 绑定测试、重绑流程测试、以及调度器非目标页采集测试。
+- [x] 针对冒烟测试中发现的任何异常情况，均已完成修复和优化。

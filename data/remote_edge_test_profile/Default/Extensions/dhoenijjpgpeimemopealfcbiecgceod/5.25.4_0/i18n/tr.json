@@ -1,0 +1,3532 @@
+{
+  "about-author": "Yazar hakkında bilgi edin",
+  "account": "Hesap",
+  "add": "Eklemek",
+  "addons": "eklentiler",
+  "addPrompt": "İstem ekle",
+  "addPrompts": "İpucu Ekle",
+  "addTools": "Araçlar Ekle",
+  "advanced": "İleri",
+  "agentPanel": {
+    "agentDesc": "{{name}}, tarayıcınızı görevleri yerine getirmek için kontrol edebilir. Bu özellik henüz erken önizleme aşamasındadır ve hatalar meydana gelebilir. İstediğiniz zaman durdurabilirsiniz.",
+    "agentIsOperating": "Bu sayfayı {{name}} çalıştırıyor",
+    "browserAgent": "Tarayıcı {{name}}",
+    "chatPlaceholder": "{{name}} ne konuda yardımcı olabilir?",
+    "creditCostTip": "{{name}}, yoğun hesaplama gerektiren bir üründür ve karşılık gelen Elite Kredileri, gerçek tüketim baz alınarak düşülecektir.",
+    "previewVersion": "Araştırma önizlemesi",
+    "stopAgent": "{{name}}'i durdur",
+    "toolAction": {
+      "click": "Tıkla",
+      "extractPageText": "Sayfa metnini çıkar",
+      "findItem": "Bul: \"{{text}}\"",
+      "formInput": "Girdiyi ayarla: \"{{text}}\"",
+      "navigate": "Şuraya git: {{url}}",
+      "pressKey": "Tuşa bas: {{text}}",
+      "readPage": "Sayfayı oku",
+      "scroll": "Kaydır",
+      "takeScreenshot": "Ekran görüntüsü al",
+      "typeText": "Metin yaz: \"{{text}}\"",
+      "waitTime": "{{time}} saniye bekle"
+    }
+  },
+  "aiResCompare": "Yapay Zeka Yanıtları Karşılaştırması",
+  "AISlides": "AI Slides",
+  "aiSlidesPromoteTip": "Tek tıkla sunum kalitesinde PPT'ler",
+  "aiSlidesPromoteTip2": "Bu PPT'yi çarpıcı hale getirin",
+  "aiWebBuilderPromoteTip": "Bu {{ARTIFACT}}'i şimdi web sitesine dönüştür",
+  "all": "Tüm",
+  "allFeatures": "Tüm Özellikler",
+  "allSettings": "Tüm ayarlar",
+  "alwaysDisplay": "Her Zaman Görüntüle",
+  "analyzed": "Analiz edildi",
+  "analyzing": "Analiz ediliyor...",
+  "analyzingFailed": "Analiz başarısız",
+  "analyzingIntent": "Niyet analiz ediliyor",
+  "answering": "Cevaplama",
+  "appearance": "Görünüm",
+  "archive": "Arşiv",
+  "archiveTpl": "Bu şablonu arşivle",
+  "artifactDemos": [
+    {
+      "title": "Sanal Bir Ksilofon Oluşturun",
+      "value": "HTML tabanlı, renkli tuşlara sahip bir ksilofon oluşturun ve bunu bir {{ARTIFACT}} içinde sunun. Vurulan tuşlar için görsel geri bildirim sağlayın ve frekans parametrelerine dayalı olarak Web Audio API kullanarak basit, gerçekçi sesler üretin. Temel talimatları ekleyin."
+    },
+    {
+      "title": "Yemek Yiyen Emoji Oyunu Oluşturun",
+      "value": "HTML tabanlı, Catch the Candy benzeri basit bir oyun oluşturun ve bunu bir {{ARTIFACT}} içinde sunun. Oyuncu, ekranın altındaki bir emojiyi hızlıca sola ve sağa hareket ettirerek yukarıdan düşen yiyecekleri (örneğin, 🍓, 🍔, 🍎) yakalayıp yemeye çalışır ve bombalardan (💣) kaçınır. Oyuncu her yiyecek emojisini yakaladığında, emojisi daha abartılı bir olumlu ifadeye (örneğin, 🤩, 😆, 😋) dönüşerek başarıyı gösterir. Oyuncu yanlışlıkla bir bomba yakalarsa, emoji önce bir patlama (💥) gösterir ve ardından sersemlemiş bir ifadeye (😵‍💫) dönüşür."
+    },
+    {
+      "title": "Akıllı Telefon Sevkiyat Grafiği Oluşturun",
+      "value": "React kullanarak aşağıdaki tabloya dayalı olarak bir {{ARTIFACT}} içinde güzel bir çizgi grafik oluşturun.\n------\n\nSon On Yılda Büyük Markalar Tarafından Yapılan Akıllı Telefon Sevkiyatları (Milyar Adet)\n\n| Yıl | Samsung | Apple | Huawei | Xiaomi | OPPO |\n|------|---------|-------|--------|--------|------|\n| 2014 | 3.24 | 1.76 | 0.75 | 0.50 | 0.40 |\n| 2015 | 3.36 | 2.00 | 1.00 | 1.00 | 0.80 |\n| 2016 | 3.43 | 2.16 | 1.40 | 1.50 | 1.20 |\n| 2017 | 3.20 | 2.10 | 1.60 | 2.00 | 1.50 |\n| 2018 | 2.94 | 2.20 | 1.70 | 2.50 | 1.80 |\n| 2019 | 3.00 | 2.50 | 2.20 | 3.00 | 2.00 |\n| 2020 | 2.80 | 2.80 | 2.50 | 4.00 | 3.00 |\n| 2021 | 2.90 | 2.90 | 2.00 | 4.50 | 3.50 |\n| 2022 | 2.60 | 2.25 | 1.60 | 3.50 | 3.00 |\n| 2023 | 2.26 | 2.34 | 1.20 | 3.00 | 3.50 |"
+    }
+  ],
+  "artifactError": {
+    "solution1": "<a>Önizlemeyi Yenile</a>",
+    "solution2": "Yardım için hata mesajını sohbete gönderin. <a>Hata mesajını gönder</a>",
+    "title": "Aşağıdaki seçenekleri deneyebilirsiniz:"
+  },
+  "artifactNarrow": "Varsayılan genişliği geri yükle",
+  "artifactPublished": "Yapıt Yayınlandı",
+  "artifactPublishTip1": "Bu yapıtı yayınladığınızda, herkesin erişebilmesi için bir genel URL oluşturacağız. Sohbetiniz gizli kalacak ve paylaşmayı istediğiniz zaman durdurabilirsiniz.",
+  "artifactPublishTip2": "Bu yapıt halka açıktır. Herkes paylaşılan bağlantı ile erişebilir.",
+  "artifactRemixContent": "Haydi bu {{ARTIFACT}}'in bazı varyasyonlarını keşfedelim. Onu yeniden düzenlemenin 3 yolunu önerebilir misiniz ve cevabımı bekleyin?",
+  "artifactsBetaTip": "Beta süresince Artifacts (Pro)'nun keyfini ücretsiz çıkarın—kaçırmayın!",
+  "artifactUnpublishedTip": "Yayından kaldırdığınızda, başkaları paylaşılan bağlantı üzerinden Yapıt'a artık erişemeyecek.",
+  "artifactWide": "Tam genişliğe genişlet",
+  "ask": "Sormak",
+  "attention": "Fark etme",
+  "audio-meeting-minutes": "Toplantı notları",
+  "audio-summarize": "Özetle",
+  "audio-to-text": "Sesi metne",
+  "audioExtractedText": "Ses metni çıkarıldı",
+  "audioTranscript": "Ses transkripti",
+  "auto": "Otomatik",
+  "autoToText": "Otomatik metne",
+  "back": "Geri",
+  "basic": "Temel",
+  "bestForChat": "Sohbet için En İyisi",
+  "betterAnswer": "{{MODEL_NAME}} ile daha iyi sonuçlar alın",
+  "bigSale": "Satış",
+  "bigSaleRest": "Satış",
+  "bilingualTranslation": {
+    "done": "Tamamlandı",
+    "goToSetting": "Ayarlar'a Git",
+    "originLangClose": "Netflix altyazıları kapalı olduğu için iki dilli altyazılar düzgün çalışmıyor. Bir altyazı dili seçin ve sayfayı yenileyin",
+    "refreshBtn": "Yenile",
+    "refreshPage": "İki dilli altyazılarda bir sorun oluştu. Sayfayı yenilemeyi deneyin",
+    "setLangPreferDesc": "En iyi iki dilli deneyim için, doğru altyazı ve çeviriler için izleyeceğiniz dilleri seçin.",
+    "setLangPreferTitle": "Dil Tercihlerini Ayarla",
+    "switchTitle": "YouTube & Netflix'te çift dilli kontrolü göster",
+    "targetLang": "Hedef dil",
+    "title": "Altyazı çevirisi",
+    "youtubeRefreshTips": "Çift dilli altyazılar algılanmadı. Lütfen sayfayı yenileyin ve altyazıları yeniden yükleyin."
+  },
+  "browseFiles": "{{NUM}} dosya göz atıldı",
+  "browseFiles1": "1 dosya göz atıldı",
+  "browsingFiles": "Dosyaları gözden geçirme",
+  "building": "Oluşturuluyor...",
+  "buyBooster": "Takviye paketi satın al",
+  "cancel": "İptal etmek",
+  "change": "Değiştir",
+  "changeLogPage": {
+    "learnToUse": "Nasıl kullanıldığını öğren",
+    "logContents": {
+      "4_22_0": "Sider, halka açık X (Twitter) gönderilerinizi kızartmaya ve övünmeye hazır! Kahkahalar için katılın, veri saklanmaz. Oyuna devam edin ve neşeyi arkadaşlarınızla paylaşın!",
+      "5_12_0": "Tercihlerinizi ayarlamak için Sohbet kontrollerine gidin. Her seferinde tercihlerinizi tekrar etmek zorunda kalmadan daha kişiselleştirilmiş bir yapay zeka deneyiminin keyfini çıkarın ve zaman kazanın.",
+      "5_14_0": "Grok 4, xAI'nin amiral gemisi modeli, lisansüstü düzeyde akıl yürütme, gelişmiş kodlama ve matematik sunar ve görüntüleri metin gibi anlar—herhangi bir analitik veya yaratıcı görev için güçlü bir araçtır.",
+      "5_19_0": "Anthropic'in şimdiye kadarki en yeni ve en güçlü modeli. En iyi sınıf kodlama sunar ve finans, hukuk ve tıp alanlarında hem akıl yürütme hem de alan bilgisi açısından Opus 4.1'i aşar.",
+      "5_21_0": "gpt-5-chat-latest ile tanışın, ChatGPT'de kullanılan en yeni GPT-5 Sohbet modeli. Günlük sohbetler, yazma ve fikir keşfi için daha hızlı, daha doğal yanıtların keyfini çıkarın.",
+      "5_23_0": "Google'un en akıllı modeli. En gelişmiş akıl yürütme yeteneği, daha faydalı, daha iyi biçimlendirilmiş ve özlü yanıtlar sunarak öğrenmenize, inşa etmenize ve plan yapmanıza yardımcı olacak mükemmel bir ortak haline getiriyor."
+    },
+    "logs": {
+      "1_0_1": [
+        "Youtube sayfasında özetleme özelliğini geliştirin",
+        "Kopyala/yapıştır ve yazdır ile ilgili bazı hataları düzeltin"
+      ],
+      "1_0_10": [
+        "Şimdi 50'den fazla dili destekleyin!"
+      ],
+      "1_0_11": [
+        "Kenar çubuğunu açmadan bir açılır pencere aracılığıyla eylemlere hızla erişin.",
+        "Ek diller için destek ekleyin.",
+        "Çeviri özelliğini kullanırken kullanıcının dil tercihini koruyun.",
+        "GitHub ve diğerleri gibi platformlarda kısayol çakışmalarını çözün."
+      ],
+      "1_0_12": [
+        "Uzantı ayarlarını bilgisayarlar arasında senkronize edin",
+        "İstemlerinize farklı dizüstü bilgisayarlardan erişin",
+        "Sohbetleri ileride kullanmak üzere kaydedin",
+        "Sohbetleri bağlantı yoluyla paylaşın"
+      ],
+      "1_0_13": [
+        "Soru sorduktan sonra sohbete devam edin",
+        "Plus kullanıcıları için GPT-4 ve GPT-3.5 arasında geçiş yapın",
+        "Sohbet geçmişine kolayca erişin ve arama yapın"
+      ],
+      "1_0_2": [
+        "Yanıt oluşturmayı durdurmak için durdur düğmesi ekleyin",
+        "Daralt düğmesinin yerini değiştir"
+      ],
+      "1_0_3": [
+        "Hızlı \"Gönder\" yapmak için CMD/Ctrl + Enter",
+        "Arama sonuçları sayfasında paneli gizleme seçeneği",
+        "Kenar çubuğunu gizlemek için ESC'yi destekleyin",
+        "Destek uzun makaleyi özetle"
+      ],
+      "1_0_4": [
+        "Açılır listedeki bilgi istemi öğelerini yeniden sıralayın",
+        "Kullanmayacağınız bilgi istemi öğelerini arşivleyin",
+        "50'den fazla dilde destek yanıtı"
+      ],
+      "1_0_5": [
+        "Kenar çubuğu simgesinin konumunu hatırla",
+        "Kısayol tuşlarını geliştirin",
+        "Bilgi istemi şablonlarını doğrudan kenar çubuğundan kaydedin"
+      ],
+      "1_0_6": [
+        "Youtube sayfasında özetleme özelliğini geliştirin"
+      ],
+      "1_0_7": [
+        "Geçen sefer kullanılan istemi hatırla",
+        "Arama sayfalarında chatGPT panelinin konumunu optimize edin",
+        "Kenar çubuğu sayfa içi simgesini sol tarafa koymak için bir seçenek ekleyin",
+        "Paket boyutunu optimize edin",
+        "Karanlık mod ekle",
+        "API url proxy'nizi destekleyin"
+      ],
+      "1_0_8": [
+        "Plus kullanıcıları için GPT-4'ü destekleyin! Ayarlar sayfasını kontrol edin!"
+      ],
+      "1_1_0": [
+        "<b>Yeni sekmede</b> Tam Sohbet!",
+        "ChatGPT, <b>Bing</b>, <b>Bard</b> birlikte!",
+        "Hata düzeltmeleri"
+      ],
+      "2_0_0": [
+        "Tüm kullanıcılar için <b>GPT-4 </b>'ü destekleyin!",
+        "Arkadaşlarınızı davet edin ve ikiniz de <b>GPT-4</b> kredisi kazanın!",
+        "Hata düzeltmeleri ve diğer UX geliştirmeleri"
+      ],
+      "2_1_0": [
+        "Hızlı Arama için Kısayol",
+        "Hızlı Arama penceresini yeniden boyutlandırma",
+        "Hata düzeltmeleri ve diğer UX geliştirmeleri"
+      ],
+      "2_2_0": [
+        "Herhangi bir mesaj oluşturun",
+        "E-posta, tweet, yorum vb."
+      ],
+      "2_3_0": [
+        "Plus kullanıcıları için Tarama ve Eklentileri Destekleyin!",
+        "Herkes için internet erişimi olan ChatGPT!"
+      ],
+      "2_4_0": [
+        "<b>Akıllı web erişimi</b>: Al, sorgunuza göre web'e erişmesi gerekip gerekmediğine karar verecektir.",
+        "Stabilite iyileştirme"
+      ],
+      "2_5_0": [
+        "YouTube Özeti! 1 dakikada 1 saatlik YouTube videosunu izleyin",
+        "Quora, StackOverflow ve Zhihu gibi Soru-Cevap sitelerinde insanlar ve yapay zeka tarafından sağlanan yanıtları karşılaştırın"
+      ],
+      "2_6_0": [
+        "Sider, Sabit Kenar Çubuğunu Destekler - Herhangi bir içeriği çakıştırmadan tüm sekmeler arasında sohbet edebilirsiniz <br /> (Chrome 114 veya sonraki sürümlerde mevcuttur)"
+      ],
+      "2_7_0": [
+        "Metinden resim çiz",
+        "Referans resimden resim çizin"
+      ],
+      "2_8_0": [
+        "Okuma Asistanı: Web sayfalarını okurken hızlı anlamak için yapay zekayı kullanın",
+        "Yazma Asistanı: Web giriş kutusunda yapay zeka ile hızla içerik oluşturun"
+      ],
+      "2_9_0": [
+        {
+          "features": [
+            "Bağlam menüsünü okuma",
+            "Bağlam menüsünü yazma"
+          ],
+          "title": "Gelişmiş bilgi istemi yöneticisi"
+        },
+        {
+          "features": [
+            "Herhangi bir görselden arka planı kaldırın",
+            "Herhangi bir görselden metni kaldırın"
+          ],
+          "title": "AI görüntü düzenleyici"
+        }
+      ],
+      "3_0_0": [
+        {
+          "features": [
+            "<b>Daha Fazla Sohbet Robotu</b>: Artık Claude-instant, Claude 2'yi Destekliyor!"
+          ]
+        },
+        {
+          "features": [
+            "<b>Grup Sohbeti</b>: Yanıtları Chatbot'larda Karşılaştırın!"
+          ]
+        },
+        {
+          "features": [
+            "<b>Bahsetme</b>: Konuşma sırasında herhangi bir sohbet robotundan zahmetsizce bahsetmek ve onunla etkileşimde bulunmak için '@' kullanın!"
+          ]
+        },
+        {
+          "features": [
+            "<b>Hızlı İstem</b>: Sadece '/' Yazın ve Devam Edin!"
+          ]
+        },
+        {
+          "features": [
+            "<b>Basit Tasarım</b>: Tasarımı basit ve gezinmesi kolay hale getirin"
+          ]
+        }
+      ],
+      "3_1_0": [
+        {
+          "features": [
+            "ChatGPT ve Claude'un yanı sıra Sider artık Bard'ı da destekliyor!"
+          ],
+          "title": "Daha fazla bot!"
+        },
+        {
+          "features": [
+            "10'dan fazla ana dili tanır",
+            "İngilizce el yazısını tanıma",
+            "Metindeki <b>matematik denklemlerini</b> tanıyın"
+          ],
+          "title": "OCR: Herhangi bir görüntüden metni çıkarın ve ChatGPT'ye gönderin"
+        },
+        {
+          "features": [
+            "Arka planın tamamını değiştir",
+            "Seçilen alanı kaldır"
+          ],
+          "title": "Boyacıyı Geliştir"
+        }
+      ],
+      "3_2_0": [
+        {
+          "features": [
+            "Harika haber! Güncellenmiş fiyatlandırmamız artık size daha fazla GPT-4 ve Claude 2 kredisi sunuyor.",
+            "Zaten premium kullanıcıysanız otomatik olarak yükseltileceksiniz. Ayrıca, tüm uzman kullanıcılar için yeni bir 'Sınırsız' planımız var!"
+          ],
+          "title": "5 kat daha fazla GPT-4 kredisi ile yeni fiyat planı"
+        }
+      ],
+      "3_3_0": [
+        {
+          "features": [
+            "Bir görüntüden metin çıkarma",
+            "Resim hakkında herhangi bir soru sorun",
+            "{{SIDERVISION}}'a resim göndermenin 3 yolu <div><ol><li>Ekran görüntüsü alın</li><li>Bir resmi Sohbet penceresine Sürükleyip Bırakın</li><li>Bir resim yükleyin </li></ol> li></div></div>"
+          ],
+          "title": "{{SIDERVISION}} — Vision özellikli ChatGPT kenar çubuğu"
+        },
+        {
+          "features": [
+            "Bir görüntüden metin çıkarma"
+          ]
+        },
+        {
+          "features": [
+            "Bir görüntüden metin çıkarma"
+          ]
+        }
+      ],
+      "3_4_0": [
+        {
+          "features": [
+            "Dilbilgisi hatalarını kontrol edin",
+            "Dilbilgisi hatalarını düzeltin",
+            "Yazıyı gramerin ötesinde geliştirin"
+          ],
+          "title": "Sider Dilbilgisi Widget'ı"
+        }
+      ],
+      "3_5_0": [
+        {
+          "features": [
+            "{{4+VISION}}",
+            "Aynı soruyu farklı botlarla yanıtlamak için tek tıkla"
+          ],
+          "title": "{{SIDERVISION}} daha akıllı hale geldi"
+        }
+      ],
+      "3_6_0": [
+        {
+          "features": [
+            "Özel bir Çeviri widget'ında çevirinizi özelleştirin",
+            "Google, Bing, Baidu vb. üzerinde ChatGPT yanıtlarını iyileştirin"
+          ],
+          "title": "Çeviri widget'ı"
+        }
+      ],
+      "4_0_0": [
+        {
+          "features": [
+            "GPT-4 Turbo ve GPT-3.5 Turbo'yu destekleyin",
+            "Web sayfasının tamamını çevir",
+            "Kenar Çubuğundaki sohbet web sayfası",
+            "Kenar Çubuğundaki Sohbet PDF'si"
+          ],
+          "title": "GPT-4 Turbo ve Sohbet web sayfası!"
+        }
+      ],
+      "4_10_0": [
+        {
+          "features": [
+            "<b>Artırılmış Hız:</b> GPT-4'ten 2 kat daha hızlı yanıtlar alın"
+          ]
+        },
+        {
+          "features": [
+            "<b>Geliştirilmiş Görüş:</b> Görüntü anlama konusunda büyük iyileştirmeler"
+          ]
+        },
+        {
+          "features": [
+            "<b>Genişletilmiş Diller:</b> Daha fazla dil, daha iyi kalite ve daha hızlı performans"
+          ]
+        }
+      ],
+      "4_11_0": [
+        {
+          "features": [
+            "<b>Birden fazla web sayfası:</b> Aynı anda birden fazla web sayfası veya belge okuyun"
+          ]
+        },
+        {
+          "features": [
+            "<b>Eleştirel okuma araçları:</b> Ana kavramları netleştirin, varsayımları belirleyin, alıntıları vurgulayın, yazar hakkında bilgi edinin ve daha fazlası."
+          ]
+        },
+        {
+          "features": [
+            "<b>{{SIDERFUSION}}:</b> Belirli göreviniz için en iyi hızlı modeli (GPT-3.5, Claude 3 Haiku, Gemini 1.5 Flash veya Llama 3) dinamik olarak seçer."
+          ]
+        }
+      ],
+      "4_12_0": [
+        {
+          "features": [
+            "<b>Claude 3.5 Sonnet Desteği:</b> Anthropic'in en son modeli, Claude 3 Opus'tan 2 kat daha hızlı ve daha yüksek zekaya sahip olup, akıl yürütme, bilgi, kodlama ve görsel görevlerde önemli ölçüde iyileşme sağlar."
+          ]
+        },
+        {
+          "features": [
+            "<b>Claude 3 Opus'un Emekliye Ayrılması:</b> gelişmiş Claude 3.5 Sonnet ile değiştirildi."
+          ]
+        },
+        {
+          "features": [
+            "<b>Davet et ve Kazan:</b> Arkadaşlarınızı davet edin, ücretsiz sorgular kazanın ve en son modeli bugün deneyin!"
+          ]
+        }
+      ],
+      "4_13_0": [
+        {
+          "features": [
+            "<b>Doğal AI Sesleri</b>: Birden çok dilde 9 doğal sesli AI sesinin keyfini çıkarın."
+          ]
+        },
+        {
+          "features": [
+            "<b>Her Yerde Dinleyin</b>: Bir web sayfasındaki herhangi bir metni seçerek sesli olarak dinleyin."
+          ]
+        },
+        {
+          "features": [
+            "<b>Kenar Çubuğu Desteği</b>: Kenar çubuğu widget'larından AI tarafından oluşturulan içeriği kolayca dinleyin."
+          ]
+        }
+      ],
+      "4_16_0": [
+        {
+          "features": [
+            "<b>Daha Hızlı, Üstün Performans:</b> Günlük görevleri daha sorunsuz ve verimli hale getirir."
+          ]
+        },
+        {
+          "features": [
+            "<b>Gelişmiş Matematik ve Kodlama:</b> Teknik görevler için doğru performans sağlar."
+          ]
+        },
+        {
+          "features": [
+            "<b>GPT-3.5'ten Yükseltme:</b> GPT-4o mini, GPT-3.5'in yerini daha iyi performansla alır."
+          ]
+        }
+      ],
+      "4_17_0": [
+        {
+          "features": [
+            "<b>Video Öne Çıkanları</b>: Yapay zeka tarafından oluşturulan anlatım, önemli video noktalarını hızlıca vurgulayarak zaman kazandırır."
+          ]
+        },
+        {
+          "features": [
+            "<b>Doğal Anlatım</b>: Gerçekçi yapay zeka sesleri, izleme deneyiminizi geliştirir."
+          ]
+        },
+        {
+          "features": [
+            "<b>Çok Dilli Destek</b>: Dil engellerini aşarak videoları kolayca anlayın."
+          ]
+        }
+      ],
+      "4_18_0": [
+        {
+          "features": [
+            "<b>Birden Fazla Format</b>: Sohbetinizi bir bağlantı veya resim olarak paylaşın."
+          ]
+        },
+        {
+          "features": [
+            "<b>Esnek Seçim</b>: Tüm konuşmayı veya sadece bir kısmını seçip paylaşın."
+          ]
+        },
+        {
+          "features": [
+            "<b>Kolay Kontrol</b>: Paylaşılan bağlantıları istediğiniz zaman iptal edin."
+          ]
+        }
+      ],
+      "4_19_0": [
+        {
+          "features": [
+            "<b>Canlı Önizleme:</b> AI tarafından oluşturulan web sayfalarını, belgeleri ve grafikleri gerçek zamanlı olarak önizleyin ve etkileşimde bulunun."
+          ]
+        },
+        {
+          "features": [
+            "<b>Kesintisiz Yineleme:</b> Sohbet yoluyla oluşturulan eserler üzerinde yineleme yapın."
+          ]
+        }
+      ],
+      "4_1_0": [
+        {
+          "features": [
+            "{{SIDERVISION}} GPT-4V tarafından desteklenmektedir",
+            "Görsellerin daha iyi anlaşılması",
+            "E-posta niyetlerini hızla kavrayın",
+            "Çeşitli tonlar ve kişilikler arasından seçim yapın",
+            "Yanıt önerilerini zahmetsizce seçin"
+          ],
+          "title": "GPT-4V(ision) Önizlemesi! & Gmail için AI yanıtı"
+        }
+      ],
+      "4_20_0": [
+        {
+          "features": [
+            "<b>Çoklu Model Çeviri</b>: Daha doğru çeviriler için birden fazla modeli aynı anda kullanın."
+          ]
+        },
+        {
+          "features": [
+            "<b>Çok Yönlü Çeviri Yeniden Yazımları</b>: Farklı senaryolar için çevirileri yeniden yazın."
+          ]
+        },
+        {
+          "features": [
+            "<b>İki Dilli Altyazılar</b>: YouTube altyazılarını aynı anda iki dilde görüntüleyin."
+          ]
+        }
+      ],
+      "4_23_0": [
+        {
+          "features": [
+            "<b>o1-preview</b>: Bilim, kodlama ve matematikte önceki modellerden daha karmaşık görevleri yönetir ve daha zor problemleri çözer. Mesaj başına 15 ileri kredi maliyeti vardır."
+          ]
+        },
+        {
+          "features": [
+            "<b>o1-mini</b>: Özellikle kodlamada etkili olan daha hızlı bir model. Geniş bilgi olmadan odaklanmış akıl yürütme için idealdir. Mesaj başına 3 ileri kredi maliyeti vardır."
+          ]
+        },
+        {
+          "features": [
+            "<b>Not</b>: Oran sınırlamaları vardır."
+          ]
+        }
+      ],
+      "4_24_0": [
+        {
+          "features": [
+            "<b>Gemini 1.5 Pro</b>: Gelişmiş matematik ve görsel becerilerle süper şarjlı akıl yürütme."
+          ]
+        },
+        {
+          "features": [
+            "<b>Gemini 1.5 Flash</b>: 2 kat daha hızlı, 3 kat daha düşük gecikme, görsellerde ve kodlamada daha iyi."
+          ]
+        }
+      ],
+      "4_25_0": [
+        {
+          "features": [
+            "<b>İnceltilmiş Tasarım</b>: Kullanım kolaylığı ve odaklanma için modern görseller, daha temiz bir düzen"
+          ]
+        },
+        {
+          "features": [
+            "<b>Hızlı Erişim Sabitleme</b>: Sık kullanılan komutları hızlı erişim için sabitleyin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Genişletilebilir Tablolar</b>: Daha iyi okunabilirlik için büyük verileri yeni bir pencerede görüntüleyin"
+          ]
+        }
+      ],
+      "4_26_0": [
+        {
+          "features": [
+            "<b>Zincirleme Düşünce Akıl Yürütmesi</b>: Daha akıllı problem çözme için karmaşık görevleri adım adım parçalar"
+          ]
+        },
+        {
+          "features": [
+            "<b>Daha Derin İçgörüler</b>: Zor sorularla başa çıkmak için düşünceli yanıtlar sunar"
+          ]
+        },
+        {
+          "features": [
+            "<b>Tüm Modellerle Çalışır</b>: Her modelde sorunsuzca kullanılabilir"
+          ]
+        }
+      ],
+      "4_27_0": [
+        {
+          "features": [
+            "<b>Basitleştirilmiş Arayüz</b>: Daha temiz, daha sezgisel bir arayüzle daha akıcı bir deneyim"
+          ]
+        },
+        {
+          "features": [
+            "<b>Geliştirilmiş Çeviri</b>: Bağlamsal doğrulukla ilgili kelime anlamlarını sunar"
+          ]
+        },
+        {
+          "features": [
+            "<b>Artifaktları Yayınla ve Paylaş</b>: Artifaktlarınızı bağlantılar aracılığıyla kolayca herkese açık olarak paylaşın"
+          ]
+        }
+      ],
+      "4_28_0": [
+        {
+          "features": [
+            "<b>Claude 3.5 Haiku</b>: Claude 3 Opus'u aşan performans sunar, kodlama, araç kullanımı ve akıl yürütmede üstün"
+          ]
+        },
+        {
+          "features": [
+            "<b>Yazı Tipi Boyutunu Özelleştir</b>: Artık mesaj yazı tipi boyutunu değiştirebilirsiniz"
+          ]
+        },
+        {
+          "features": [
+            "<b>Basitleştirilmiş UI</b>: Kolay kişiselleştirme için daha temiz, daha sezgisel bir Seçenekler UI"
+          ]
+        }
+      ],
+      "4_29_0": [
+        {
+          "features": [
+            "<b>Mesaj Düzenleme</b>: Gönderilen mesajları kolayca düzenleyin ve yeni yanıtlar için yeniden gönderin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Yan Yana Karşılaştırma</b>: Birden fazla modelin yanıtlarını tam sayfa görünümünde görüntüleyin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Özel İstemler için Simge</b>: Daha net bir organizasyon için özel istemlere simgeler atayın"
+          ]
+        }
+      ],
+      "4_2_0": [
+        {
+          "features": [
+            "<b>Yenilenen Arayüz:</b> Daha temiz ve gezinmesi daha kolay"
+          ]
+        },
+        {
+          "features": [
+            "<b>Daraltılabilir Gezinme Çubuğu:</b> Temel özelliklere kolayca erişilebilmesini sağlarken odaklanmış bir sohbet deneyimi sağlar"
+          ]
+        },
+        {
+          "features": [
+            "<b>Kenar Çubuğu GPT'lerine Erişim:</b> ChatGPT Plus kullanıcıları için, GPT'lere doğrudan erişim artık web uygulaması modunda kenar çubuğunda mevcuttur"
+          ]
+        }
+      ],
+      "4_30_0": [
+        {
+          "features": [
+            "<b>GPT-4o (2024-11-20)</b>: Geliştirilmiş doğal yazma yetenekleri ve iyileştirilmiş dosya yönetimi"
+          ]
+        },
+        {
+          "features": [
+            "<b>Sadece Çeviri Görüntüleme</b>: Sayfa çevirisi artık yalnızca çevrilen içeriği görüntülemeyi destekliyor"
+          ]
+        },
+        {
+          "features": [
+            "<b>Daha İyi YouTube Altyazıları</b>: Daha yüksek kaliteli iki dilli altyazı çevirilerinin keyfini çıkarın"
+          ]
+        }
+      ],
+      "4_31_0": [
+        {
+          "features": [
+            "<b>Araçlar Navigasyonu</b>: Navigasyon çubuğundan görüntüler, PDF'ler ve videolar için AI araçlarına erişim"
+          ]
+        },
+        {
+          "features": [
+            "<b>Girdi Çevirisi</b>: Girdi metnini çevirmek için üçlü boşluk bırakın (Seçenekler'de etkinleştirin)"
+          ]
+        },
+        {
+          "features": [
+            "<b>Hızlı Kopyalama</b>: Bağlam menüsü ile metni anında kopyalayın"
+          ]
+        }
+      ],
+      "4_32_0": [
+        {
+          "features": [
+            "<b>Sesten Metne</b>: Transkript oluşturmak için MP3, WAV, M4A veya MPGA dosyası yükleyin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Görüntüle ve Dinle</b>: Sesi dinlerken transkriptleri okuyun"
+          ]
+        },
+        {
+          "features": [
+            "<b>Kolayca Özetleyin</b>: Tek tıkla hızlı özetler oluşturun"
+          ]
+        }
+      ],
+      "4_33_0": [
+        {
+          "features": [
+            "<b>OpenAI o1</b>: 'o1-preview'den daha hızlı, karmaşık çok adımlı görevlerde gelişmiş doğrulukla mükemmel"
+          ]
+        },
+        {
+          "features": [
+            "<b>Altyazısız Videoları Özetle</b>: Altyazısız YouTube videoları için transkriptler ve özetler alın"
+          ]
+        },
+        {
+          "features": [
+            "<b>Web İçeriği Özeti</b>: Reddit ve Twitter gibi platformlar için geliştirildi"
+          ]
+        }
+      ],
+      "4_34_0": [
+        {
+          "features": [
+            "<b>Gmail'de Al Yanıt</b>: Daha iyi iletişim için çeviri ve Al model seçimi desteği"
+          ]
+        },
+        {
+          "features": [
+            "<b>Artifacts</b>: Kolay paylaşım için akış şemalarını resim olarak dışa aktar"
+          ]
+        },
+        {
+          "features": [
+            "<b>Çeviri</b>: Kelime ve ifadelerin doğru çevirileri için Al sözlük"
+          ]
+        }
+      ],
+      "4_35_0": [
+        {
+          "features": [
+            "<b>Anlık Önizlemeler</b>: Bağlantıları sürükleyerek yeni sekmeler açmadan içeriği görüntüleyin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Akıllı Özetler</b>: Sayfalardan hızlıca önemli bilgileri edinin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Verimli Gezinme</b>: Daha az tıklama ve dikkat dağıtıcı unsurla odaklanmış kalın"
+          ]
+        }
+      ],
+      "4_36_0": [
+        {
+          "features": [
+            "<b>Web Sayfalarını ve Vurguları Kaydedin</b>: Değerli web içeriğini tek tıkla Wisebase'e (Al bilgi tabanı) kaydedin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Al Inbox</b>: İçeriğinizi otomatik olarak kategorize etmesine izin verin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Birden Fazla Dosya ile Sohbet</b>: Topladığınız dosyalardan anında yanıtlar alın"
+          ]
+        }
+      ],
+      "4_37_0": [
+        {
+          "features": [
+            "<b>DeepSeek-R1</b>: OpenAI-o1 performansıyla eşleşir"
+          ]
+        },
+        {
+          "features": [
+            "<b>DeepSeek-V3</b>: Karmaşık akıl yürütme, matematik ve kodlama görevlerinde mükemmeldir"
+          ]
+        },
+        {
+          "features": [
+            "<b>Web Sayfası için AI Çevirici</b>: Doğal ve doğru çeviriler sunar"
+          ]
+        }
+      ],
+      "4_38_0": [
+        {
+          "features": [
+            "Gemini 1.5 Pro'nun 2 katı hız"
+          ]
+        },
+        {
+          "features": [
+            "Anında, profesyonel düzeyde sonuçlar sunar"
+          ]
+        },
+        {
+          "features": [
+            "Geliştirilmiş metin, kod anlama ve akıl yürütme yetenekleri"
+          ]
+        }
+      ],
+      "4_39_0": [
+        {
+          "features": [
+            "<b>Güçlü Akıl Yürütme</b>: OpenAI o1’in matematik, bilim ve kodlama yetenekleriyle eşleşir"
+          ]
+        },
+        {
+          "features": [
+            "<b>o1-mini'den Daha Hızlı</b>: Daha hızlı ve daha sorunsuz yanıtlar için optimize edilmiştir"
+          ]
+        },
+        {
+          "features": [
+            "<b>Daha Güvenilir Cevaplar</b>: Daha yüksek doğruluk ve daha net akıl yürütme sağlar"
+          ]
+        }
+      ],
+      "4_3_0": [
+        {
+          "features": [
+            "Sürükleyici, tam ekran görüntüye dalın"
+          ]
+        },
+        {
+          "features": [
+            "Tüm yan çubuk özelliklerinin tadını tam ekran modunda çıkarın"
+          ]
+        },
+        {
+          "features": [
+            "En iyi deneyim için modlar arasında sorunsuz geçiş yapın"
+          ]
+        }
+      ],
+      "4_40_0": [
+        {
+          "features": [
+            "<b>Gelişmiş Kodlama</b>: Karmaşık kodlama görevlerinde olağanüstü performansla mükemmel"
+          ]
+        },
+        {
+          "features": [
+            "<b>Geliştirilmiş Komut İşleme</b>: Karmaşık komutları etkili bir şekilde anlar ve yanıtlar"
+          ]
+        }
+      ],
+      "4_41_0": [
+        {
+          "features": [
+            "<b>Sesli Giriş</b>: Eller serbest verimlilik için konuşarak hızlıca metin girin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Yeni AI Modeli</b>: DeepSeek-R1-70B artık yayında"
+          ]
+        }
+      ],
+      "4_42_0": [
+        {
+          "features": [
+            "<b>İki Dilli Altyazı</b>: İzleme deneyiminizi geliştirin ve dil öğrenimini artırın"
+          ]
+        },
+        {
+          "features": [
+            "<b>API Anahtarı</b>: DeepSeek, OpenAl ve daha fazlası için API anahtarlarını destekleyin"
+          ]
+        }
+      ],
+      "4_43_0": [
+        {
+          "features": [
+            "<b>{{CLAUDE37}}</b>: Matematik, fizik, kodlama ve birçok diğer görevde daha iyi performans için adım adım düşünme"
+          ]
+        },
+        {
+          "features": [
+            "<b>API Anahtar Desteği</b>: Claude ve Ollama API anahtarları ile uyumlu"
+          ]
+        }
+      ],
+      "4_44_0": [
+        {
+          "features": [
+            "<b>Öne Çıkanlar</b>: Daha zengin bir bilgi tabanı, kullanıcı niyetiyle daha iyi uyum ve daha yüksek duygusal zeka"
+          ]
+        },
+        {
+          "features": [
+            "<b>Mükemmel Uyum</b>: Yazı yazma, programlama ve gerçek dünya zorluklarını çözme"
+          ]
+        },
+        {
+          "features": [
+            "<b>Not</b>: Sorgu başına 30 ileri seviye kredi. Kota sınırlamaları nedeniyle kullanıcı başına 24 saatte 1 kullanım ile sınırlıdır"
+          ]
+        }
+      ],
+      "4_45_0": [
+        {
+          "features": [
+            "<b>Daha Fazla Alan ve Odak</b>: Daha büyük bir arayüz, uzun mesajları okumayı ve kodu görüntülemeyi kolaylaştırırken, daha iyi odaklanma için dikkat dağıtıcı unsurları en aza indirir."
+          ]
+        },
+        {
+          "features": [
+            "<b>Kesintisiz Senkronizasyon</b>: Sohbetler, web ve uzantı arasında senkronize kalır, web sayfası ve kenar çubuğu görünümleri arasında kolay geçiş sağlar."
+          ]
+        }
+      ],
+      "4_4_0": [
+        {
+          "features": [
+            "<b>Yeni Gelişmiş Veri Analizi Aracı:</b> Verimli veri işleme ve karmaşık hesaplamalar için Kod Yorumlayıcı"
+          ]
+        },
+        {
+          "features": [
+            "<b>Yeni Boyama Aracı:</b> Sohbette anında resim oluşturun"
+          ]
+        },
+        {
+          "features": [
+            "<b>Geliştirilmiş Bağlam Menüsü:</b> GPT-4'ü bağlam menüsünde kullanın."
+          ]
+        }
+      ],
+      "4_5_0": [
+        {
+          "features": [
+            "<b>Arama Aracı bileşeni:</b> AI otomasyonuyla aramanın geleceğini deneyimleyin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Web sayfasını çevir:</b> Daha okuyucu dostu çeviri görüntüleme stilleri"
+          ]
+        },
+        {
+          "features": [
+            "<b>Yeni Ayar:</b> Yan Panel'i açarken son sohbeti otomatik olarak devam ettirme"
+          ]
+        }
+      ],
+      "4_6_0": [
+        {
+          "features": [
+            "<b>Claude 3 Opus:</b> \"insana yakın\" yeteneklere sahip olduğunu iddia eder ve GPT-4'ü yenebilir."
+          ]
+        },
+        {
+          "features": [
+            "<b>Claude 3 Sonnet:</b> Zeka ve hızı dengeleyen, bilgi almak veya satışları otomatikleştirmek için idealdir."
+          ]
+        }
+      ],
+      "4_7_0": [
+        {
+          "features": [
+            "Sohbet İçi Özet: Sohbet penceresinde 'Bu sayfayı oku' ile YouTube videolarının ana noktalarını alın."
+          ]
+        },
+        {
+          "features": [
+            "Kolay Altyazı Çıkarma: YouTube'da daha derin bir anlayış için tek bir tıklama ile altyazıları alın."
+          ]
+        },
+        {
+          "features": [
+            "Claude 3 Haiku: Sohbet deneyiminizi zenginleştirmek için şimdi mevcut."
+          ]
+        }
+      ],
+      "4_8_0": [
+        {
+          "features": [
+            "<b>Yeni Model:</b> Gemini 1.5 Pro'yu şimdi destekleyin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Yeni AI Resim Araçları:</b> Herhangi bir resmin üzerine gelerek AI özelliklerine erişin"
+          ]
+        }
+      ],
+      "4_9_0": [
+        {
+          "features": [
+            "<b>Yeni Model:</b> Llama 3'ü şimdi destekleyin"
+          ]
+        }
+      ],
+      "5_0_0": [
+        {
+          "features": [
+            "<b>Akıllı Kaynak Keşfi</b>: Yapay zeka insanları taklit eder, 100'den fazla siteyi hızlıca tarar, sizin için en iyisini seçer."
+          ]
+        },
+        {
+          "features": [
+            "<b>Otomatik Vurgular ve Notlar</b>: Yapay zeka konu ile ilgili bilgileri vurgular, ilham için notlar hazırlar."
+          ]
+        },
+        {
+          "features": [
+            "<b>Otomatik Rapor Oluşturma</b>: Dakikalar içinde kaynak gösterilen derin raporlar alın."
+          ]
+        },
+        {
+          "features": [
+            "<b>Wisebase Hepsini Kaydeder</b>: Yapay zeka raporları, web bulguları, sohbetler ve daha fazlası—her zaman keşfetmek için kaydedilir."
+          ]
+        }
+      ],
+      "5_10_0": [
+        {
+          "features": [
+            "Konuşmacı tanımlaması ile transkripsiyon almak için Sohbet'e ses dosyaları yükleyin. Bu, yapay zekanın konuşmaları daha iyi anlamasını ve daha alakalı yanıtlar sağlamasını sağlar. Toplantılar, röportajlar ve daha fazlası için mükemmel."
+          ]
+        }
+      ],
+      "5_13_0": [
+        {
+          "features": [
+            "<b>Zihin Haritaları</b>: Düşüncelerinizi kolayca düzenleyin ve mantığı bir bakışta netleştirin."
+          ]
+        },
+        {
+          "features": [
+            "<b>Temel Slaytlar</b>: Verimli raporlama ve paylaşım için fikirleri hızlıca sunun."
+          ]
+        }
+      ],
+      "5_15_0": [
+        {
+          "features": [
+            "<b>Tek Tıkla Yakalama</b>: Toplantıları, sesli notları ve ekranları anında kaydedin."
+          ]
+        },
+        {
+          "features": [
+            "<b>Otomatik Transkripsiyon</b>: Kayıtları aranabilir belgelere dönüştürün."
+          ]
+        },
+        {
+          "features": [
+            "<b>Akıllı Sohbet</b>: İçeriğinizden özetler, eylem maddeleri ve yanıtlar alın."
+          ]
+        }
+      ],
+      "5_16_0": [
+        {
+          "features": [
+            "<b>Daha akıllı kodlama yardımı</b>: Karmaşık projeleri ele alır, daha temiz kod yazar, daha hızlı hata ayıklar."
+          ]
+        },
+        {
+          "features": [
+            "<b>Daha iyi yazma ortağı</b>: Mesajları daha net ve ilgi çekici hale getirir."
+          ]
+        },
+        {
+          "features": [
+            "<b>Geliştirilmiş sağlık cevapları</b>: Daha kesin, düşünceli ve güvenilir."
+          ]
+        }
+      ],
+      "5_17_0": [
+        {
+          "features": [
+            "<b>REC Notu, Otomatik Geliştirilmiş</b>: Yapay zeka yazarken hızlı notlar alın ve kaydedin. Notlarınız ve transkriptleriniz, net ve yapılandırılmış bir REC notunda birleştirilir."
+          ]
+        },
+        {
+          "features": [
+            "<b>Ücretsiz Transkripsiyon</b>: Her kayıt otomatik olarak metne dönüştürülür, böylece hiçbir şey kaçırılmaz."
+          ]
+        },
+        {
+          "features": [
+            "<b>Nano Banana</b>: Görüntü aracı artık Chat kontrollerinde Nano Banana'yı destekliyor."
+          ]
+        }
+      ],
+      "5_18_0": [
+        {
+          "features": [
+            "<b>Dakikalar İçinde Araştırma</b>: Kaynaklar arasında arama yapın, perspektifleri karşılaştırın ve alıntılarla yapılandırılmış raporlar alın"
+          ]
+        },
+        {
+          "features": [
+            "<b>Seçkin Krediler</b>: Derin Araştırma ve AI Slides gibi AI ajanı özellikleri için yeni kredi birimi"
+          ]
+        },
+        {
+          "features": [
+            "<b>Daha Basit Model Listesi</b>: Bir modeli bir kez seçin; akıl yürütmeyi etkinleştirmek veya devre dışı bırakmak için Düşünme geçişini kullanın"
+          ]
+        }
+      ],
+      "5_1_0": [
+        {
+          "features": [
+            "<b>Düşün (R1) Modu</b>: DeepSeek-R1'in düşüncesi artık daha iyi yanıtlar için genel modellerle kullanılabilir. Kullanım başına 1 Gelişmiş Kredi maliyeti."
+          ]
+        },
+        {
+          "features": [
+            "<b>Gelişmiş Arama</b>: En alakalı kaynakları geliştirilmiş hassasiyetle bulun."
+          ]
+        },
+        {
+          "features": [
+            "<b>Not Olarak Kaydet</b>: AI yanıtlarını daha sonra kullanmak üzere Wisebase'e not olarak kaydedin."
+          ]
+        }
+      ],
+      "5_20_0": [
+        {
+          "features": [
+            "<b>Web Sayfalarında Hareket Et</b>: AI'ye görevleri mevcut tarayıcınızda sizin için yerine getirmesini söyleyin — ayrı bir “ajan tarayıcı” gerektirmez."
+          ]
+        },
+        {
+          "features": [
+            "<b>Sınırlı Yayın</b>: Bu sürüm yavaş veya tutarsız olabilir. Yüksek maliyetler nedeniyle şu an için erişim Ultra kullanıcılarıyla sınırlıdır."
+          ]
+        }
+      ],
+      "5_22_0": [
+        {
+          "features": [
+            "Daha Akıllı, Daha Doğal: GPT‑5'ten daha insansı sesler ve talimatları daha iyi takip eder"
+          ]
+        },
+        {
+          "features": [
+            "Daha Kesin Düşünür: Basit görevler için daha hızlı yanıtlar ve karmaşık olanlar için daha derinlemesine akıl yürütme sunar"
+          ]
+        }
+      ],
+      "5_24_0": [
+        {
+          "features": [
+            "<b>Günlük Görevler İçin Daha Akıllı</b>: Daha net açıklamalar, geliştirilmiş yazma, çeviri ve daha fazlası"
+          ]
+        },
+        {
+          "features": [
+            "<b>Karmaşık İşlerde Üstün</b>: Kodlama, elektronik tablolar, sunumlar genelinde daha iyi performans"
+          ]
+        },
+        {
+          "features": [
+            "<b>Kredi Kullanım Güncellemesi</b>: En gelişmiş modeller, daha yüksek yetenek ve uzun vadeli güvenilirliği desteklemek için daha fazla kredi kullanır"
+          ]
+        }
+      ],
+      "5_25_0": [
+        {
+          "features": [
+            "<b>Daha Hızlı ve Daha Doğru</b>: İsteklerinize daha güvenilir bir şekilde uyan görüntüler oluşturun, 4 kata kadar daha hızlı"
+          ]
+        },
+        {
+          "features": [
+            "<b>Kesin, Tutarlı Düzenlemeler</b>: Revizyonlar boyunca detayları koruyarak değişiklikler yapın"
+          ]
+        },
+        {
+          "features": [
+            "<b>Daha Keskin Metin</b>: Daha yoğun ve küçük metinleri daha net bir şekilde işleyin"
+          ]
+        }
+      ],
+      "5_2_0": [
+        {
+          "features": [
+            "<b>Ödül Merkezi</b>: Sider'ın özelliklerini keşfederek ücretsiz krediler kazanın."
+          ]
+        },
+        {
+          "features": [
+            "<b>Geliştirilmiş Sayfa Çeviri</b>: GPT, Claude veya Gemini kullanarak AI çevirisi. Çevrilmiş sayfaların belirli bölümlerini yeniden çevirin."
+          ]
+        }
+      ],
+      "5_3_0": [
+        {
+          "features": [
+            "<b>Gemini 2.5 Pro</b>: Geliştirilmiş akıl yürütme ve bağlam farkındalığı ile kodlama, bilim ve matematikte üstün."
+          ]
+        },
+        {
+          "features": [
+            "<b>DeepSeek-V3-0324</b>: Hızlı, güvenilir cevaplar ve matematik ile kodlama için geliştirilmiş destek sunar."
+          ]
+        }
+      ],
+      "5_4_0": [
+        {
+          "features": [
+            "<b>Sohbetleri Yıldızla</b>: Önemli sohbetleri daha sonra kolay erişim için işaretleyin."
+          ]
+        },
+        {
+          "features": [
+            "<b>Sohbetleri Dışa Aktar</b>: Sohbetleri kolayca TXT dosyaları olarak kaydedin ve paylaşın."
+          ]
+        }
+      ],
+      "5_5_0": [
+        {
+          "features": [
+            "<b>GPT-4.1</b>: Karmaşık problemleri ve gerçek dünya kodlamasını geliştirilmiş doğrulukla ele alır, GPT-4o'nun yerini alır."
+          ]
+        },
+        {
+          "features": [
+            "<b>GPT-4.1 Mini</b>: Görüntü anlama konusunda mükemmeldir ve daha hızlı yanıtlar sunar."
+          ]
+        }
+      ],
+      "5_6_0": [
+        {
+          "features": [
+            "<b>o3</b>: Matematik, kodlama, bilim ve teknik yazımda karmaşık problemleri çözmek için güçlü bir model. o1'in yerini alır."
+          ]
+        },
+        {
+          "features": [
+            "<b>o4-mini</b>: Hızlı akıl yürütme, kodlama ve görsel görevler için idealdir. o3-mini'nin yerini alır."
+          ]
+        }
+      ],
+      "5_7_0": [
+        {
+          "features": [
+            "<b>GPT-Image-1 Tarafından Desteklenmektedir</b>: Basit açıklamalar ve OpenAI'nin en son görüntü oluşturma modeli kullanılarak yüksek kaliteli, profesyonel görüntüler oluşturun veya mevcut olanları düzenleyin."
+          ]
+        },
+        {
+          "features": [
+            "<b>Yeni Görüntü Kalitesi Seçenekleri</b>: Sohbet Kontrollerinde Düşük, Orta veya Yüksek kalite arasından seçim yapın—kredi maliyetleri seçime göre değişir."
+          ]
+        }
+      ],
+      "5_8_0": [
+        {
+          "features": [
+            "<b>Geliştirilmiş Yetenekler</b>: GPT Image 1 ile görüntüler oluşturun, eserleri ayrı bir panelde görüntüleyin"
+          ]
+        },
+        {
+          "features": [
+            "<b>Çift Model Karşılaştırması</b>: Yan yana bir görünüm, farklı modellerin aynı soruya gerçek zamanlı olarak nasıl yanıt verdiğini gösterir (Web'e özel)"
+          ]
+        }
+      ],
+      "5_9_0": [
+        {
+          "features": [
+            "<b>Claude Opus 4</b>: Anthropic'in eşsiz kodlama ve karmaşık problem çözme yeteneklerine sahip en güçlü modeli."
+          ]
+        },
+        {
+          "features": [
+            "<b>Claude Sonnet 4</b>: Sonnet 3.7'nin yerini alan geliştirilmiş akıl yürütme ve kodlama yetenekleri."
+          ]
+        }
+      ]
+    },
+    "logTitles": {
+      "4_10_0": "OpenAI'nin GPT-4o'su artık burada!",
+      "4_11_0": "Eleştirel okuma becerilerinizi artırmak için derin okuyucu!",
+      "4_12_0": "",
+      "4_13_0": "AI Sesli Okuma Tanıtımı: Kişisel Sesli Asistanınız",
+      "4_16_0": "GPT-4o mini'yi tanıtıyoruz",
+      "4_17_0": "YouTube için İzleme Öne Çıkanlarını Tanıtıyoruz",
+      "4_18_0": "Sohbet Paylaşımı Şimdi Aktif!",
+      "4_19_0": "{{ARTIFACTS}}: Gerçek Zamanlı, Etkileşimli İçerik Blokları",
+      "4_1_0": "",
+      "4_20_0": "Çeviri Özellikleri Yükseltmesi",
+      "4_22_0": "Şeytan vs Melek: X-Kişiliğinizi Röntgenleyin",
+      "4_23_0": "OpenAI o1-preview & o1-mini artık mevcut!",
+      "4_24_0": "Gemini modelleri artık daha akıllı ve daha hızlı!",
+      "4_25_0": "Daha İyi Bir Deneyim İçin Yeni Görünüm",
+      "4_26_0": "Düşünce Modu'nu Tanıtıyoruz (Deneysel)",
+      "4_27_0": "Geliştirilmiş Bağlam Menüsü ve Artifaktlar",
+      "4_28_0": "Claude 3.5 Haiku & Gelişmiş Seçenekler",
+      "4_29_0": "Gelişmiş Sohbet Deneyimi",
+      "4_2_0": "Daha Verimli Kullanıcı Arayüzü ve Kenar Çubuğu GPT Erişimi",
+      "4_30_0": "Güncellenmiş GPT-4o, Sayfa Çevirisi ve YouTube Altyazıları",
+      "4_31_0": "Araçlar Navigasyonu, Girdi Çevirisi, Hızlı Kopyalama",
+      "4_32_0": "Sohbette Ses Dosyaları Desteği",
+      "4_33_0": "O1 ve Video Özeti Yükseltmeleri",
+      "4_34_0": "Gmail Al Yanıt, Artifacts ve Çeviri Geliştirmeleri",
+      "4_35_0": "Bağlantı Önizlemeleri: Daha Akıllı Gezin",
+      "4_36_0": "Wisebase ile Bilgi Toplayın",
+      "4_37_0": "DeepSeek-R1 & V3, AI Çevirici",
+      "4_38_0": "Gemini 2.0 Flash'i Tanıtıyoruz",
+      "4_39_0": "OpenAI o3-mini Artık Mevcut!",
+      "4_3_0": "Tam Ekran Modu ile Deneyiminizi Maksimuma Çıkarın!",
+      "4_40_0": "Gemini 2.0 Pro şimdi mevcut!",
+      "4_41_0": "Sesli Giriş & DeepSeek-R1-70B",
+      "4_42_0": "Netflix için İki Dilli Altyazı Desteği",
+      "4_43_0": "{{CLAUDE37}}'yi Tanıtıyoruz",
+      "4_44_0": "GPT-4.5 geldi!",
+      "4_45_0": "Web Sohbeti Şimdi Canlı!",
+      "4_4_0": "Sohbet ve GPT-4 Bağlam Menüsünde Tüm Araçlar",
+      "4_5_0": "",
+      "4_6_0": "Şimdi Claude 3 ailesini destekleyin!",
+      "4_7_0": "Sohbet İçi Video Özeti, Altyazı Çıkarma, Claude 3 Haiku! 🚀",
+      "4_8_0": "Gemini 1.5 Pro - Şimdi Mevcut!",
+      "4_9_0": "Llama 3 Şimdi! Meta'nın son teknoloji açık kaynak LLM'nin yeni nesli.",
+      "5_0_0": "Sider 5.0 ile Tanışın: Derin Araştırma Kolaylaştı. Akıllı ve Otomatik.",
+      "5_10_0": "Konuşmacı Tanımlamalı Sesli Metin Dönüştürme",
+      "5_12_0": "Özel Talimatlar Artık Mevcut",
+      "5_13_0": "Artifaktlar Artık Zihin Haritalarını ve Slaytları Destekliyor",
+      "5_14_0": "Grok 4 Burada!",
+      "5_15_0": "Kaydet. Sakla. Ustalaş.",
+      "5_16_0": "GPT-5 burada!",
+      "5_17_0": "REC Notu & Nano Banana",
+      "5_18_0": "Derin Araştırma & Seçkin Krediler",
+      "5_19_0": "Claude Sonnet 4.5'i Tanıtıyoruz",
+      "5_1_0": "Daha Akıllı Düşünme, Arama ve Tasarruf",
+      "5_20_0": "Tarayıcı Ajanını Tanıtıyoruz (Araştırma Önizlemesi)",
+      "5_21_0": "GPT-5 Güncellendi",
+      "5_22_0": "GPT-5.1 burada",
+      "5_23_0": "Gemini 3 Pro Burada!",
+      "5_24_0": "GPT‑5.2 Tanıtımı",
+      "5_25_0": "GPT Image 1.5 Burada",
+      "5_2_0": "Ödül Merkezi ve Geliştirilmiş Sayfa Çeviri",
+      "5_3_0": "Gemini 2.5 Pro & Güncellenmiş DeepSeek V3 Şimdi Mevcut",
+      "5_4_0": "Sohbetlerinizi Yıldızlayın ve Dışa Aktarın",
+      "5_5_0": "GPT-4.1 ve GPT-4.1 Mini'yi Tanıtıyoruz",
+      "5_6_0": "OpenAI o3 & o4-mini Artık Mevcut",
+      "5_7_0": "GPT-Image-1 ile Sohbette Görüntü Oluştur ve Düzenle",
+      "5_8_0": "Tam Sayfa Web Sohbeti Geliştirildi",
+      "5_9_0": "Claude Opus 4 ve Claude Sonnet 4 Şimdi Mevcut"
+    },
+    "newInVersion": "Sürüm {{versionId}}'deki Yenilikler",
+    "rate5Star": "<b>Uzantımızı beğendiniz mi?</b> Büyümemize yardımcı olması için lütfen web mağazasında bize beş yıldız verin",
+    "tryRecordNote": "REC Notunu Deneyin",
+    "xButton": "X'te @Sider_AI'yi takip edin",
+    "xTip": "Sider AI ile önde kalın: güncellemeler, ipuçları ve daha fazlası."
+  },
+  "changeSpeed": "Hızı Değiştir",
+  "ChangeTone": "Tonu değiştir",
+  "changeVoice": "Bir sesi değiştir",
+  "chatWithPDF": "PDF ile sohbet et",
+  "check": "Kontrol etmek",
+  "checkOutNow": "Şimdi kontrol et!",
+  "clear": "Temizlemek",
+  "clickPreview": "Önizlemek için tıklayın",
+  "clickToAsk": "sormak için tıklayın",
+  "clickToTry": "Bu özelliği denemek için tıklayın",
+  "clickView": "Görüntülemek için tıklayın",
+  "close": "Kapat",
+  "code": "Kod",
+  "code&preview": "Kod ve Önizleme",
+  "collapse": "Kenar çubuğunu daralt",
+  "collapseNav": "Navigasyon Çubuğunu Daralt",
+  "compareWith": "{{NAME}} ile karşılaştır",
+  "confirm": "Onaylamak",
+  "console": "Konsol",
+  "constructionDesc": "Daha iyi, daha kişiselleştirilmiş yanıtlar almak için kendinizi tanıtın",
+  "constructionForm": {
+    "additional_info": {
+      "descritionList": [
+        "İspanyolca öğrenmeye çalışıyorum.",
+        "Fotoğrafçılık ve seyahat konusunda tutkuluyum.",
+        "Bilim kurgu kitapları ve filmlerinin büyük hayranıyım."
+      ],
+      "descritionTitle": "Şunlar gibi şeyler paylaşabilirsiniz:",
+      "label": "Sizi daha iyi tanımama yardımcı olacak başka bir şey var mı?",
+      "placeholder": "Dikkate alınması gereken ilgi alanları, değerler veya tercihler"
+    },
+    "desired_ai_traits": {
+      "descritionList": [
+        "Samimi, arkadaşça bir ton kullan.",
+        "Doğrudan ol ve hemen konuya gir.",
+        "Fikirlerime meydan oku ve takip soruları sor."
+      ],
+      "descritionTitle": "Bana şunları yapmamı söyleyebilirsiniz:",
+      "label": "Sizin için en iyi şekilde çalışacak yapay zeka arkadaşı nasıl olmalı?",
+      "placeholder": "İletişim tarzı veya kişilik özellikleri"
+    },
+    "nickname": {
+      "label": "Size nasıl hitap etmeliyim?",
+      "placeholder": "Takma Ad"
+    },
+    "occupation": {
+      "label": "Ne iş yapıyorsunuz?",
+      "placeholder": "İşiniz"
+    }
+  },
+  "contactUs": "Bize Ulaşın",
+  "contextMenu": {
+    "chatSelection": "Seçili metinle sohbet et",
+    "highlightSelection": "Seçili metni vurgula",
+    "imageTools": "{{AI}} Görüntü Araçları",
+    "openFullPageChat": "Tam Sayfa Sohbeti Aç",
+    "revertSavePage": "{{WISEBASE}}'den kaldır",
+    "revertTranslatePage": "Orijinal metni göster",
+    "savePage": "Sayfayı {{WISEBASE}}'e kaydet",
+    "summarizePage": "Sayfayı özetle",
+    "translatePage": "{{lang}} diline çevir"
+  },
+  "continue": "Devam etmek",
+  "contrast-analysis": "Zıtlıkları analiz et",
+  "conversationTip": "Bu sohbet {{CHATPROVIDER}} modunda oluşturuldu. Devam etmek için modu değiştirin veya mevcut modda yeni bir sohbet başlatın.",
+  "copied": "kopyalandı",
+  "copy": "kopyala",
+  "copyAsMarkdown": "Markdown Olarak Kopyala",
+  "copyAsSheet": "Elektronik Tablo Olarak Kopyala",
+  "createAccount": "Bir hesap oluşturun",
+  "createAccountTip": "Her gün <a>{{NUM}} ücretsiz</a> kredi almak için kaydolun",
+  "createImageTip": "Seçilen modele göre resim başına ücret uygulanır.",
+  "creatingImage": "Görüntü oluşturuluyor",
+  "creatingImageFailed": "Görüntü oluşturma başarısız",
+  "credit": "Kredi",
+  "credits": "Krediler",
+  "current": "Akım",
+  "currentRecordedSpeakers": "Mevcut Kayıtlı Konuşmacılar",
+  "currentTpl": "Geçerli şablon:",
+  "customInstructions": "Özel Talimatlar",
+  "customPrompt": "Özel bilgi istemi",
+  "dataAnalysisTip": "Bu araç yalnızca kullanıldığında tetiklenir ve 1 Gelişmiş Kredi düşer.",
+  "deepReadTools": "Derin okuma araçları",
+  "deepResearch": "Derin Araştırma",
+  "deepResearchBlockTip": "Derin araştırmanın 5-20 dakika sürmesi bekleniyor. Diğer özellikleri kullanmaya devam edebilirsiniz.",
+  "deepResearchFileModalCancelText": "Dosyasız Devam Et",
+  "deepResearchFileModalContent": "Derin Araştırma dosyaları desteklemiyor. Dosya yüklemek için Derin Araştırma'dan çıkın veya dosyasız devam edin.",
+  "deepResearchFileModalOkText": "Araştırmadan Çık & Dosya Yükle",
+  "deepResearchFileModalTitle": "Dosya Yüklenemiyor",
+  "deepResearchFileTip": "Derin Araştırma dosyaları desteklemiyor. Devam etmek için dosyaları kaldırın veya sohbet etmeye devam edin.",
+  "deepResearchInputHint": "Ne araştırmak istersiniz?",
+  "deepResearchNormalTip": "Her kullanım 20 Elite Kredisi maliyetindedir",
+  "deepResearchTip": "Daha ileri gidin——Derin Araştırma ile derinlemesine analiz",
+  "delete": "Silmek",
+  "deleteAll": "Hepsini Sil",
+  "delteTpl": "Bu şablonu sil",
+  "describeImage": "Bu resmi açıklayın",
+  "describleImage": "Tanımla",
+  "detected": "Tespit Edildi",
+  "disable": "Devre Dışı Bırak",
+  "Distinguish": "Ayırt et",
+  "distinguishDesc": "3 ileri kredi / 10 dakika",
+  "DitinguishSpeakers": "Konuşmacıları ayırt et?",
+  "done": "Tamamlamak",
+  "download": "İndir",
+  "downloadPng": "PNG İndir",
+  "downloadTypeFile": "{{type}} Dosyasını İndir",
+  "dropMsg": "Sider'e göndermek için buraya bırakın",
+  "earnFree": "Ücretsiz Krediler Kazanın",
+  "edgePasteBug": "Bir Edge tarayıcı hatası nedeniyle klavye kısayolları kullanılarak yapıştırılamıyor. Yapıştırmak için lütfen sağ tıklayın.",
+  "edit": "Düzenlemek",
+  "editTitle": "Başlığı düzenle",
+  "editTpl": "Bu şablonu düzenle",
+  "elite": "Elite",
+  "emailEnhance": {
+    "emailAssistant": "E-posta Asistanı",
+    "emailAssistantDesc": "Sider açıldığında e-postalara hızla yanıt vermenize yardımcı olabilir.",
+    "hideTranslation": "Çeviriyi gizle",
+    "inputPlaceholder": "Sider'a nasıl cevap vermek istediğini söyle...",
+    "intent": "Gönderenin niyeti",
+    "orgLang": "E-posta Dili",
+    "quickAIReply": "AI Yanıtı",
+    "replyInputPlaceholder": "Ne yanıtlamak istersiniz?",
+    "resultsTitle": "Yanıt taslağı",
+    "showTranslation": "Çeviriyi göster",
+    "translateEmail": "E-postayı çevir",
+    "tryAgain": "Tekrar deneyin",
+    "voice": {
+      "applicant": "Başvuru sahibi",
+      "casual": "Gündelik",
+      "colleague": "İş arkadaşı",
+      "confident": "kendinden emin",
+      "customer-service-staff": "Müşteri hizmetleri personeli",
+      "direct": "doğrudan",
+      "emailLength": "E-posta Uzunluğu",
+      "empathetic": "empatik",
+      "enthusiastic": "Tutkulu",
+      "formal": "Resmi",
+      "formality": "Formalite",
+      "friendly": "arkadaşça",
+      "human-resources": "İnsan kaynakları",
+      "informational": "bilgilendirici",
+      "leader": "Önder",
+      "long": "Uzun",
+      "medium": "Orta",
+      "neutral": "Doğal",
+      "personable": "Canım",
+      "project-manager": "Proje Müdürü",
+      "sales-representative": "Satış Temsilcis",
+      "short": "Kısa",
+      "subordinate": "Ast",
+      "tone": "Ton",
+      "witty": "akıllı",
+      "yourRole": "Rolün"
+    },
+    "voiceSettings": "Ton ayarı",
+    "wayToReply": "Yanıt fikirleri"
+  },
+  "enable": "Etkinleştir",
+  "enable&continue": "Etkinleştir ve Devam Et",
+  "enterText": "Metin girin",
+  "errorOccurred": "Bir hata oluştu",
+  "everyThing": "Her Şey",
+  "example": "Örnek",
+  "exit": "Çıkış",
+  "expand": "Genişlet",
+  "expandNav": "Navigasyon Çubuğunu Genişlet",
+  "experimental": "Erken erişim",
+  "experimentalDesc": "Ücretli kullanıcılar, abone olmayanlara sunulmayan özel, son teknoloji araçlara ve deneysel özelliklere erken erişim elde ederler.",
+  "explain": "Açıkla",
+  "explainSection": "Bu bölümü bana daha detaylı açıklayabilir misiniz?",
+  "export": "Dışa Aktar",
+  "exportXmind": ".xmind dosyasını dışa aktar",
+  "extra": "ekstra",
+  "extracted": "Ses çıkarıldı",
+  "extractingText": "Metin çıkarılıyor",
+  "extractingTextFailed": "Metin çıkarma başarısız oldu",
+  "ExtractText": "Metni çıkar",
+  "faceError": "Bu hatayla en son {{ARTIFACT}}'ta karşılaşıldı, lütfen düzeltin.",
+  "fact-check": "Gerçekleri Kontrol Et",
+  "feedback": "Geri bildirim",
+  "fetched": "{{QUERY}} getirildi",
+  "fetchFailed": "{{QUERY}} alınamadı.",
+  "fetching": "{{QUERY}} alınıyor...",
+  "fileInputHint": "Bu dosya hakkında soru sor",
+  "finish": "Bitir",
+  "fit": "Ekrana Sığdır",
+  "fiveStarRate": {
+    "enjoy": "😘 Bu uzantıyı beğendiniz mi?",
+    "enjoyNo": "Geribesleme yok",
+    "enjoyYes": "Evet, 5 yıldızlı değerlendirme!",
+    "feedbackThx": "Geri bildiriminiz için teşekkürler.",
+    "feedbackTip": "🥹 Lütfen memnuniyetsizliğinizin nedenini bize bildirin.",
+    "rate": "Bize Beş Yıldız Değerlendirin"
+  },
+  "free": "Ücretsiz",
+  "freeTrial": {
+    "cancelTip": "İstediğiniz zaman iptal edin",
+    "panelBtn": "Ücretsiz Denemeyi Başlat",
+    "panelList": [
+      "GPT-4 & Claude 3 ile özgürce sohbet edin",
+      "Herhangi bir PDF, resim ve bağlantı ile sohbet edin",
+      "Web sayfalarını ve YouTube videolarını özetleyin"
+    ],
+    "panelTitle": "3 Günlük Sınırsız Plan Ücretsiz Deneme"
+  },
+  "fullPageChat": "Tam sayfa sohbet",
+  "fullscreen": "Tam ekran",
+  "fullscreenBookmarkTip": "Bir dahaki sefere kolay erişim için tam ekran sohbeti yer imlerine eklemek üzere yıldız simgesine tıklayın!",
+  "fullScreenChat": "Tam Ekran Sohbet",
+  "gamify": "Oyunlaştır",
+  "gamifyDoc": "Belgeyi Oyunlaştır",
+  "gamifyPage": "Bu sayfayı oyunlaştır",
+  "gamifyPageDesc": "Mevcut web sayfasının daha iyi anlaşılması için oyunlaştırılmış, etkileşimli görünümler oluşturun.",
+  "gamifyTip": "Oynayarak öğren: Etkileşimli demolarla kavramları keşfedin",
+  "genBy": "{{MODEL_NAME}} tarafından oluşturuldu",
+  "general": "Genel yapılandırma",
+  "generating": "Üretiliyor",
+  "generatingImageTip": "Görüntü hazır olana kadar sohbeti açık tutun",
+  "generatingReport": "Rapor oluşturuluyor...",
+  "generatingTranscript": "Transkript oluşturuluyor",
+  "getAIAnswer": "Yapay zeka cevabını al",
+  "getAnotherKey": "Başka Bir Anahtar Al",
+  "getItNow": "Şimdi sahip ol",
+  "getKeyPage": {
+    "addKey": "Anahtar Ekle",
+    "apiKeyInputPlaceholder": "API anahtarınızı girin",
+    "checkConnectionBtn": "Kontrol Et",
+    "checkConnectionDesc": "API anahtarınızın ve vekil sunucunuzun (kullanılıyorsa) geçerli olup olmadığını kontrol edin.",
+    "checkConnectionTitle": "Bağlantıyı kontrol et",
+    "connectionFailed": "Bağlantı başarısız. API anahtarınızı ve vekil sunucu ayarlarınızı kontrol edin.",
+    "connectionSuccess": "Bağlantı başarılı",
+    "customKey": "Özel API Anahtarı",
+    "deleteModelTip": "Bu modeli silmek istiyor musunuz?",
+    "modelCount": "{{count}} model mevcut",
+    "modelList": "Model listesi",
+    "noKeyWarn": "API anahtarı bulunamadı. Devam etmek için bir anahtar ekleyin veya {{APP_NAME}} kullanmaya geçin.",
+    "proxyUrlTitle": "API proxy URL'si (isteğe bağlı)",
+    "proxyUrlTitleRequired": "API proxy URL'si",
+    "setup": "Kurulum",
+    "step1": "1. Adım: API anahtarını alın",
+    "step1-1": "<i>OpenAI hesabınıza giriş yapın</i> Hesabınız yoksa <b>BURADAN</b> kaydolun",
+    "step1-2": "OpenAI API Anahtarı sayfasını ziyaret edin",
+    "step1-3": "Yeni bir gizli anahtar oluşturun ve aşağıdaki gibi kopyalayın",
+    "step2": "2. Adım: API Anahtarını aşağıdaki kutuya yapıştırın",
+    "step2-tips": "Merak etme. API anahtarınız yalnızca yerel olarak ChatGPT uzantısında kullanılır. API'yi kullanmak, ChatGPT'yi doğrudan kullanmaktan daha kararlıdır.",
+    "step3": "3. Adım: Kredilerinizi <i>buradan</i> kontrol edin",
+    "stepTitle": "API anahtarı nasıl alınır.",
+    "useSider": "{{APP_NAME}} kullan",
+    "welcome": "{{APP_NAME}}'a hoş geldiniz! İşte başlama yolculuğunuz:"
+  },
+  "getMore": "Daha fazla al",
+  "googleSearchPage": {
+    "claude3Advantages": [
+      "GPT-4 kadar güçlü",
+      "Daha doğal yanıtlar",
+      "Güçlü akıl yürütme yetenekleri"
+    ],
+    "gpt4Advantages": [
+      "Daha iyi cevaplar al",
+      "Daha çeşitli bilgi",
+      "Daha güçlü anlama"
+    ]
+  },
+  "goPremium": "Premiuma yükselt",
+  "goPremiumGetMore": "daha fazlasını elde etmek için premium'a yükseltin",
+  "gotIt": "Anladım",
+  "guideVideos": {
+    "chat": {
+      "ai-bot": "Çoklu-bot Sohbet",
+      "data-analysis": "Gelişmiş Veri Analizi",
+      "painter": "Görüntü Oluşturma",
+      "prompts": "Özel İstekler",
+      "web-access": "Web Erişimi"
+    },
+    "chatpdf": {
+      "chatpdf": "PDF ile Sohbet"
+    },
+    "email": {
+      "reply": "E-posta Yanıtları Oluştur"
+    },
+    "grammar": {
+      "context": "Bağlam Menüsü ile Dilbilgisi Kontrolü",
+      "widget": "Kenar Çubuğu ile Dilbilgisi Kontrolü"
+    },
+    "ocr": {
+      "ocr": "Metin ve Denklemleri Çıkar"
+    },
+    "painter": {
+      "bg-remove": "Arka Planı Kaldır",
+      "bg-replace": "Arka Planı Değiştir",
+      "eraser": "Fırçalanmış Alanı Kaldır",
+      "image": "Görüntüler Oluştur",
+      "text-remove": "Metni Kaldır",
+      "upscale": "Görüntüleri Büyüt"
+    },
+    "summary": {
+      "doc": "Yüklenen Belgeler",
+      "page": "Hızlı Menü ile Web Sayfası",
+      "page2": "Sohbet ile Web Sayfası",
+      "youtube": "YouTube Videoları"
+    },
+    "translation": {
+      "in-chat": "Sohbette Seçilen Metin",
+      "in-chat2": "Sohbette Yazılan Metin",
+      "input": "Sayfada Yazılan Metin",
+      "page": "Tam Web Sayfası",
+      "selected": "Bağlam Menüsünden Seçilen Metin",
+      "widget": "Kenar Çubuğundan Seçilen Metin"
+    },
+    "write": {
+      "context": "Seçilen Metni Geliştir",
+      "input": "Girdileri Yeniden Yaz",
+      "widget": "Talep Üzerine Oluştur"
+    }
+  },
+  "guideVideoTitle": {
+    "chat": "Sohbet",
+    "chatpdf": "ChatPDF",
+    "email": "E-posta Yanıtı",
+    "grammar": "Dilbilgisi",
+    "ocr": "OCR",
+    "painter": "Resimci",
+    "summary": "Özetle",
+    "translation": "Çevir",
+    "write": "Yaz"
+  },
+  "helpCenter": "Yardım Merkezi",
+  "hi": "Merhaba,",
+  "hide": "Gizle",
+  "hideImage": "Resmi gizle",
+  "highlight-excerpts": "Alıntıları Vurgula",
+  "highlightType": {
+    "comprehensive-coverage": "Kapsamlı Kapsama",
+    "key-sentences": "Anahtar Cümleler",
+    "memorable-quotes": "Unutulmaz Alıntılar",
+    "structural-importance": "Yapısal Önem"
+  },
+  "historyGroups": {
+    "earlier": "Daha Önce",
+    "thisMonth": "Bu Ay",
+    "thisWeek": "Bu Hafta",
+    "today": "Bugün"
+  },
+  "howToUse": "Nasıl kullanılacağını görün",
+  "icon": "Simge",
+  "identify-assumptions": "Varsayımları Belirle",
+  "image": "Görsel",
+  "imageInputHint": "Bu görsel hakkında sorular sorun",
+  "imageQuality": {
+    "high": {
+      "desc": "GPT-image-1.5",
+      "label": "GPT-image-1.5 (Yüksek)"
+    },
+    "low": {
+      "desc": "GPT-image-1.5",
+      "label": "GPT-image-1.5 (Düşük)"
+    },
+    "medium": {
+      "desc": "GPT-image-1.5",
+      "label": "GPT-image-1.5 (Orta)"
+    },
+    "nano_banana": {
+      "desc": "Gemini 2.5 Flash Image Preview",
+      "label": "Nano Banana"
+    },
+    "nano_banana_pro": {
+      "desc": "Gemini 3 Pro Image Preview",
+      "label": "Nano Banana Pro"
+    }
+  },
+  "imageQuoteTipContent": "Görsel hakkında tekrar soru sormak için alıntı yapmanız yeterlidir.",
+  "imageQuoteTipTitle": "Resmi tekrar sor? Görselden alıntı yapmanız gerekmektedir",
+  "imageRetryTip": "Bir hata oluştu. Lütfen yeniden deneyin.",
+  "imageToolbar": {
+    "AITools": "Yapay Zeka Araçları",
+    "chatWithImage": "Resimli Sohbet",
+    "erase": "Bölge Silme",
+    "extractText": "Metni Çıkar",
+    "imageTools": "Resim Araçları",
+    "inpaint": "Yerel Yeniden Çizim",
+    "removeBackground": "Arka Plan Kaldırma",
+    "removeText": "Metin Kaldırma",
+    "replaceBackground": "Arka Plan Değiştirme",
+    "upscale": "Görüntü Kalitesini Artırma",
+    "variation": "Varyasyonlar Oluştur"
+  },
+  "imageTranslateInto": "Resimdeki metni {{lang}} diline çevir",
+  "inputTranslation": {
+    "mainSwitchDesc": "Herhangi bir web sayfasındaki bir giriş kutusundaki metni çevirin ve değiştirin",
+    "mainSwitchTitle": "Giriş metnini bir tetikleme tuşuyla çevirin",
+    "model": "Çeviri modeli",
+    "neverTransSites": "Bu sitelerde asla çeviri yapma",
+    "spaceKey": "Boşluk tuşu",
+    "title": "Girdi çevirisi",
+    "triggerKeyDesc": "Çevirmek için tetikleyici tuşa 3 kez hızlıca basın, {{key}} ile geri alın",
+    "triggerKeyTitle": "Tetikleyici tuş"
+  },
+  "insert": "Sokmak",
+  "invite": "Davet etmek",
+  "inviteFriendTip": "Ekstra kredi almak için <a>arkadaşlarınızı davet edin</a>",
+  "inviteYourFriends": "Arkadaşları davet etmek",
+  "issueType": "Sorun Tipi",
+  "joinDiscord": "Discord topluluğumuza katılın",
+  "key-concepts": "Temel kavramları açıkla",
+  "keyboardShortcuts": "Klavye kısayolları",
+  "keypoints": "Anahtar noktaları",
+  "language": "Dil",
+  "learnMore": "Daha fazla bilgi edinin",
+  "letsTryItNow": "Hadi Şimdi Deneyelim!",
+  "listen": "Dinlemek",
+  "llmStatus": {
+    "thinking": "Düşünüyor..."
+  },
+  "Loading": "Yükleniyor",
+  "loadMessageFailed": "Mesajlar Yüklenemedi",
+  "login": {
+    "apple": "Apple ile devam et",
+    "google": "Google ile devam et",
+    "microsoft": "Microsoft ile devam et",
+    "phone": "Telefon ile devam et"
+  },
+  "loginTip": "Hesabınız yok mu? <a>Bir hesap oluşturun</a>",
+  "loginTipSiderMode": "Bu özelliği Sider modunda kullanmak için giriş yapın.",
+  "loginToClaimRewards": "Sider modunda ödüllerinizi talep etmek için giriş yapın.",
+  "loginToUnlockFeature": "Daha fazla özelliği açmak için giriş yapın.",
+  "loginToUse": "Sider'ı kullanmaya başlamak için giriş yapın.",
+  "logout": "Çıkış yap",
+  "longAnswerFullScreenTip": "Sıkışık mı hissediyorsunuz? Tam ekran yapın",
+  "longText": "Uzun metin",
+  "manage": "Üstesinden gelmek",
+  "mathSolver": "Matematik Çözücü",
+  "mathSolverTip": "Soru Bankalarıma Kaydet",
+  "maximize": "Maksimize Et",
+  "maybeLater": "Belki Daha Sonra",
+  "mentionBot": "Modeli belirt",
+  "mentionGPTs": "GPT'leri belirtin",
+  "mindmap": {
+    "catalogOrganization": "Katalog Organizasyonu",
+    "fishbone": "Balık Kılçığı",
+    "logicalStructure": "Mantıksal Yapı",
+    "logicalStructureLeft": "Mantıksal Yapı Sol",
+    "mindMap": "Zihin Haritası",
+    "organizationStructure": "Organizasyon Yapısı",
+    "timeline": "Zaman Çizelgesi"
+  },
+  "minimize": "Küçült",
+  "mobileChatHistoryAd": {
+    "btn": "Uygulamayı edin",
+    "title": "Sohbetleri cihazlar arasında senkronize et"
+  },
+  "model": "Modeli",
+  "modelCountTip": {
+    "gpt-3.5": "Maliyeti <m>1 temel kredi</m>.",
+    "gpt-3.5-n_one": "Maliyet <m>{{count}} temel kredi</m>.",
+    "gpt-3.5-n_other": "Maliyet <m>{{count}} temel krediler</m>.",
+    "gpt-4": "Maliyeti <m>1 gelişmiş kredi</m>.",
+    "gpt-4-2": "Maliyeti <m>2 gelişmiş kredi</m>.",
+    "gpt-4-n_one": "Maliyeti <m>{{count}} gelişmiş kredi</m>.",
+    "gpt-4-n_other": "Maliyeti <m>{{count}} gelişmiş kredi</m>."
+  },
+  "modelDesc": {
+    "bard": "Google'ın modeli (PaLM 2), ileri düzey akıl yürütme görevlerinde iyi performans gösterir.",
+    "claude-3-haiku": "Anthropic'in en kompakt modeli, hemen yanıt verme ve insan etkileşimlerini taklit eden sorunsuz AI deneyimleri için tasarlandı",
+    "claude-3-opus": "Anthropic'ın en güçlü modeli, son derece karmaşık görevlerde üstün performans sunar ve akıcılık ve insan gibi anlama sergiler.",
+    "claude-3-sonnet": "Anthropic'ın zeka ve hız arasında en dengeli modeli, geniş bir görev yelpazesinde idealdir.",
+    "claude-3.5-sonnet": "Anthropic'in en son modeli, Claude 3 Opus'tan iki kat daha hızlı ve daha yüksek zekaya sahip, akıl yürütme, bilgi, kodlama ve görsel görevlerde önemli ölçüde geliştirilmiş.",
+    "claude-instant": "Antropik, düşük gecikme süreli, yüksek verimli kullanım örneklerinden temel model.",
+    "claude2": "Anthropic'in sınıfının en iyisi teklif modeli, karmaşık muhakeme gerektiren görevlerde üstün performans.",
+    "gemini-1.5-flash": "Hız ve verimlilik için optimize edilmiş, Google'ın hafif modeli.",
+    "gemini-1.5-pro": "Google'ın geniş bir yelpazede görevlerde genel performans için en iyi modeli.",
+    "gemini-pro": "Google'ın en dengeli modeli, yetenek ile verimliliği mükemmel bir şekilde harmanlıyor.",
+    "gpt-3.5": "Çok hızlı, çoğu günlük görev için harika.",
+    "gpt-4": "En yetenekli model, ileri düzey muhakeme gerektiren karmaşık görevler için en iyisi.",
+    "gpt-4o": "OpenAI'nin en iyi modeli, karmaşık görevler için kaliteyi korurken en iyisi.",
+    "gpt-4o-mini": "OpenAI'nin en son modeli, günlük kullanım için sohbette, kodlamada ve akıl yürütme görevlerinde hızlı ve üstün performans sunar.",
+    "gpt-5": "OpenAI'nin en son modeli, karmaşık görevler için en iyisiyken kaliteden ödün vermiyor.",
+    "llama-3": "Meta'nın en son modeli, kaliteyi korurken karmaşık görevler için en iyisi.",
+    "sider": "{{SIDER}}, senaryoya bağlı olarak optimal yanıtlar için dinamik olarak GPT-4o mini, Claude 3 Haiku, Gemini 1.5 Flash veya Llama 3'ü seçer."
+  },
+  "modelUpdateFailed": "Model güncellenemedi",
+  "modelUpdateSuccess": "Model başarıyla güncellendi",
+  "more": "Daha",
+  "moreFeature": "Daha fazla özellik!",
+  "morePrompts": "Daha Fazla İpucu",
+  "moreQueries": "Daha fazla kredi!",
+  "moreQuery": "Daha Fazla Kredi",
+  "msg": {
+    "askOriginalModel": "Orijinal {{MODELNAME}}",
+    "basicCreditLimit": "Temel Krediler Tükendi",
+    "basicCreditLimitDesc": "Tüm Temel Kredilerinizi kullandınız. Planınızı yükseltin veya daha fazla kredi almak için arkadaşlarınızı davet edin.",
+    "cantBeTranscribed": "Telif hakkı kısıtlamaları nedeniyle bu videoyu özetleyemiyoruz. Lütfen başka bir video deneyin.",
+    "changeSaved": "değişiklikler kaydedildi",
+    "chatgptTabGuardRefreshingTips": "ChatGPT'de bir şeyler ters gitti. Yeniden bağlanılıyor, lütfen bekleyin...",
+    "chatgptTabGuardRefreshingTips1": "ChatGPT'de bir şeyler ters gitti.",
+    "chatgptTabGuardRefreshingTips2": "Yeniden bağlanılıyor, lütfen bekleyin...",
+    "chatgptTabGuardSetupSuccessTips": "Düzeltildi, lütfen tekrar deneyin",
+    "chatgptTabGuardTips": "Lütfen bu sekmeyi açık tutun, artık {{APP_NAME}} uygulamasına dönebilirsiniz.",
+    "checkInvitation": "Davet Kayıtlarını Kontrol Edin",
+    "deletePromptWarn": "Bu istemi silmek istiyor musunuz?",
+    "dontRemindAgain": "Bir daha sorma",
+    "dragImgTips": "Yüklemek için tıklayın veya bir resmi buraya sürükleyin",
+    "dragTips": "Yüklemek için tıklayın veya dosyaları buraya sürükleyin",
+    "emailRequired": "Email gereklidir.",
+    "enterAPIKey": "Lütfen OpenAI API anahtarınızı girin",
+    "enterEmail": "Sorunla ilgili güncellemeleri almak için bir e-posta adresi girin.",
+    "errChatGPTAuth": "Lütfen ChatGPT web sayfanıza <m>giriş yapmak için bağlantıya tıklayın</m>; biz de onu sabitlemenize yardımcı olacağız. Daha sonra kenar çubuğunda kullanabilirsiniz.",
+    "errChatGPTAuthTipTitle": "Deneyin:",
+    "errChatGPTFailToFetch": "ChatGPT'den yanıt alınamadı.",
+    "errGeminiPro": "{{GEMINI}} hatası, lütfen daha sonra tekrar deneyin.",
+    "errOpenaiFailToFetch": "API anahtarınız aracılığıyla OpenAI'den yanıt alınamadı.",
+    "errOpenAIFilter": "Yanıt, OpenAI'nin içerik yönetim politikası nedeniyle filtrelendi. Lütfen isteminizi değiştirin ve tekrar deneyin.",
+    "error1139_1": "Sınırsız planları kullandığınız için teşekkürler! Gelişmiş AI modellerini kullanmaya devam edebilirsiniz. Ancak, geçici bir hız sınırına ulaştınız. <a>İşte hız sınırının neden olduğu ve size nasıl yardımcı olmaya çalıştığımız</a>. Lütfen <mx>OKUYUN</mx>.",
+    "error1139_1_2": "Sınırsız planları kullandığınız için teşekkürler! Gelişmiş AI modellerini kullanmaya devam edebilirsiniz. Ancak, geçici bir hız sınırına ulaştınız ve tüm ekstra gelişmiş sorguları kullandınız. İşte <a>hız sınırının neden olduğu ve size nasıl yardımcı olmaya çalıştığımız</a>. Lütfen <mx>OKUYUN</mx>.",
+    "error1139_1_3": "Sınırsız planları kullandığınız için teşekkürler! Gelişmiş AI modellerini kullanmaya devam edebilirsiniz. Ancak, geçici bir hız sınırına ulaştınız ve tüm hediye gelişmiş sorguları kullandınız. İşte <a>hız sınırının neden olduğu ve size nasıl yardımcı olmaya çalıştığımız</a>. Lütfen <mx>OKUYUN</mx>.",
+    "error1139_2": "Mevcut çalışmanızı kesintiye uğratmamak için, mevcut hız sınırını kaldırmak amacıyla size hediye olarak bazı ekstra gelişmiş sorgular verdik. <b>Bu ekstra gelişmiş sorguların hepsini kullandıktan sonra bir hız sınırınız olacak</b>.",
+    "error1139_3": "Mevcut hız sınırı, Gelişmiş Sorgular için ({{timesToUse}} kez / {{periodTime}} saat) şeklindedir. Kapasitemize göre bunu ayarlayabiliriz. Şimdi daha fazlasına mı ihtiyacınız var? Bir güçlendirici paket deneyin!",
+    "error1139_4": "Mevcut hız sınırını kaldırmak amacıyla size hediye olarak ekstra 50 gelişmiş sorgu verdik. <b>Bu ekstra gelişmiş kredilerin hepsini kullandıktan sonra bir hız sınırınız olacak.</b>",
+    "errorFileType": "Desteklenmeyen dosya formatı",
+    "errorOutputLimit": "Uzunluk sınırına ulaşıldı. Daha uzun bir cevap almak için yükseltin.",
+    "errServiceUnavailable": "Openai sunucusu meşgul, lütfen daha sonra tekrar deneyin veya OpenAI kesintisi sırasında Sider API'sine geçin ve {{model}} kullanın.",
+    "errSiderAdminKickout": "Çıkarıldınız, lütfen tekrar giriş yapın",
+    "errSiderAdvancedTextLimit": "Gelişmiş kredi için hız sınırına ulaştınız. Şu anda, her 60 dakikada bir {{count}} mesaj sınırı bulunmaktadır. Alternatif olarak, temel kredi kullanabilir ve daha sonra geri dönebilirsiniz.",
+    "errSiderApiHighLoad": "OpenAI sunucusu şu anda meşgul. Lütfen daha sonra tekrar deneyiniz.",
+    "errSiderApiImageLimit": "Tüm temel kredileri kullandınız, lütfen bu özelliği kullanmaya devam etmek için yükseltin.",
+    "errSiderApiImgLimitPremiumUltra": "Maksimum temel kredi sayısına ulaştınız. Devam etmek için lütfen bir sonraki sıfırlamayı bekleyin.",
+    "errSiderApiLimitDevice": "Kullanmak için lütfen giriş yapın.",
+    "errSiderApiLimitLogin": "Bugün tüm ücretsiz kredilerinizi kullandınız. Daha fazla kredi için yükseltin veya arkadaşlarınızı davet edin ya da yarının kredi sıfırlamasını bekleyin.",
+    "errSiderApiLimitPremium": "Bu ayki Temel Krediniz tükendi. Gelişmiş Kredilere geçin, gelecek ayın sıfırlanmasını bekleyin (abonelik tarihi) veya daha fazlası için yükseltin.",
+    "errSiderApiLimitPremiumDiscount": "Tüm kredilerinizi kullandınız. Sınırsız krediler için şimdi yükseltin ve <b>$1</b> indirim kazanın.",
+    "errSiderApiOcrLimit": "Tüm temel kredilerinizi kullandınız. Bu özelliğe erişmeye devam etmek için lütfen yükseltin.",
+    "errSiderApiSummaryVideoLimit": "Tüm kredilerinizi kullandınız. Lütfen daha fazla kredi almak için yükseltin veya arkadaşlarınızı davet edin.",
+    "errSiderApiTrialFeatLimit": "Premium özellik için deneme sınırına ulaştınız. Tüm özelliklerin kilidini açmak için yükseltin.",
+    "errSiderAudioAdvancedLimit": "Daha fazla Gelişmiş Kredilere ihtiyacınız var. Her 10 dakika (veya daha az) ses 1 Gelişmiş Krediye mal olur. Daha fazla almak için yükseltin veya arkadaşlarınızı davet edin!",
+    "errSiderBasicTextLimit": "Temel kredi için hız sınırına ulaştınız. Şu anda, her 60 dakikada bir {{count}} mesaj sınırı bulunmaktadır. Alternatif olarak, gelişmiş kredi kullanabilir ve daha sonra geri dönebilirsiniz.",
+    "errSiderChatDeepResearchFailed": "Araştırma raporunuzu oluştururken şu anda zorluklar yaşıyoruz. Lütfen tekrar deneyin.",
+    "errSiderCreditFreqLimit": "Mevcut kullanım sınırına ulaştınız. Bu sınır, tüm kullanıcılar için adil kullanım sağlar. Lütfen {{count}} dakika sonra tekrar deneyin.",
+    "errSiderCreditUsageLimit": "Kullanım Sınırına Ulaşıldı",
+    "errSiderDataAnalysisCredit": "Bu cevap Veri Analizi gerektiriyor (1 İleri Kredi). İleri Kredileriniz bitti, daha fazlası için yükseltin veya arkadaşlarınızı davet edin!",
+    "errSiderDeviceBinded": "Kullanmak için lütfen giriş yapın.",
+    "errSiderDeviceLimitLogout": "Cihaz sınırına ulaşıldığı için oturumunuz kapatıldı. Tekrar giriş yapabilirsiniz ve bu, hesabınızdaki en eski aktif cihazın oturumunu kapatacaktır.",
+    "errSiderEliteCreditLimitElite": "Tüm Elite Kredilerinizi kullandınız — lütfen kredi sıfırlama tarihinden sonra tekrar deneyin. Hemen yardım için lütfen destek ekibimizle iletişime geçin.",
+    "errSiderEliteCreditLimitNotElite": "Elite Kredileriniz tükendi — lütfen Sider üyeliğinizi yükseltin.",
+    "errSiderGPT45RateLimit": "GPT-4.5 için günlük limitinize ulaştınız. OpenAI kota kısıtlamaları nedeniyle, kullanım kullanıcı başına günde 1 kez ile sınırlıdır. Lütfen 24 saat sonra tekrar deneyin veya devam etmek için başka bir mevcut modele geçin.",
+    "errSiderGPT4HighLoad": "OpenAI sunucusu şu anda meşgul. Lütfen daha sonra tekrar deneyiniz.",
+    "errSiderGPT4LimitDevice": "Lütfen önce <b>giriş yapın</b> ve daha fazla gelişmiş kredi almak için <amb>arkadaşlarınızı davet edin</amb> veya <ta>premium'a yükseltin</ta>.",
+    "errSiderGPT4LimitLogin": "Daha fazla içgörülü yanıtlar için daha fazla Gelişmiş Kredinin kilidini açmak için yükseltin veya arkadaşlarınızı davet edin.",
+    "errSiderGPT4LimitPremium": "Aylık Gelişmiş Kredilerinizin tamamını kullandınız. Daha yüksek bir aylık kota için planınızı yükseltin veya hemen kullanmak için bir Gelişmiş Krediler güçlendirici paketi satın alın!",
+    "errSiderGPT4LimitPremiumDiscount": "Bu ay için Gelişmiş Kredileriniz tükendi. Sınırsız krediler için şimdi yükseltin ve <b>$1</b> indirim kazanın veya gelecek ayın sıfırlanmasını bekleyin (abonelik tarihi).",
+    "errSiderHighTrafficError": "Yoğun trafik nedeniyle lütfen daha sonra tekrar deneyin veya daha hızlı erişim için premium hesaba geçin.",
+    "errSiderHighTrafficTip": "İstikrarlı erişim ve gelişimimizi desteklemek için lütfen <a>bir premium hesaba yükseltmeyi</a> düşünün.",
+    "errSiderLoginExpired": "Oturumunuzun süresi doldu, lütfen tekrar giriş yapın",
+    "errSiderNeedLogin": "Kullanmak için lütfen giriş yapın.",
+    "errSiderO1Limit1": "OpenAI o1 modeli yüksek talep görüyor ve kota sınırına ulaştı. Endişelenmeyin, ayrıca topluluk odaklı Soru-Cevap sitemiz olan <a>ask.sider.ai</a> adresinde OpenAI o1 ile ilgili sorularınızı ücretsiz olarak sorabilirsiniz.",
+    "errSiderOpenaiFault": "Openai sunucusu meşgul. OpenAI kesintisi sırasında lütfen {{model}} modeline geçin.",
+    "errSiderOpusLimit": "Claude Opus 4 için günlük limitinize ulaştınız. Anthropic kota kısıtlamaları nedeniyle, kullanım kişi başına günde 1 kez ile sınırlıdır. Lütfen 24 saat sonra tekrar deneyin veya devam etmek için başka bir mevcut modele geçin.",
+    "errSiderOpusTLimit": "Claude Opus 4 Think için günlük limitinize ulaştınız. Anthropic kota kısıtlamaları nedeniyle, kullanım kişi başına günde 1 kez ile sınırlıdır. Lütfen 24 saat sonra tekrar deneyin veya devam etmek için başka bir mevcut modele geçin.",
+    "errSiderPremiumRequired": "Bu özellik yalnızca premium kullanıcılara açıktır. Bu işlevin kilidini açmak için şimdi yükseltin.",
+    "errSiderProcessing": "Bir seferde yalnızca bir mesaj. Lütfen başka bir mesaj göndermeden önce diğer yanıtların tamamlanmasına izin verin veya bir dakika bekleyin.",
+    "errSiderThinkingModelCredit": "\"Düşünme modu\" için yetersiz gelişmiş kredi. Lütfen bu modu devre dışı bırakın veya ek krediler için yükseltme yapın/arkadaşlarınızı davet edin.",
+    "errSiderTimeout": "İstek zaman aşımına uğradı. Lütfen tekrar deneyin.",
+    "errSiderTranslateApiLimitPremium": "Bu ayki Temel Krediniz tükendi. Lütfen gelecek ayın sıfırlanmasını bekleyin (abonelik tarihi) veya daha fazlası için yükseltin.",
+    "errSiderUltraVipRequired": "Bu özellik yalnızca Ultra planında mevcuttur. Kullanmak için lütfen Ultra'ya yükseltin.",
+    "errSiderUnlimitedLimit": "Gelişmiş Kredilerde geçici bir sınıra ulaştınız ({{timesToUse}} kez / {{periodTime}} saat). Sizin için daha fazla kredi almaya çalışıyoruz. Yeni krediler {{resetTime}} tarihinde kullanılabilir olacak. Şimdi daha fazlasına mı ihtiyacınız var? Bir booster paketi deneyin!",
+    "errSiderUserBanned": "Hesabınız, tespit edilen olağandışı etkinlikler nedeniyle askıya alınmıştır (örneğin, kural ihlalleri veya hesap paylaşımı). Herhangi bir sorunuz varsa, lütfen hesap bilgilerinizle birlikte care@sider.ai adresine e-posta gönderin.",
+    "errTrySiderAPI": "<a>Özel API ayarlarınızı</a> kontrol edin.",
+    "errTrySiderAPI2": "Güvenilir erişim için <a>Sider'a geçin</a> (bu yeni bir sohbet başlatacaktır).",
+    "errTrySiderAPI2NonChat": "Güvenilir erişim için <a>Sider'a geçin</a>.",
+    "errTrySiderAPI3": "Yardım için <a>destek ile iletişime geçin</a>.",
+    "failToPlay": "Oynatma başarısız oldu",
+    "featureBrowserLimit": "Bu sayfa tarayıcı uzantılarını desteklemiyor. Kısıtlı sayfalar genellikle yeni sekmeler, web mağazası, diğer uzantılar ve ayarlar (chrome:// URL'leri) içerir. Lütfen bunun yerine normal bir sayfa deneyin.",
+    "featureLimit": "Özellik Sınırı",
+    "featureLimitTip": "Lütfen Claude ve Bard'ı kullanmak için yükseltme yapın.",
+    "featureUnavailableOnPage": "Bu sayfada çalıştırılamıyor",
+    "fetchFailed": "Görüntü alınamadı. Manuel olarak indirebilir ve yükleyebilirsiniz.",
+    "fileLimit": "Bu dosyayı işlemek için Gelişmiş Veri Analizi Aracını etkinleştirmeniz gerekiyor. Her kullanımda 1 Gelişmiş kredi maliyeti vardır. Etkinleştirip devam etmek ister misiniz?",
+    "fileLimitFree": "Yüklediğiniz dosyanın işlenmesi için Gelişmiş Veri Analizi gereklidir. Bu özelliğin kilidini açmak için şimdi yükseltin.",
+    "fileSizeLimit": "Dosya çok büyük",
+    "fileSizeLimitTip": "Dosya 100MB yükleme limitini aşıyor. Lütfen dosya boyutunu küçültün ve tekrar deneyin.",
+    "fileSizeTip": "Maksimum boyut: Her biri için 100MB. En fazla 5 dosya.",
+    "fiveStart": "Bize 5 yıldız verin",
+    "functionCallError": "Üzgünüz, mevcut model yanıt oluştururken bir iç hata ile karşılaştı. Lütfen başka bir modele geçin ve tekrar deneyin.",
+    "getApiKeyGuide": "Çalışması için bir OpenAI API anahtarına ihtiyacınız var. API anahtarını almak için kılavuzumuzu takip edin.",
+    "getMoreGPT4": "Daha fazla Gelişmiş Kredi Al",
+    "goToSignIn": "Oturum açmaya git",
+    "imageSizeLimit": "Resim Sınırı",
+    "imageSizeLimitTip": "Lütfen görselin 10 MB'tan küçük olduğundan ve genişliğinin veya yüksekliğinin 4096 pikseli aşmadığından emin olun ve tekrar deneyin.",
+    "invalidApiKey": "API anahtarı geçersiz, lütfen başka bir tane alın.",
+    "invitedRewardObtained": "Ödüller Alındı!",
+    "invitedWelcome": "Hoş geldiniz! GPT kredileri hesabınıza eklendi!",
+    "inviteEarn": "Siz ve arkadaşlarınız için <mx>{{num}} kredi</mx> kazanın. <b>Ne kadar çok yönlendirirseniz, o kadar çok kazanırsınız</b>.",
+    "inviteFriendJoin_one": "{{count}} arkadaş katıldı",
+    "inviteFriendJoin_other": "{{count}} arkadaş katıldı",
+    "inviteStep1": "Davet bağlantısı ile arkadaşlarınıza önerin",
+    "inviteStep2": "Arkadaşların kaydoluyor",
+    "inviteStep3": "Uzantıyı yüklerler ve oturum açarlar. Kazanılan ödüller!",
+    "inviteTitle": "Davet ve Ödüller",
+    "iosDownload": "iOS / Android uygulamasını indir",
+    "keepConversationTip": "Her Sider'ı açtığınızda yeni bir sohbet başlar. Son sohbeti devam ettirmek için <a>ayarları</a> ayarlayın.",
+    "localFileAccessRequiredBtn": "Uzantı ayarlarına git",
+    "localFileAccessRequiredDesc": "Uzantıyı yerel dosyalarla kullanmak için lütfen uzantı ayarlarına gidin ve \"<b>Dosya URL'lerine erişime izin ver</b>\" seçeneğini etkinleştirin.",
+    "localFileAccessRequiredTitle": "Dosya erişimi gerekli",
+    "loginAndCloudflareCheck": "İstikrarlı erişim elde etmek için <a>Kenar Çubuğu API'sine</a> geçin VEYA <i>chat.openai.com</i> adresinde oturum açın ve Cloudflare kontrolünü geçin.",
+    "maxFileSize": "Maksimum dosya boyutu: {{size}}",
+    "maxSize": "Maksimum boyut: {{num}}",
+    "modelError": "Sunucu meşgul. Lütfen daha sonra tekrar deneyin veya başka bir modele geçin.",
+    "nameYourPrompt": "İsteminize bir ad verin",
+    "nameYourTitle": "görüşmenize ad verin",
+    "noSubtitleMsg": "Video, altyazı içermiyor ve özetlenemez.",
+    "noSubtitleTitle": "Özet İçin Altyazı Gereklidir",
+    "notSupportFile": "Desteklenmeyen dosya formatı",
+    "notSupportLiveVideo": "Canlı video özetleme şu anda desteklenmemektedir.",
+    "notValidEmail": "geçerli bir e-posta değil",
+    "onlyOneRequest": "Aktif İstek Devam Ediyor",
+    "onlyOneRequestDesc": "Hesabınızda aktif bir istek var - aynı anda yalnızca bir istek yapılabilir. Lütfen daha sonra tekrar deneyin.",
+    "openLastConversationCancel": "Anladım",
+    "openLastConversationContent": "Artık yan çubuğun her başladığında son konuşmayı geri yükleyip yüklemeyeceğini ayarlayabiliriz.",
+    "openLastConversationOk": "Ayarlar'a git",
+    "openLastConversationTitle": "Son konuşmayı açmak istiyor musunuz?",
+    "promptNameRequired": "Bilgi istemi adı gerekli.",
+    "promptTplRequired": "Hızlı içerik gereklidir.",
+    "quotaModelContent": "GPT-4/Claude-2 sorgu limitinize ulaştınız. Daha fazla erişim için Premium Plan'a yükseltin veya ücretsiz ekstra krediler için arkadaşlarınızı davet edin.",
+    "reEnableInSettings": "<a>Ayarlar</a>'dan yeniden etkinleştirebilirsiniz",
+    "restorePromptWarn": "Bu bilgi istemi şablonunu geri yüklemek istiyor musunuz?",
+    "searchNotFound": "Sonuç bulunamadı",
+    "selectModel": "Lütfen geçerli bir model seçin",
+    "signinAward": "Giriş yaparak günde {{num}} <span>ÜCRETSİZ</span> kredi alın",
+    "signinAward2": "Giriş yapmamış kullanıcı için krediler tükendi. Giriş yaparak günde <b>{{num}} ücretsiz kredi</b> alabilirsiniz.",
+    "signinAward3": "Giriş yaparak günde daha fazla kredi alın",
+    "signinAward4": "Tarayıcınızla büyülü bir AI yolculuğuna çıkın ve her gün {{num}} <span>ÜCRETSİZ</span> kredi alın",
+    "signinFeature": "Bu özelliğe erişmek için lütfen giriş yapın",
+    "signInRequired": "Oturum açmak gereklidir",
+    "signinTips": "İstemlerinizi ve ayarlarınızı senkronize etmek için oturum açın",
+    "somethingWrong": "Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyin.",
+    "somethingWrong2": "Bir şeyler yanlış gitti.",
+    "supportedFileFormat": "Desteklenen dosya formatları: {{formats}}",
+    "switchBarTip": "Gezinme çubuğunu sabitlemek için yan paneli genişletin.",
+    "switchRequired": "{{APP_NAME}}'e geçiş yap?",
+    "switchToSiderApiToContinue": "Bu özellik şu anda yalnızca {{APP_NAME}} API modunu desteklemektedir, devam etmek için lütfen <a>{{APP_NAME}} API'sine geçin</a>.",
+    "switchToSiderDesc": "Bu özelliği kullanmak için lütfen AI erişim yöntemini {{APP_NAME}} olarak değiştirin.",
+    "thankForFeedback": "Teşekkür ederim. Form başarıyla gönderildi. Kısa süre içinde sizinle iletişime geçeceğiz.",
+    "titleRequired": "Başlık gereklidir.",
+    "ttsChangeVoiceTip": "Kredi Kesintisi Bildirimi",
+    "ttsChangeVoiceTipDesc": "Farklı bir sese geçmek kredilerinizi tekrar düşürecektir. Devam etmek istediğinizden emin misiniz?",
+    "ttsCharacterLimit": "Karakter Sınırına Ulaşıldı",
+    "ttsCharacterLimitDesc": "AI Okuma Özelliğinin {{count}} karakter sınırı vardır. Lütfen daha kısa bir metin seçin veya ücretsiz sesi kullanın.",
+    "ttsCharacterLimitDesc2": "Bu mesaj AI seslerinin okuması için çok uzun. Bunun yerine ücretsiz sesi kullanabilirsiniz.",
+    "ttsChooseVoice": "Bir Ses Seçin",
+    "ttsChooseVoiceLater": "Bunu daha sonra değiştirebilirsiniz.",
+    "ttsCreditLimit": "Yetersiz temel krediler",
+    "ttsCreditLimitDesc": "Bu ses için yeterli Temel Krediniz yok. Lütfen planınızı yükseltin veya ücretsiz sesi kullanın.",
+    "unreadableMsg": "Bu sayfada ana içeriği bulamıyorum. Lütfen başka bir sayfayı deneyin.",
+    "unreadableTitle": "Ana içerik eksik",
+    "updateExtTips": "Bu özelliği kullanmak için lütfen Sider uzantınızı güncelleyin",
+    "upgradeSupport": "Bizi desteklemek için premium plana geçin",
+    "upgradeSupport2": "Daha fazla özellik için yükseltin",
+    "uploadFailed": "\"{{FILENAME}}\" yükleme başarısız oldu.",
+    "useUpUpgrade": "Kredileriniz tükendi, lütfen daha fazla kredi almak için yükseltin.",
+    "videoTooLang": "Video çok uzun (maksimum 10 saat). Lütfen daha kısa bir video seçin.",
+    "writeSomething": "Lütfen bir şeyler yazın."
+  },
+  "multiFileChat": "{{WISEBASE}} içinde çok dosyalı sohbet",
+  "myAccount": "Hesabım",
+  "myChats": "Sohbetlerim",
+  "myHighlights": "Öne Çıkanlarım",
+  "newFeature": "Yeni Özellik!",
+  "newPlan": "Yeni plan",
+  "next": "Sonraki",
+  "NoFiles": "Bu sohbette yeni dosya yok",
+  "noReasoningModelTip": "DeepSeek R1 ile genişletilmiş düşünme. Her sorgu için 1 ekstra ileri kredi maliyetindedir.",
+  "notDistinguish": "Ayırt etme",
+  "notDistinguishDesc": "1 ileri kredi / 10 dakika",
+  "notNotifyAgain": "Tekrar bildirme",
+  "notNow": "Şimdi değil",
+  "ocrEmptyMsg": "Üzgünüm, bu resimde metin bulamıyorum.",
+  "OCRPanel": {
+    "aiOCRTips": "AI OCR hatalar yapabilir",
+    "dragImgTips": "Metni çıkarmak için buraya tıklayın veya bir resmi buraya sürükleyip bırakın",
+    "noText": "Hiçbir metin tanınmadı",
+    "ocrCost": "Her {{name}} {{num}} temel krediye mal olacak",
+    "ocrTips": "Görüntüden metin, sayı ve denklem çıkarma"
+  },
+  "ok": "TAMAM",
+  "openAnswerCompare": "Yan yana karşılaştırma",
+  "openSidebar": "Kenar çubuğunu aç",
+  "openTabs": "Açık Sekmelerden Seç",
+  "optimizeWith": "{{NAME}} ile optimize edin",
+  "optionPage": {
+    "activateContextMenu": "Hızlı soru sormayı aç",
+    "addASite": "Bir site ekle",
+    "addNewTplForSearch": "Yeni bilgi istemi şablonu ekle",
+    "addNewTplForSidebar": "Yeni bilgi istemi şablonu ekle",
+    "apiFreeGuide": "API anahtarını almak için kılavuzu izleyin.",
+    "apiKeyGpt4Tip": "Bir GPT-4 API anahtarı girerseniz uzantı GPT-4'ü destekler.",
+    "apiKeyGuideTip": "Bir API anahtarı eklemek için [Kur] seçeneğine tıklayın.",
+    "apiKeyLocally": "API anahtarınız tarayıcınızda yerel olarak saklanır ve başka bir yere gönderilmez. <b>Not:</b> Bazı özellikler teknik nedenlerle yalnızca {{APP_NAME}} modunda sınırlıdır.",
+    "apiKeyProvider": "Resmi OpenAI API'si daha kararlıdır ve ücretler kullanıma bağlıdır.",
+    "apiKeyProviderTip": "(API anahtarına sahip geliştiriciler için)",
+    "apiKeyTip1": "Ücretsiz OpenAI API anahtarınızın süresi dolmuş olabilir. Lütfen <a>API anahtarının sona erme durumunu buradan kontrol edin.</a>",
+    "apiKeyTip2": "Ücretsiz OpenAI API anahtarını kullanırsanız, yüksek talep gördüğünde ChatGPT'ye erişim istikrarlı olmayabilir.",
+    "autoQuoteSelectedText": "Seçilen metni giriş kutusunda otomatik olarak alıntıla",
+    "autoQuoteSelectedTextTip": "Açık olduğunda, seçilen metin hızlı işlemler için otomatik olarak giriş kutusunda görünür",
+    "customModelName": "Özel model adı kullan",
+    "defaultSpeed": "Varsayılan hız",
+    "defaultVoice": "Varsayılan ses",
+    "disabledSites": "Sitelerde devre dışı",
+    "displayLanguage": "Görüntüleme dili",
+    "displayMode": "Görüntüleme modu",
+    "displaySearchRes": "Arama sonuç sayfalarının yanında ChatGPT yanıtını görüntüleyin",
+    "displayWhenSelect": "Metin seçildiğinde göster",
+    "easiestWayUse": "{{APP_NAME}} kullanmanın en kolay yolu",
+    "editSearchTplPlaceholder": "İçerikteki {{keywords}} otomatik olarak arama anahtar kelimelerinizle değiştirilecektir",
+    "editSearchTplTip": "arama anahtar kelimelerinizi yönlendirmek için {{keywords}} kullanın",
+    "editSidebarTplTip": "İçeriği buraya yapıştırın veya girin",
+    "feedbackTypes": {
+      "bug": {
+        "detail": {
+          "label": "Sorun Ayrıntıları",
+          "tip": "Lütfen neyin yanlış gittiğini, yaptığınız işlemleri ve aldığınız hata mesajlarını ayrıntılı olarak açıklayın."
+        },
+        "name": "Sorun Raporu",
+        "title": {
+          "label": "Sorun Özeti",
+          "tip": "Birkaç kelimeyle neyin yanlış gittiğini bize bildirin."
+        }
+      },
+      "fr": {
+        "detail": {
+          "label": "Tanım",
+          "tip": "Lütfen istediğiniz yeni özelliğin ayrıntılı bir açıklamasını sağlayın."
+        },
+        "name": "Özellik isteği",
+        "title": {
+          "label": "Başlık",
+          "tip": "Talebiniz ne hakkında?"
+        }
+      }
+    },
+    "fontSizeAutoTip": "Kenar çubuğu genişliğine göre otomatik ayarla",
+    "fontSizeOptions": {
+      "large": "Büyük",
+      "regular": "Normal"
+    },
+    "fontSizeTip": "Yalnızca mesaj metni için",
+    "fontSizeTitle": "Mesaj için yazı tipi boyutu",
+    "GPT4Desc": "Web sitesinde ChatGPT hesabınızda oturum açmış durumda kalmalısınız. OpenAI'nin kısıtlaması nedeniyle hem Plus kullanıcıları hem de ücretsiz kullanıcılar için kararlılık tutarsız olabilir.",
+    "hideThinkingAfterFinish": "Düşünme tamamlandıktan sonra daralt",
+    "hideThinkingAfterFinishTip": "Düşünme bloğunu düşünme tamamlandıktan sonra daralt",
+    "howToAccess": "ChatGPT'ye nasıl erişilir ve her yerde nasıl kullanılır?",
+    "howToAccessTip": "Yapay zekaya herkesin erişebildiğinden emin olmak için ChatGPT'ye erişmenin ve onu her yerde kullanmanız için 3 yol sunuyoruz.",
+    "importantReminders": "Önemli hatırlatmalar",
+    "invalidShortcutTip": "{{key1}}, {{key2}} veya {{key3}} dahil et",
+    "launchSidebar": "Kenar çubuğunu aç",
+    "linkToSetting": "Kenar çubuğu konumunu tarayıcı ayarlarında değiştir",
+    "loginFirst": "Lütfen önce giriş yapın.",
+    "loginFirstTip": "Sider'ı kullanmaya başlamak ve her gün ücretsiz krediler almak için giriş yapın.",
+    "messageStreamEffect": "Mesaj akışı efekti",
+    "messageStreamEffectOptions": {
+      "classic": "Klasik",
+      "fadeIn": "İçeri kaydır"
+    },
+    "messageStreamEffectTip": "Gelen sohbet mesajlarını canlı olarak göstermek için akış efekti",
+    "noSiteAdded": "Site eklenmedi",
+    "openNewChat": "Yeni bir sohbet başlat",
+    "ownURL": "Kendi URL'mi kullan",
+    "promptManage": {
+      "checkPrompt": "İstemi Kontrol Et",
+      "deletePromptWarn": "Bu istemi silmek istiyor musunuz?",
+      "editPrompt": "İstemi Düzenle",
+      "hideFromList": "Listeden gizle",
+      "howToExample": "Başlıkları, bölümleri ve alt bölümleri içeren bir taslak oluşturmak için lütfen aşağıdaki konuları veya anahtar kelimeleri kullanın.\nMarkdown formatında çıktı alın. Bana sadece çıktıyı ver, başka bir şey yapma. Anahat {{lang}} dilinde olmalıdır.\nKonular veya anahtar kelimeler: {{content}}",
+      "howToVar1": "Girişi veya seçilen içeriği temsil etmek için bu değişkeni kullanabilirsiniz. Bilgi istemi bu değişkeni içermiyorsa, giriş veya seçilen içerik üçlü tırnak içine alınacak ve bilgi isteminin en sonuna yerleştirilecektir.",
+      "howToVar2": "Ayarlarda ayarlanan varsayılan dile bağlı olarak çıktı için kullanmak istediğiniz dili temsil etmek için bu değişkeni kullanabilirsiniz.",
+      "howToVarTitle": "Bilgi istemine hangi değişkenler dahil edilebilir?",
+      "howToWritePrompt": "istem nasıl yazılır",
+      "newPrompt": "Yeni İstem",
+      "noPrompts": "Burada istem yok",
+      "promptTabChatDesc": "'Listede göster' içindeki ipuçları {{name}} özelliğinde görünür.",
+      "promptTabReadDesc": "'Listede göster' içindeki ipuçları sayfa metni için {{name}} içinde görünür.",
+      "promptTabWriteDesc": "'Listede göster' içindeki ipuçları giriş kutuları için {{name}} içinde görünür.",
+      "showInList": "Listede göster"
+    },
+    "promptTplForSearch": "Google ve diğer arama motorları için bilgi istemi şablonu",
+    "providerAPIKeyDesc": "API anahtarı olanlar için ideal: kararlı, kullanım tabanlı fiyatlandırma",
+    "providerPartTitle": "Yapay Zeka erişimi",
+    "providerSiderDesc": "Önde gelen modellerin resmi API'leriyle desteklenir, hızlı ve güvenilir",
+    "providerSiderTip": "{{APP_NAME}}, OpenAI, DeepSeek, Anthropic, Google ve daha fazlasından önde gelen AI modellerine hızlı ve güvenilir erişim sağlar—hepsi tek bir platformda resmi API'ler aracılığıyla. En son AI yeniliklerini parmaklarınızın ucunda keşfedin!",
+    "providerWebappDesc": "OpenAI politika değişiklikleri nedeniyle kararsız olabilir",
+    "providerWebappTip": "OpenAI'nin kısıtlamaları nedeniyle ziyaretçiler ve giriş yapmış kullanıcılar için deneyim farklılık gösterebilir.",
+    "quickAction": {
+      "customPromptMenu": "{{name}} için istemleri yönet",
+      "desc": "{{name}}, bir web sayfasında (okuma) veya bir giriş kutusunda (yazma) seçilen metin için hızlı eylemler sağlar.",
+      "displayOnSelect": "metin seçildiğinde",
+      "displayOnShortcut": "metin seçildiğinde ve {{key}} tuşuna basıldığında",
+      "mainSwitchTitle": "{{name}} göster"
+    },
+    "recommend4all": "(Herkese tavsiye edilir)",
+    "recommended": "Önerilen",
+    "restoreDefault": "Varsayılanı geri yükle",
+    "scrollingBehavior": "Uzun yanıtlar için kaydırma davranışı",
+    "sendingMsgBehavior": "Sohbette mesaj gönderdikten sonraki davranış",
+    "sendingMsgBehaviorOptions": {
+      "bottom": "Yanıtın sonuna otomatik olarak kaydır",
+      "messageTop": "Yanıt üst kısma ulaştığında kaydırmayı duraklat"
+    },
+    "sendMessage": "Mesaj gönder",
+    "serviceProvider": "Hizmet sağlayıcı",
+    "shortcutInUseTip": "Zaten kullanımda, başka bir tane deneyin",
+    "showSelectedTextDesc": "Seçilen metni, hızlı eylemler için giriş kutusunda alıntı olarak otomatik olarak göster",
+    "showSelectedTextTip": "Seçilen metni otomatik olarak görüntülemek istemiyorsanız, bunu <a>kenar çubuğu ayarları</a>ndan kapatabilirsiniz.",
+    "showSelectedTextTitle": "Seçilen Metni Giriş Kutusunda Otomatik Göster",
+    "sidebarDisplayOption": "Kenar Çubuğu Görüntüleme Modu",
+    "sidebarDisplayOptions": {
+      "expand": "Genişleyen",
+      "overlay": "Kaplama"
+    },
+    "sidebarDisplayOptionTip": "Kenar çubuğunun sayfada nasıl görüneceğini seçin",
+    "sidebarIcon": "Kenar Çubuğu Simgesi",
+    "sidebarIconAccess": "Sayfanın sağ alt köşesinde bulunan simge aracılığıyla kenar çubuğuna erişin. Yukarı ve aşağı taşımak için sürükleyebilirsiniz",
+    "sidebarLeftOrRight": "Kenar çubuğunu sol veya sağ tarafa yerleştirin",
+    "sidebarLocation": "Kenar Çubuğu Konumu",
+    "sidebarOnStartup": "Kenar Çubuğu açıldığında",
+    "sidebarOnStartupAutoTip": "10 dakika içinde tekrar açılırsa sohbet devam eder; 10 dakikadan sonra yeni bir sohbet başlar",
+    "sidebarOnStartupOptions": {
+      "auto": "Otomatik devam veya yeniden başlatma",
+      "last": "Her zaman son sohbeti devam ettir",
+      "new": "Her zaman yeni bir sohbet başlat"
+    },
+    "sidebarOnStartupTip": "Kenar Çubuğunu açarken sohbet arayüzünün görüntüleme modunu yapılandırın",
+    "sidebarProvider": "Kenar Çubuğu, istikrarlı erişim sağlamak için ChatGPT Premium API'yi kullanır.",
+    "sidebarProviderGoPremium": "Herkes için AI erişimini garanti altına almak için günlük {{num}} ücretsiz kredi sunuyoruz. Günlük kredi limitinizi artırmak ve <a>Herkes için Evrensel AI sağlama</a> misyonumuzu desteklemek için <b>premium'a yükseltin</b>.",
+    "sidepanelLeftOrRight": "Yan paneli sol veya sağ tarafa yerleştirin. Yan panel sadece Google Chrome 114 veya daha yeni sürümlerde kullanılabilir.",
+    "sidepanelLocation": "Kenar Çubuğu Konumu",
+    "sidepanelPosition": "Yan panel konumu",
+    "sidepanelPositionTip": "Chrome 114 veya üstü için, yalnızca tarayıcı ayarlarından değiştirilebilir",
+    "siderIcon": "{{APP_NAME}} simgesi",
+    "siderIconDisplay": "Sayfada her zaman {{APP_NAME}} simgesini göster",
+    "siderIconDisplayTip": "Açık olduğunda, {{APP_NAME}} simgesi sağ alt köşede görünür ve sürüklenebilir",
+    "translatePage": "Sayfayı çevir",
+    "webappGPT4": "(ChatGPT Plus kullanıcıları deneyebilir)",
+    "webappReminder1": "Hesabınıza giriş yapmış halde kalın.",
+    "webappReminder2": "Bu hizmet, OpenAI politika değişiklikleri nedeniyle kararsız olabilir. Hızlı ve kararlı performans için {{APP_NAME}} kullanmanızı öneririz.",
+    "webappTip1": "ChatGPT Plus kullanıcısıysanız, artık GPT-4'ü seçme seçeneğiniz vardır. Ancak OpenAI, günde gönderebileceğiniz mesaj sayısını sınırlayabilir.",
+    "webappTip2": "Lütfen <m>ChatGPT sekmesini sabitleyin</m> ve ChatGPT web sitesinde oturumunuzu açık tutun. Ancak, bu istikrarı garanti etmeyebilir. Herhangi bir sorunla karşılaşırsanız, <v>ChatGPT web sitesini </v> ziyaret edin ve sayfayı yenileyin.",
+    "webAssistant": {
+      "code": {
+        "desc": "{{APP_NAME}} açık olduğunda, web sayfasındaki kodları açıklamanıza yardımcı olabilir",
+        "title": "Kod Yardımcısı"
+      },
+      "image": {
+        "desc": "Açık olduğunda, herhangi bir görüntünün üzerine gelerek AI Görüntü Araçlarına hızlıca erişebilirsiniz",
+        "title": "Görüntü Asistanı"
+      },
+      "linkPreview": {
+        "autoSummarize": "Otomatik Özetle",
+        "collapse": "Daralt",
+        "guideTipDesc": "Bağlantıyı sürükleyerek önizleyin, sayfadan çıkmadan. Gerekli değilse <link>ayarlar</link> bölümünden devre dışı bırakabilirsiniz.",
+        "guideTipTitle": "Bağlantıları verimli bir şekilde önizleyin",
+        "openInNewTab": "Yeni sekmede aç",
+        "pageLoadFailed": "Sayfa yüklenemedi",
+        "summarizeNotSupported": "Bu sayfa özetlemeyi desteklemiyor.",
+        "viewSummary": "Özeti görüntüle"
+      },
+      "qa": {
+        "desc": "{{APP_NAME}} etkinleştirildiğinde Quora, StackOverflow ve diğer KG sitelerinde soruyu yanıtlayabilir",
+        "title": "Soru-Cevap Asistanı"
+      },
+      "video": {
+        "BilingualDesc": "<b>Çift Dilli Altyazılar</b>: Etkinleştirildiğinde, {{APP_NAME}} YouTube videolarını izlerken otomatik olarak görüntülenecektir",
+        "SummaryDesc": "<b>Video Özeti</b>: Etkinleştirildiğinde, {{APP_NAME}} YouTube videolarını özetlemenize yardımcı olabilir",
+        "title": "YouTube Asistanı"
+      }
+    },
+    "webAsstAISitesDesc": "{{url}} üzerinde \"Karşılaştır\" düğmesini göster",
+    "webAsstAISitesTitle": "Modelleri ChatGPT üzerinde karşılaştırın",
+    "webAsstCodeDesc": "Kod bloğunda Kodu Açıkla düğmesini göster",
+    "webAsstCodeTitle": "Kod için",
+    "webAsstEmailDesc": "Gmail'de AI Yanıtla düğmesini göster",
+    "webAsstEmailTitle": "E-posta için",
+    "webAsstImageDesc": "Görüntü üzerine gelindiğinde AI araçlarını göster",
+    "webAsstImageTitle": "Görseller için",
+    "webAsstInputBoxDesc": "Yazmayı geliştirmek için girdi kutusunda nokta simgesini göster",
+    "webAsstInputBoxTitle": "Girdi kutusu",
+    "webAsstLinkPreviewDesc": "Bir bağlantıyı sürüklerken bağlantı önizleme penceresini göster.",
+    "webAsstLinkpreviewExampleLink": "Bu güvenli bir bağlantıdır, önizleme penceresini görmek için sürüklemeyi deneyin",
+    "webAsstLinkPreviewTitle": "Bağlantı önizlemeleri için",
+    "webAsstQADesc": "Soru-Cevap sitelerinde Yanıtla düğmesini göster",
+    "webAsstQATitle": "Soru-Cevap siteleri için",
+    "webAsstRecordShortCutSitesDesc": "Google toplantısı ve Teams'de Hızlı Kayıt panelini göster",
+    "webAsstRecordShortCutSitesTitle": "Toplantılar İçin",
+    "webAsstSearchDesc": "Arama sonuçlarının yanında AI yanıtını göster",
+    "webAsstSearchTitle": "Arama için",
+    "webAsstTranslationSitesDesc": "Google Çeviri'de \"Karşılaştır\" düğmesini göster",
+    "webAsstTranslationSitesTitle": "Google Çeviri'de modelleri karşılaştır",
+    "webAsstVideoBilingualDesc": "YouTube'da iki dilli kontrolü göster",
+    "webAsstVideoSummaryDesc": "YouTube'da özet panelini göster",
+    "webAsstYoutubeTitle": "YouTube için",
+    "whenSidebarReopens": "Kenar çubuğu yeniden açıldığında",
+    "whenToAsk": "ChatGPT'ye ne zaman sorulmalı?",
+    "wrongSiteTip": "Geçersiz URL: URL'yi kontrol edin ve tekrar deneyin."
+  },
+  "options": {
+    "shortcut": {
+      "tips": "Kısayol yazın"
+    },
+    "sidebarLocation": {
+      "left": "Sol Taraf",
+      "right": "Sağ Taraf"
+    },
+    "sidebarMode": {
+      "inpage": "Sayfa İçi Kenar Çubuğu",
+      "sidepanel": "Sabit Kenar Çubuğu"
+    },
+    "sidebarModeTip": {
+      "inpage": "Sekmeler arasında geçiş yaparken Sider ekranda kalmaz; yeni sayfada Kenar Çubuğu'nu yeniden açmanız gerekir.",
+      "sidepanel": "Sekmeler arasında geçiş yaparken, Sider her zaman tarayıcının sağ tarafında sabit kalacaktır."
+    },
+    "sidebarPromptTpl": {
+      "explain": {
+        "template": "Aşağıdaki içeriği açıklayın:",
+        "title": "Açıklamak"
+      },
+      "explain-codes": {
+        "template": "Aşağıdaki kodları açıklayınız:",
+        "title": "Kodları Açıkla"
+      },
+      "translate": {
+        "template": "Aşağıdaki içeriği {{lang}} diline çevirin:",
+        "title": "Çevirmek"
+      }
+    },
+    "theme": {
+      "auto": "otomatik",
+      "dark": "karanlık mod",
+      "light": "parlak mod"
+    },
+    "title": "Seçenekler",
+    "triggerMode": {
+      "always": {
+        "desc": "Her zaman",
+        "title": "Her zaman"
+      },
+      "manually": {
+        "desc": "Cevap butonuna tıklandığında",
+        "title": "manuel olarak"
+      },
+      "questionMark": {
+        "desc": "Sorgu soru işaretiyle bittiğinde",
+        "title": "Soru işareti"
+      }
+    }
+  },
+  "OR": "VEYA",
+  "orTakeAction": "Veya başka eylemler gerçekleştirin:",
+  "otherModels": "Diğer modeller",
+  "pageTranslation": {
+    "aiTranslator2": "AI Çevirici",
+    "aiTranslatorFunDesc1": "Niyeti ve tonu yakalar, kelime kelime çeviriden daha derine iner",
+    "aiTranslatorFunDesc2": "Açıklık ve hassasiyetle çevirir, hiçbir detayı kaybetmeden",
+    "aiTranslatorFunTitle1": "Bağlam Anlayışı",
+    "aiTranslatorFunTitle2": "Doğru Çeviri",
+    "autoDetect": "Otomatik algılama",
+    "autoTrans": "Otomatik çeviri",
+    "autoTrans2": "Web sayfalarını otomatik olarak çevir",
+    "autoTrans2Desc": "Kapalı olduğunda, çevir düğmesine tıklayın veya kısayolu kullanın",
+    "demoText": "ChatGPT, doğal dil işleme için tasarlanmış, kendine dikkat ve ileri beslemeli sinir ağları içeren bir derin öğrenme modeli olan Transformer tarafından desteklenmektedir.",
+    "displayMode": "Görüntüleme modu",
+    "displayModes": [
+      "İki Dilli",
+      "Sadece Çeviri"
+    ],
+    "displayStyle": "Görüntüleme stili",
+    "displayStyleDesc": "Sadece iki dilli karşılaştırma modundaki çeviriler için",
+    "displayStyles": [
+      "Hiçbiri",
+      "Altı çizili",
+      "Zayıflatılmış"
+    ],
+    "free": "Ücretsiz",
+    "neverTransSite": "Bu siteyi asla çevirme",
+    "neverTransSites": "Bu siteleri asla çevirme",
+    "newAITranslationTip": "Yapay Zeka Sayfa Çevirisi artık yayında! Kurulum için buraya tıklayın.",
+    "pageTranslation": "Bu sayfayı çevir",
+    "reTrans": "Yeniden Çevir",
+    "showOriginal": "Orijinal metni göster",
+    "source": "Kaynak dil",
+    "target": "Hedef dil",
+    "title": "Sayfa çevirisi",
+    "transAgain": "Tekrar çevir",
+    "translateService": "Çeviri hizmeti",
+    "translateServiceTip": "AI çeviri, içerik uzunluğuna göre temel krediler kullanır.",
+    "transSettings": "Çeviri ayarları"
+  },
+  "painterOnBoardingTip": "AI görüntü oluşturma ve düzenleme için buraya tıklayın",
+  "pasteSelection": "Seçimi yapıştır",
+  "pasteTextPage": "Sayfadan metin yapıştır",
+  "pause": "Duraklat",
+  "pdfOnBoardingTip": "ChatPDF için buraya tıklayın",
+  "personalization": "Kişiselleştirme",
+  "phoneNumber": "Telefon numarası",
+  "pin": "iğnelemek",
+  "pinExt": "Pin uzantısı",
+  "planNames": {
+    "basic": "Temel Plan",
+    "free": "Ücretsiz Plan",
+    "pro": "Profesyonel Plan",
+    "starter": "Başlangıç Planı",
+    "ultra": "Sınırsız Plan"
+  },
+  "play": "Oynat",
+  "popupPage": {
+    "chatNow": "Şimdi sohbet et",
+    "desc": "Geçerli sayfa benzersiz bir sayfadır ve kenar çubuğu özelliği kullanılamaz. Ancak, sohbet etmek için tam bir sayfa açabilirsiniz!",
+    "thank": "{{APP_NAME}} uzantısını kullandığınız için teşekkür ederiz!"
+  },
+  "poweredByGPTImage": "GPT-image-1 tarafından desteklenmektedir",
+  "prev": "Önceki",
+  "preview": "Önizleme",
+  "pricePerDay": "{{num}}/gün'den az",
+  "pricePerMonth": "{{price}}/ay",
+  "producthuntPromote": {
+    "ios1Banner1": "ChitChat - ChatGPT iOS uygulaması için oy verin 🎉",
+    "ios1Banner2": "İşleri bir patlama ile başlatalım! 😄",
+    "ios1ModalDesc": "• ChatGPT 3.5 ve 4'ten yanıtlar alın\n• Robotlardan oluşan bir destek ekibi size tek bir yerden yardımcı olur\n  • PDF'nizi bir sohbet robotuna dönüştürün",
+    "ios1ModalTitle": "✨ ChitChat iOS Uygulamasında Yenilikler",
+    "sidebar2Banner1": "Haberi yaymak için ŞİMDİ <b>Product Hunt</b>'ta bize oy verin.",
+    "sidebar2ModalDesc": "• Sohbet sekmesi\n  • Hızlı sorgular için hızlı arama\n  • İstemleri senkronize etmek için bir hesap\n  • Sohbetleri kaydedin ve paylaşın\n  • Daha fazla dil desteği\n  • GPT-4'ü destekleyin",
+    "sidebar2ModalTitle": "✨ Kenar Çubuğu 2.0'ın Özeti",
+    "voteBtn": "Ürün Avına Oy Verin"
+  },
+  "productivity": "Verimlilik",
+  "promotePreset": {
+    "anni2025Countdown": "Büyük İndirim: <b>{{time}} Kaldı</b>",
+    "blackFridayCountdown": "Kara Cuma: <b>{{time}} Kaldı</b>",
+    "halloweenCardDesc": "Korkunç Tasarrufları Aç",
+    "halloweenCardDesc2": "{{price}} İNDİRİMİN Keyfini Çıkar",
+    "halloweenCardTitle": "Cadılar Bayramı İndirimi",
+    "halloweenCardTitle2": "Cadılar Bayramı İkramını Talep Et",
+    "halloweenCountdown": "Korkunç Fırsat: <b>{{time}} Kaldı</b>",
+    "halloweenCountdown2": "{{price}} İNDİRİM: <b>{{time}} Kaldı</b>",
+    "macContent": "Sider'ın artık Mac kullanıcıları için mevcut olduğunu duyurmaktan heyecan duyuyoruz! Web sürümümüzdeki sevdiğiniz tüm güçlü özelliklerin yanı sıra, yalnızca Mac için özel olarak tasarlanmış kusursuz ve verimli bir deneyimin keyfini çıkarın.",
+    "macContent2": "{{APP_NAME}} artık Mac'te mevcut!",
+    "macDownload": "Şimdi İndirin!",
+    "macTitle": "Mac için {{APP_NAME}}",
+    "phContent": "<i>Product Hunt</i> üzerinde bize bir oy vererek destek olun—bu hızlı, kolay ve bize çok yardımcı olur!",
+    "phContent2": "<b>Ürün Avı</b>'nda bize oy verin",
+    "phFeatures1": "<b>ChatGPT Widget'ları</b>: Tek bir yerden yazın, resimlerden metin çıkarın, dilbilgisini kontrol edin ve çevirin.",
+    "phFeatures2": "<b>Sider Vision</b>: GPT-4 Vision ile görüntüler hakkında sohbet ederek yapay zeka sohbetini bir sonraki seviyeye taşıyın.",
+    "phFeatures3": "<b>Grup Yapay Zeka Sohbeti</b>: Çığır açan tek bir grup sohbetinde ChatGPT, GPT-4, Claude ve Bard ile etkileşime geçin.",
+    "phFeatures4": "<b>Hepimiz Kulağız</b>: Geri bildirimleriniz Sider'ı şekillendiriyor - düşüncelerinizi paylaşın, biz dinliyoruz!",
+    "phTitle": "Uzantımızı kullanmayı seviyor musunuz?",
+    "phTitle2": "<i>Ürün Avı</i>'nda Sider 3.X sürümlerini kullanıma sunduk.",
+    "phVote": "Şimdi oyla!",
+    "phVote2": "<i>Ürün Avı</i>'na oy verin",
+    "phVoteTips": "<b>Bugünün Oyu Önemlidir</b> - Şimdi Bizi Destekleyin!",
+    "xmasCountdown": "Yıl Sonu İndirimi: <b>{{time}} Kaldı</b>"
+  },
+  "prompt": "İstem",
+  "promptContent": "Bilgi İstemi İçeriği",
+  "PromptManage": "Komut Yöneticisi",
+  "promptManage": "İstem Yöneticisi",
+  "promptName": "İstem Adı",
+  "prompts": "İpuçları",
+  "publish": "Yayınla",
+  "publishArtifact": "Yapıtı Yayınla",
+  "published": "Yayınlandı",
+  "publishing": "Yayınlama",
+  "queryNames": {
+    "advanced": "Gelişmiş",
+    "fast": "Temel",
+    "image": "Resim",
+    "reader": "Okuyucu"
+  },
+  "quickAction": "Bağlam menüsü",
+  "quickActions": {
+    "askAI": "{{name}}'e Sor",
+    "continueImproving": "İyileştirmeye Devam Edin",
+    "defaultPlaceholder": "{{APP_NAME}} uygulamasına istediğiniz her şeyi sorun",
+    "defaultPlaceholder2": "Yukarıdaki içeriği {{APP_NAME}}'a sorun",
+    "dictExample": "Örnek:",
+    "disableGlobal": "Tüm sitelerde devre dışı bırak",
+    "disableOnce": "Bir sonraki ziyarete kadar sakla",
+    "disableSite": "Bu sitede devre dışı bırak",
+    "managePrompts": "Komutları yönet",
+    "pressToClose": "Kapatmak için {{name}} tuşuna basın",
+    "requireSignin": "Oturum açmak gereklidir",
+    "siginHint": "Bu özelliğe erişmek için lütfen giriş yapın."
+  },
+  "quiz": "Sınav",
+  "quotaInfo": {
+    "allPlans": "Tüm planları görüntüle",
+    "chatActionTranslate": "Şuna çevir {{lang}}",
+    "chatFileLink": "Dosya/Bağlantı Sohbeti",
+    "chatPDF": "PDF/Bağlantı Sohbeti",
+    "creditRuleTip": "Kullandığınız model, özellikler ve bağlam uzunluğuna göre kredi kesiyoruz. Detaylar için <a>Yardım Merkezi</a>'ni ziyaret edin.",
+    "creditRuleTitle": "Kredi kesinti kuralları",
+    "dailyCreditTip": "Sıfırlama kuralı yalnızca plan kredileri için geçerlidir, ekstra krediler için değil.",
+    "dataAnalysis": "Gelişmiş Veri Analizi",
+    "enjoyUnlimitedCredits": "Sınırsız Kredilerin Keyfini Çıkarın",
+    "enjoyUnlimitedCreditsDesc": "GPT, Gemini, Claude ve diğer yapay zeka modellerinden en iyi şekilde yararlanın.",
+    "extraCreditTip": "Bunlar tek seferlik kullanım için ekstra kredilerdir.",
+    "extractText": "AI Metin Çıkarma",
+    "inviteFriends": "Daha fazla kredi almak için <a>arkadaşlarınızı davet edin</a>",
+    "mobilePlan": "Mobil Plan",
+    "off": "{{num}} İndirim",
+    "pocketPlanTips": "Pocket kredileri yalnızca mobilde kullanılabilir. Biraz masaüstü kredisi ücretsiz olarak tadını çıkarın.",
+    "pocketUpgrade": "Daha Fazlasını Açmak İçin Yükseltin",
+    "premiumTrial": "Premium özellikleri ücretsiz deneyin",
+    "premiumTrialTip": "Deneme, ücretli üyelere özel premium özelliklere sınırlı erişim sağlar. Lütfen her kullanımın yine de krediye mal olacağını unutmayın.",
+    "readAloud": "AI Sesli Okuma",
+    "resetDate": "Sıfırlama Tarihi",
+    "resetsDaily": "Günlük olarak sıfırlanır",
+    "shortVideo": "AI Video Kısaltıcı",
+    "tryForFree": "Ücretsiz dene",
+    "tryReadAloudForFree": "Okuma Özelliğini Ücretsiz Deneyin",
+    "unlockAllFeats": "Tüm Özelliklerin Kilidini Aç",
+    "unlockAllFeats2": "Tam Erişimi Aç",
+    "unlockAllFeatsDesc": "Premium özellikler için deneme sınırına ulaştınız. Tüm özelliklerin kilidini açmak için yükseltin.",
+    "unlockAllFeatsDesc2": "Sınırsız sohbet, web erişimi, veri analizi, görüntü oluşturma, YouTube özetleri, dosya/bağlantı sohbeti, metin çıkarma ve daha fazlasını edinin",
+    "unlockFeats": "Tüm Premium Özelliklerin Kilidini Aç",
+    "unlockToUse": "Sınırsız Kullanımın Kilidini Aç",
+    "upgradeFor": "Sadece {{price}}/ay karşılığında yükseltin",
+    "usedCredits": "{{count}} kredi kullanıldı",
+    "usedCredits_one": "{{count}} kredi kullanıldı",
+    "usedCredits_other": "{{count}} kredi kullanıldı",
+    "vipInviteFriends": "{{APP_NAME}}'dan memnun musunuz? <a>Arkadaşlarınızı davet edin!</a>",
+    "webAccess": "Web Erişimi",
+    "youtubeSummary": "YouTube Özeti"
+  },
+  "quote": "Alıntı",
+  "quoteText": "Alıntı metni",
+  "readAloud": "Sesli Oku",
+  "reading": "Okuma",
+  "readingwriting": "Okuma & Yazma",
+  "readPage": "Bu sayfayı okuyun",
+  "reasoningModelTip": "Akıl yürütme zaten mevcut modelde yerleşik",
+  "reasoningModelTip2": "Seçtiğiniz modelin gelişmiş akıl yürütme yeteneğini etkinleştirir ve karmaşık sorgulara daha doğru ve içgörülü yanıtlar verir (akıl yürütme olmayan modeller DeepSeek R1 kullanır). Yaklaşık 2 kat kredi maliyeti vardır.",
+  "recentFiles": "Son Dosyalar",
+  "recognizing": "tanıma",
+  "recordPanel": {
+    "alertContinue": "Kayda Devam Et",
+    "alertStop": "Kaydı Bitir",
+    "allNotes": "Tüm notlar",
+    "audio": "Ses",
+    "camera": "Sadece Kamera",
+    "cameraDisableTip": "Sekme kaydı sırasında kamera kullanılamaz",
+    "cameraPermission": {
+      "deniedDesc": "Kamera kaydı kullanmak için kamera erişimini etkinleştirin lütfen.",
+      "grantedDesc": "Bu sekmeyi kapatabilir ve kenar çubuğunda kayda başlayabilirsiniz.",
+      "noBrowserPremission": "Sistem tarafından izin reddedildi",
+      "noBrowserPremissionTip": "Sistem, mevcut tarayıcı için kamera erişimini reddetti. Lütfen izinleri değiştirmek için sistem ayarlarına gidin.",
+      "noCamera": "Kamera Yok",
+      "noCameraTip": "Üzgünüz, kullanılabilir kamera tespit edilmedi.",
+      "noIconDesc": "Sayfayı yenileyin, ardından adres çubuğundaki {{iconImage}} simgesine tıklayın ve \"Her zaman izin ver...\" seçeneğini seçin.",
+      "noIconTitle": "Kamera simgesini görmüyorsanız",
+      "noPopupDesc": "Adres çubuğundaki kamera simgesine {{iconImage}} tıklayın, \"Her zaman izin ver...\" seçeneğini seçin ve \"Tamam\"a tıklayın.",
+      "title": "Kamera İzin Kılavuzu",
+      "withPopupDesc": "Kamera kaydı için \"Siteyi ziyaret ederken izin ver\"e tıklayın."
+    },
+    "cameraPrepare": "Kameranızı hazırlıyoruz...",
+    "cameraTipOff": "Kamerayı kapat",
+    "cameraTipOn": "Kamerayı aç",
+    "cancelConfigContent": "İptal etmek, mevcut kaydın kaybolmasına neden olacaktır.",
+    "cancelConfigTitle": "Kaydı iptal etmeyi onaylıyor musunuz?",
+    "cancelRecording": "Kaydı İptal Et",
+    "cancelRecordWarn": "Kaydı iptal etmeyi onayla",
+    "cancelRecordWarnContent": "İptal etmek, mevcut Kaydı ve notları silecektir.",
+    "captureScreenshot": "Ekran Görüntüsü Al",
+    "closePermanently": "Kalıcı olarak kapat",
+    "closeThisTime": "Bu sefer kapat",
+    "continueRecord": "Mikrofonsuz Devam Et",
+    "countdown": "Geri Sayım",
+    "countdownTip": "Kayıt şu anda başlayacak",
+    "ctrlBar": "Kontrol Çubuğu",
+    "deleteNoteWarn": "Bu notu silmek istiyor musunuz?",
+    "desktop": "Masaüstü",
+    "don'tShow": "Bunu bir daha gösterme",
+    "liveTips": "Önemli bilgileri yakalamak için aynı anda not alın ve kaydedin.",
+    "micMissContent": "Sesiniz bu oturumda kaydedilmeyecek. Nasıl devam etmek istersiniz?",
+    "micMissContent1": "Sesiniz kaydedilmeyecek. Açmak ister misiniz?",
+    "micMissTitle": "Mikrofon KAPALI",
+    "micTipOff": "Mikrofonu kapat",
+    "micTipOn": "Mikrofonu aç",
+    "missInputTip": "Lütfen bir not oluşturmadan önce ekran kaydını etkinleştirin veya mikrofonu açın.",
+    "new": "Yeni",
+    "newRecordNote": "Yeni REC Notu",
+    "noDevice": "Cihaz bulunamadı",
+    "NoSoundAlertContent": "Mikrofonunuzun açık olup olmadığını kontrol etmek için lütfen buraya tıklayın.",
+    "NoSoundAlertTitle": "Ses algılanmadı",
+    "noteContentPlaceholder": "Anahtar bilgileri girin, Sider bunları düzenlemenize yardımcı olacak.",
+    "noteGuideContent": "Anahtar noktaları siz alın, Sider tam notları oluşturur.",
+    "noteListCreateWisebase": "Bir {{WISEBASE_APP_NAME}} ekle",
+    "noteListEmpty": "Başlamak için + tuşuna basın",
+    "noteListError": "Notlar yüklenemedi",
+    "noteListMove": "Taşı",
+    "noteListTitle": "Notlarım",
+    "noteTitlePlaceholder": "Başlıksız",
+    "paused": "Duraklatıldı",
+    "pausedAlertTitle": "Kayıt Duraklatıldı",
+    "proceed": "Evet, Devam Et",
+    "quicklyRecord": "Hızlı Kayıt",
+    "recordScreen": "Ekranı Kaydet",
+    "resolution": "Çözünürlük",
+    "setting": "Ayar",
+    "showCutGuide": "Bir kısayol tuşu ayarlayabilirsiniz <num>burada</num>",
+    "startRecording": "Kaydı Başlat",
+    "storageAlertContent": "Yetersiz depolama alanı. Kayda devam etmek için lütfen alan açın veya mevcut kaydı bitirin.",
+    "storageAlertStart": "Yetersiz depolama alanı. Kayda devam edebilmek için lütfen alan açın.",
+    "tab": "Sekme",
+    "tabAudioOnly": "Yalnızca Sekme Sesini Kaydet",
+    "tabAudioOnlyShow": "Yalnızca Sekme Sesi",
+    "tabSound": "Sekme Sesi",
+    "tabVideoAudio": "Sekme Ekran + Ses Kaydet",
+    "tabVideoAudioShow": "Ekran + Ses",
+    "tabVideoOnly": "Sekme Ekranını Yalnızca Kaydet",
+    "tabVideoOnlyShow": "Yalnızca Sekme Ekranı",
+    "timeLimitAlertContent": "Kayıt {{alertNumber}} saatlik sınıra ulaştı",
+    "title": "Kaydet",
+    "title1": "Sesli Notlar",
+    "transcript": "Transkript",
+    "turnAndProceed": "Mikrofonu aç ve devam et",
+    "turnOnMic": "Mikrofonu Aç",
+    "uploadingList": {
+      "connection": "Bağlantı yeniden sağlandığında yükleme devam edecek.",
+      "delete": "İptal Et ve Sil",
+      "failed": "Yükleme başarısız oldu",
+      "networkTip": "İnternet bağlantısı yok.",
+      "save": "Yerel Olarak Kaydet",
+      "title": "Senkronizasyon Durumu",
+      "uploaded": "Yüklendi"
+    },
+    "uploadTimedOut": "Yükleme zaman aşımına uğradı",
+    "uploadTimedOutTip": "Yükleme, bir ağ sorunu nedeniyle kesildi. Bağlantı yeniden kurulduğunda otomatik olarak devam edecek veya önce kaydedilen dosyayı cihazınıza indirebilirsiniz.",
+    "video": "Video",
+    "voice": "Sadece Ses"
+  },
+  "refresh": "Yenile",
+  "refreshing": "Yenileniyor",
+  "refreshModel": "Modelleri Yenile",
+  "related-academic-research": "İlgili makalelere göz at",
+  "related-news": "İlgili haberleri bul",
+  "related-videos": "İlgili videoları izle",
+  "remixArtifact": "Eseri Yeniden Düzenle",
+  "remove": "Kaldırmak",
+  "RemoveAds": "Reklamları Kaldır?",
+  "removeAdsContent1": "Reklamların rahatsız edici olduğunu biliyoruz, ancak uygulamanın herkes için ücretsiz kalmasına yardımcı oluyorlar.",
+  "removeAdsContent2": "Daha temiz bir deneyim için yükseltin.",
+  "renameAll": "Hepsini yeniden adlandır",
+  "renameOnce": "Bir kez yeniden adlandır",
+  "repair": "Onar",
+  "repairing": "Onarılıyor",
+  "replace": "Yer değiştirmek",
+  "replay": "Tekrar Oynat",
+  "researching": "Araştırılıyor",
+  "researchProgress": "Araştırma İlerlemesi",
+  "reselect": "Yeniden Seç",
+  "reset": "Sıfırla",
+  "resetTime": "<a>3 Ağu 2023</a>'de sıfırlayın",
+  "restoreTpl": "Bu şablonu geri yükle",
+  "result": "Sonuç",
+  "resume": "Devam Et",
+  "retry": "Yeniden Dene",
+  "rewrite": "Yeniden Yaz",
+  "roast": {
+    "analyzing": "Analiz ediliyor...",
+    "boast": "🥰 Övünmek",
+    "roast": "😜 Dalga geçmek",
+    "roastX1": "🔥 Birisi seni yeni kızdırdı, bir göz at",
+    "roastX2": "Bu Adamı Kızdır!"
+  },
+  "save": "Kaydet",
+  "saved": "kaydedildi",
+  "screenshot": "Ekran görüntüsü",
+  "search": "Ara",
+  "searched3": "3 site arandı",
+  "searchedFor": "Aranan:",
+  "searchedN": "{{NUM}} site arandı",
+  "searchEnhance": {
+    "adContent": "GPT-4'ten daha akıllı mı? Claude 3 burada! Arkadaşlarını davet et ve ücretsiz dene!",
+    "getStarted": "Şimdi başla",
+    "noLoginAdContent": "AI Gücünü Aç: Daha Hızlı ve Akıllıca Ara, Oku, Yaz, Çevir!",
+    "noLoginBtn": "4M+ Memnun Kullanıcıya Katılın!",
+    "relatedQuestion": "İlgili sorular:"
+  },
+  "searchFailed": "Arama başarısız",
+  "searching": "Aranıyor: {{QUERY}}",
+  "searchingFor": "aranıyor:",
+  "searchPage": "Arama Sayfası",
+  "searchTip": "Gerekirse web'de ara",
+  "searchTool": {
+    "braveTrouble": "Hala çalışmıyor? {{url}}'yi takip et",
+    "cloudflareCheck": "OpenAI, arada bir güvenlik kontrolünden geçmeyi gerektirir. Bu durum devam ederse, <i>uzantı seçeneklerinde</i> AI sağlayıcısını OpenAI API olarak değiştirin.",
+    "failedResponse": "ChatGPT'den yanıt yüklenemedi:",
+    "fiveStart": "Bu uzantıyı beğendiniz mi? {{store}}'da bize 5 yıldız verin",
+    "loginAndCloudflareCheck": "Lütfen giriş yapın ve {{web}} adresinden Cloudflare kontrolünü geçin",
+    "questionMark": "Sorgunuzdan sonra bir soru işareti ekleyerek ChatGPT'yi tetikleyin",
+    "waitResponse": "ChatGPT yanıtı bekleniyor...",
+    "whenToAskTips": "Her arama bir temel kredi tüketir. ChatGPT'ye ne zaman sormak istediğinizi ayarlamak için buraya tıklayın."
+  },
+  "seeMoreHelp": "<a>Yardım Merkezi</a>'nde daha fazlasını görün",
+  "select": "Seç",
+  "selectedTextInputHint": "Seçilen metin hakkında soru sor",
+  "selectGenerationModel": "Üretim Modelini Seç",
+  "selectPrompt": "İstem seç",
+  "send": "Göndermek",
+  "sendShortcut": "Kısayol gönder",
+  "sendToChat": "Sohbete gönder",
+  "settingApiKey": "API anahtarınızı ayarlama",
+  "settings": "Ayarlar",
+  "setupPage": {
+    "activeUser": "Aktif Kullanıcılar",
+    "endBottom": "Yardıma mı İhtiyacınız Var veya Önerileriniz mi Var?",
+    "endBottom2": "Görüşlerinizi önemsiyoruz! Deneyiminizi iyileştirmemize yardımcı olmak için <a>Geri Bildirimde Bulunun</a>.",
+    "endTip": "Artık herhangi bir web sayfasına göz atabilir veya Daha Fazla Bilgi Edinmek için Yardım Merkezimize dalabilirsiniz.",
+    "endTitle": "{{APP_NAME}} Size Yardımcı Olmaya Hazır!",
+    "explore": "{{FEATURE_NAME}} Özelliğini Keşfedelim",
+    "favorites": "Chrome'ın en popüler uzantısı",
+    "fiveStarRate": "5 Yıldızlı Değerlendirmeler",
+    "learnMore": "{{APP_NAME}} Hakkında Daha Fazla Bilgi Edinin",
+    "loginSuccess": "Giriş başarılı",
+    "loginWith": "{{name}} ile giriş yapın",
+    "next": "Sonraki",
+    "pinClickTip": "{{icon}} uygulamasını sabitlemek için {{APP_NAME}} simgesini tıklayın",
+    "pinClickTip2": "Hızlı Erişim için {{APP_NAME}}'i Sabitle",
+    "pinClickTip3": "Sağ üstteki {{icon}} simgesine tıklayın",
+    "pinTips": "<b>{{APP_NAME}}</b>'i sabitleyin, daha kolay erişim sağlayın!",
+    "privacy": "Devam ederek <a>Gizlilik Politikası</a> ve <b>Kullanım Koşulları</b>'nı kabul etmiş olursunuz.",
+    "privacyPart1": "Devam ederek",
+    "privacyPart2": "<a>Gizlilik Politikası</a> ve <b>Kullanım Koşulları</b>'nı kabul etmiş olursunuz",
+    "spamMsg": "Verileriniz sızdırılmayacak ve spam olmayacak.",
+    "startUsing": "{{APP_NAME}} Kullanmaya Başlayın",
+    "tryOut": "denemek",
+    "userCount": "4M+",
+    "welcome": "{{APP_NAME}} uygulamasına hoş geldiniz!"
+  },
+  "share": "Paylaşmak",
+  "shareChat": {
+    "5starRatings": "<num>50K</num> 5 Yıldızlı Değerlendirme",
+    "activeUsers": "<num>5M+</num> Aktif Kullanıcı",
+    "AIContentWarning": "Yapay zeka tarafından üretilen içerik her zaman özgün olmayabilir",
+    "copyIamge": "Resmi Kopyala",
+    "copyLink": "Bağlantıyı Kopyala",
+    "downloadImage": "Resmi İndir",
+    "exportAs": "Olarak Dışa Aktar",
+    "generateImage": "Resim Oluştur",
+    "generateLink": "Bağlantı Oluştur",
+    "linkCopied": "Bağlantı Kopyalandı",
+    "linkGenerated": "Bağlantı Oluşturuldu",
+    "qrcodeTip": "{{APP_NAME}}'i almak için tarayın!",
+    "selectAll": "Hepsini seç",
+    "shareOn": "Paylaş",
+    "slogan": "Yapay Zeka asistanınız",
+    "socialMediaImageCopiedTip": "Görüntü kopyalandı ve yapıştırmaya hazır."
+  },
+  "shortcut": "Kısayol Tuşları",
+  "shortPlanNames": {
+    "basic": "Temel",
+    "free": "Ücretsiz",
+    "pocket": "Pocket",
+    "pro": "Pro",
+    "starter": "Başlangıç",
+    "ultra": "Sınırsız"
+  },
+  "show": "Göster",
+  "showImage": "Resmi göster",
+  "showLess": "Daha az göster",
+  "showMore": "Daha fazla göster",
+  "showSearchPanel": "Arama Panelini Göster",
+  "showTpl": "Bu şablonu göster",
+  "sidebar": "kenar çubuğu",
+  "sidebarChatPanel": {
+    "addImage": "Resim ekle",
+    "answerFrom": "Cevaplayan",
+    "answerWithoutSearching": "Orijinal <b>Bot'a</b> sor",
+    "autoCloseBanner": "Hareketsizlikten sonra otomatik olarak duraklatılır",
+    "autoCloseTips": "Arama Asistanı, kart üzerindeki herhangi bir düğmeye 30 arama içinde tıklamazsanız duraklatılır. Herhangi bir zamanda düğmeye tıklayarak yeniden etkinleştirebilirsiniz.",
+    "capabilities": "Yetenekler",
+    "chatActionTranslate": "{{lang}} diline çevir",
+    "chatControls": "Sohbet kontrolleri",
+    "chatHistory": "Sohbet geçmişi",
+    "chatWithVideo": "Video ile sohbet",
+    "compareAnsWith": "Cevabı karşılaştır",
+    "compareWeb": "Web'den yanıtı karşılaştırın",
+    "compareWithXXX": "<b>Bot'a Sor</b>",
+    "continueInChat": "sohbete devam et",
+    "deleteConfirmContent": "Bu işlem geri alınamaz.",
+    "deleteConfirmTitle": "Bu görüşme silinsin mi?",
+    "experimental": "Bu özellik hala gelişiyor ve değişebilir, bu yüzden lütfen düşüncelerinizi paylaşın.",
+    "feedback": "Geri bildirim",
+    "improveWithBoth": "Google Yanıtlarını GPT-4 ile düzenleyin",
+    "improveWithSearch": "Google'dan web yanıtı alın",
+    "improveWithXXX": "<b>Bot</b>'tan daha akıllı yanıt alın",
+    "improveWithXXX2": "<b>Bot</b>'tan kapsamlı yanıt alın",
+    "inputPlaceholder": "Her şeyi sor, @ modeller, / istemler",
+    "newChat": "Yeni sohbet",
+    "noChatHistory": "Henüz geçmiş yok.",
+    "noSearchHistory": "Sonuç bulunamadı",
+    "ocrTextTip": "{{name}} Sonuç",
+    "readDoc": "Belgeleri oku",
+    "readDocFail": "Belgeleri okuma başarısız oldu",
+    "readingDoc": "Belgeleri okuma",
+    "replyLanguage": "Yanıt dili",
+    "screenshot": "Ekran görüntüsü",
+    "search": "Aramak",
+    "searchHistory": "Arama Geçmişi",
+    "send": "Göndermek",
+    "share": "Paylaşmak",
+    "siderUploadFile": "PDF, DOC, XLSX, CSV, JPG, JSON ve diğer formatlarda dosya yükleyin, aynı anda en fazla 6 dosya, dosya başına en fazla 100MB.",
+    "signinToAsk": "{{MODEL_NAME}} adlı kullanıcıya sormak için giriş yapın",
+    "smarterAnsWith": "Daha akıllı cevap alın",
+    "switchAndContinue": "Geçiş yap ve devam et",
+    "textSelectedSystemMsg": "Metinle ne yapmak istersin?",
+    "textSelectedTip": "Seçiminizden metin",
+    "translateTip": "Sonuçları Çevir",
+    "upload": "Yüklemek",
+    "uploadFile": "Dosyaları Yükle",
+    "uploadTip": {
+      "format": "Web sayfası, PDF, DOC, XLSX, CSV, JPG, JSON, MP3, WAV, M4A, MPGA ve daha fazlası",
+      "formatTitle": "Destek:",
+      "limit": "En fazla 6 dosya, her biri 100MB",
+      "limitTitle": "Sınır:"
+    },
+    "userStopTip": "Kullanıcı isteği iptal etti.",
+    "webAccessModalContent": "ChatGPT'nin verileri gerçek zamanlı değildir. {{APP_NAME}}, ChatGPT'nin zekasını gerçek zamanlı web bilgileriyle birleştirerek GPT'nin gerçek zamanlı bilgilerle ilgili soruları daha etkili bir şekilde ele almasına olanak tanır. Bu özelliği kazanmak için yükseltme yapın ve artık güncel olmayan bilgiler konusunda endişelenmeyin!",
+    "webAccessModalTitle": "{{APP_NAME}}, hem ChatGPT-3.5 hem de GPT-4'ün web'e erişmesini sağlar!",
+    "welcomeMsg": "Bugün nasıl yardımcı olabilirim?",
+    "welcomeQues": [
+      {
+        "ques": "Akıllı telefonlar hakkında Shakespeare tarzında bir sonnet yazın.",
+        "title": ""
+      },
+      {
+        "ques": "Çocuklar için 10 yaratıcı Cadılar Bayramı kostümü önerin.",
+        "title": ""
+      },
+      {
+        "ques": "Kişisel finans öğrenimi için bir başlangıç yol haritası oluşturun.",
+        "title": ""
+      },
+      {
+        "ques": "10 yaşındaki bir çocuğa gökyüzünün neden mavi olduğunu açıklayın.",
+        "title": ""
+      }
+    ],
+    "welcomeSystemMsg": "Merhaba! Size bugün nasıl yardımcı olabilirim?",
+    "writeHistory": "Yazı Geçmişi"
+  },
+  "sidebarComposePanel": {
+    "addToSite": "siteye ekle",
+    "addToSiteTip": "Fare imlecinizi istenen giriş kutusuna getirin ve eklemek için '{{name}}' öğesini tıklayın",
+    "ads": "Pazarlama Reklamları",
+    "AIWriter": "Yapay zeka yazarı",
+    "alsoWriteTips": "Al ile yan yana yazma",
+    "basic": "temel",
+    "blog": "Blog yazısı",
+    "casual": "Gündelik",
+    "comment": "Yorum",
+    "compose": "Oluştur",
+    "continueOptimizeTips": "Yapay zeka ile yan yana geliştirip iyileştirmeye devam edin",
+    "email": "E-posta",
+    "enthusiastic": "Hevesli",
+    "essay": "Makale",
+    "formal": "Resmi",
+    "format": "Biçim",
+    "formatExists": "Format zaten mevcut",
+    "funny": "Eğlenceli",
+    "generate": "Taslak oluştur",
+    "history": "Geçmiş",
+    "idea": "Fikir",
+    "informational": "bilgilendirici",
+    "insertToSite": "Sonucu web sayfası giriş kutusuna ekle",
+    "length": "Uzunluk",
+    "long": "Uzun",
+    "medium": "Orta",
+    "message": "İleti",
+    "outline": "Anahat",
+    "paragraph": "Paragraf",
+    "professional": "Profesyonel",
+    "regenerate": "yeniden oluştur",
+    "reply": "Cevap vermek",
+    "replyPlaceholder1": "Yanıtlamak istediğiniz orijinal metni girin",
+    "replyPlaceholder2": "Yanıtınızın genel fikrini tanımlayın",
+    "short": "Kısa",
+    "style": "Stil",
+    "submitShortcut": "Taslak oluşturmak için {{shortcut}} tuşuna basın",
+    "tone": "ton",
+    "twitter": "twitter",
+    "write": "Yaz",
+    "writePlaceholder": "Yazmak istediğiniz konuyu girin"
+  },
+  "sidebarGrammarPanel": {
+    "accept": "Kabul etmek",
+    "checkFailed": "Kontrol Başarısız",
+    "checking": "Kontrol etme",
+    "checkNoError": "Hata yok",
+    "fixError": "Tümünü Düzelt ({{errorCount}})",
+    "ignore": "Görmezden gelmek",
+    "improve": "Geliştir",
+    "inputPlaceholder": "Sadece İngilizce desteklenmektedir. Kontrol etmek için metni yapıştırın veya yazın.",
+    "reasonForChanges": "Değişikliklerin nedeni"
+  },
+  "sidebarPanel": {
+    "addToStarred": "Yıldızlılara Ekle",
+    "agentTabLabel": "Agent",
+    "askTabLabel": "Sormak",
+    "chatTabLabel": "Sohbet",
+    "composeTabLabel": "Yazmak",
+    "deleteAllConfirmTitle": "Hepsini Sil",
+    "downloadLabel": "Masaüstü/Mobil Uygulama İndir",
+    "extraQuota": "Ekstra Kota",
+    "freePlan": "Ücretsiz Plan",
+    "grammarTabLabel": "Dilbilgisi",
+    "includeStarred": "Yıldızlıları Dahil Et",
+    "inputPlaceholder1": "Giriş istemi veya menüden seçim yapın",
+    "inputPlaceholder2": "İçeriği buraya yapıştırın veya girin",
+    "inputPlaceholderCodes": "Kodları buraya yapıştırın veya girin",
+    "inputPlaceholderQA": "Soruyu buraya yapıştırın veya girin",
+    "moreTabLabel": "Daha Fazla",
+    "ocrTabLabel": "OCR",
+    "painterLabel": "Ressam",
+    "premiumPlan": "Prim Planı",
+    "pressToSubmit": "Göndermek için {{key}} tuşuna basın",
+    "recordTabLabel": "REC Notlar",
+    "regenerate": "Yanıtı yeniden oluştur",
+    "removeFromStarred": "Yıldızlılardan Kaldır",
+    "replacePrompt": "İstemi değiştir",
+    "saveNewPrompt": "Yeni bilgi istemi olarak kaydet",
+    "searchTabLabel": "Ara",
+    "starred": "Yıldızlılar",
+    "startNewLine": "Yeni bir satır başlatmak için {{shortcut}} tuşuna basın",
+    "stopGenerating": "Oluşturmayı durdur",
+    "submitOption": "Gönderme Seçeneği",
+    "toolsTabLabel": "Araçlar",
+    "translateTabLabel": "Çevirmek"
+  },
+  "sidebarSearchPanel": {
+    "answer": "Cevap",
+    "currentVisit": "Mevcut ziyaret",
+    "defaultSearchSuggesiton": "Paris'i ziyaret etmek için en iyi zaman ne zaman?",
+    "feedback": {
+      "stepAnswer": "Cevap üret",
+      "stepSearch": "Arama yap",
+      "stepUnderstand": "Soruları anla",
+      "tipTotal": "Toplam {{count}} kredi"
+    },
+    "followUpQuestion": "Takip sorusu...",
+    "history": "Geçmiş",
+    "newSearch": "Yeni Arama",
+    "relatedSearches": "İlgili Aramalar",
+    "searchAll": "Tümünden Ara",
+    "searchFrom": "Şuradan ara",
+    "searchFromAll": "Tüm İnternet'ten ara",
+    "searchFromSite": "{{domain}} sitesinden ara",
+    "searchHistory": "Arama Geçmişi",
+    "searching": "Arama",
+    "searchPlaceholder": "Aramak istediğiniz bilgiyi girin",
+    "searchProgress": {
+      "analyzeSearchResult": "Arama sonuçlarını analiz et",
+      "analyzing": "Analiz ediliyor",
+      "competed": "Tamamlandı",
+      "generateAnswer": "Cevap üret",
+      "generatingAnswer": "Cevap oluşturuluyor",
+      "organizing": "Düzenleniyor",
+      "searchCancelled": "Arama İptal Edildi",
+      "searchCompleted": "Arama Tamamlandı",
+      "searching": "Aranıyor",
+      "searchInWeb": "Web'de Ara"
+    },
+    "searchRange": "Arama Aralığı",
+    "sources": "Kaynaklar",
+    "stoppedSearch": "Bu aramayı durdurdunuz.",
+    "suggestions": "Öneriler",
+    "title": "Ara",
+    "viewAll": "Tümünü Gör"
+  },
+  "sidebarTranslatePanel": {
+    "auto-detect": "Otomatik algılama",
+    "currentPage": "Mevcut Sayfa",
+    "customization": {
+      "Complexity": "Karmaşıklık",
+      "ComplexityOpt": {
+        "Expert": "Uzman",
+        "Layman": "Meslekten olmayan",
+        "Standard": "Standart"
+      },
+      "defaultPreferences": "Varsayılan tercihleri",
+      "Length": "Uzunluk",
+      "LengthOpt": {
+        "Brief": "Kısa bilgi",
+        "Concise": "Özlü",
+        "Expanded": "Genişletilmiş",
+        "Standard": "Standart"
+      },
+      "Style": "Stil",
+      "StyleOpt": {
+        "CreativeAdaptation": "Yaratıcı Uyarlama",
+        "DynamicEquivalence": "Dinamik Eşdeğerlik",
+        "Literal": "Değişmez"
+      },
+      "title": "Çeviri tercihleri",
+      "Tone": "Ton",
+      "ToneOpt": {
+        "Authoritative": "Yetkili",
+        "Casual": "Gündelik",
+        "Empathetic": "Empatik",
+        "Formal": "Resmi",
+        "Neutral": "Doğal"
+      }
+    },
+    "errTooManyChar": "{{num}}/{{total}}: Girdi karakter sınırını aşıyor.",
+    "errWrongTargetLang": "Aynı kaynak ve hedef dil. Seçiminizi kontrol edin.",
+    "extraTransTips": "Ayrıca şunları da çevirebilirsiniz:",
+    "inputTranslateAdBtn": "Şimdi kurun",
+    "inputTranslateAdText": "Herhangi bir web sayfasındaki bir giriş kutusundaki metni anında çevirin!",
+    "placeholde": "Metni buraya yazın veya yapıştırın...",
+    "seeDict": "Sözlüğü Gör",
+    "upgradeForLongChar": "Daha uzun girişleri açmak için şimdi yükseltin ({{num}} karakter)."
+  },
+  "sidepanel": {
+    "benefit1": "Yeni bir sayfaya giderseniz Sider kenar çubuğunuz <b>hiçbir zaman kaybolmaz</b>.",
+    "benefit2": "<b>Herhangi bir içerik çakışmadan</b> tüm sekmeler arasında sohbet edebilirsiniz.",
+    "benefit3": "Yalnızca <b>Google Chrome 114 veya sonraki sürümlerinde</b> kullanılabilir",
+    "micPermission": {
+      "deniedDesc": "Sesli giriş kullanmak için lütfen mikrofon erişimini etkinleştirin.",
+      "deniedTitle": "Erişim Verilmedi",
+      "grantedDesc": "Bu sekmeyi şimdi kapatabilir ve kenar çubuğundaki mikrofonu kullanabilirsiniz.",
+      "grantedTitle": "Erişim Başarıyla Verildi",
+      "noIconDesc": "Sayfayı yenileyin, ardından adres çubuğundaki {{iconImage}} simgesine tıklayın ve \"Her zaman izin ver...\" seçeneğini seçin.",
+      "noIconTitle": "Mikrofon simgesini görmüyorsanız",
+      "noPopupDesc": "Adres çubuğundaki {{iconImage}} mikrofon simgesine tıklayın, \"Her zaman izin ver...\" seçeneğini seçin ve \"Bitti\"ye tıklayın.",
+      "noPopupTitle": "Eğer bir açılır pencere yoksa",
+      "tips": "💡 İpucu: Kayıt hatalarını önlemek için adında \"sanal\" olan cihazları seçmekten kaçının.",
+      "title": "Mikrofon İzni Rehberi",
+      "withPopupDesc": "Konuşmayı metne dönüştürmeyi etkinleştirmek için \"Siteyi ziyaret ederken izin ver\"e tıklayın.",
+      "withPopupTitle": "Bir açılır pencere görürseniz"
+    },
+    "tip": "İpucu: Daha iyi bir deneyim için yan panelin genişliğini uygun şekilde ayarlayın.",
+    "title": "Sider, Sabit Kenar Çubuğunu Destekler",
+    "voiceInput": "Sesli Giriş",
+    "voiceInputError": {
+      "deviceNotFound": "Üzgünüz, kullanılabilir bir mikrofon algılanmadı.",
+      "deviceNotFoundTitle": "Mikrofon yok",
+      "rateLimit": "Bu özelliği kullanma sıklığınızın sınırına ulaştınız. Lütfen bir saat sonra tekrar deneyin.",
+      "rateLimitTitle": "Kullanım Sınırı Aşıldı",
+      "systemPermission": "Sistem, mevcut tarayıcı için mikrofon erişimini reddetti. Lütfen izinleri değiştirmek için sistem ayarlarına gidin.",
+      "systemPermissionTitle": "Sistem tarafından izin reddedildi",
+      "timeLimit": "Kayıt sınırına ulaşıldı. Önce mevcut kaydı yazıya dökün.",
+      "tooShort": "Kayıt tanınamayacak kadar kısa",
+      "transcriptionFailed": "Yazıya dökme sırasında bir hata oluştu. Lütfen tekrar deneyin.",
+      "transcriptionFailedTitle": "Yazıya dökme başarısız oldu"
+    }
+  },
+  "sidepanelPinGuide": {
+    "desc": "Hızlı erişim için {{APP_NAME}}'i araç çubuğunuza ekleyin",
+    "title": "\"{{icon}}\" tıklayın"
+  },
+  "sidepanelTip": "Yan Panel Ucu",
+  "signin": "Giriş yapmak",
+  "signinNow": "Şimdi giriş yap",
+  "signupTip": "Zaten bir hesabınız var mı? <a>Giriş yapın</a>",
+  "skip": "Atlamak",
+  "smarterWith": "{{NAME}}'den daha akıllı cevap al",
+  "Speaker": "Sözcü",
+  "speechVoice": "Konuşma Sesi",
+  "startingResearch": "Araştırma başlatılıyor...",
+  "stop": "Durmak",
+  "submit": "Göndermek",
+  "subscribe": "Abone Ol",
+  "success": "Başarı",
+  "suggestTools": {
+    "tips": {
+      "create_image": "Görüntü oluşturmak mı istiyorsunuz? AI görüntü araçlarının kilidini açmak için yükseltin.",
+      "search": "Gerçek zamanlı cevaplara mı ihtiyacınız var? Web arama erişimi için yükseltin."
+    }
+  },
+  "summarize": "özetle",
+  "summarizeFailed": "Özetleme başarısız oldu",
+  "summarizePage": "Bu sayfayı özetleyin",
+  "summarizing": "Özetleme",
+  "summary": "Özet",
+  "superAdvanced": "Süper gelişmiş",
+  "switch": "Değiştir",
+  "switchAndContinue": "Modu değiştir",
+  "switchModel": "Modeli değiştir",
+  "switchToSidepanel": "Kenar çubuğuna geç",
+  "switchToSider": "{{APP_NAME}} API'sine geçin",
+  "switchToXXX": "{{model}} modeline geç",
+  "switchVoice": "Sesi Değiştir",
+  "table": "Tablo",
+  "takeAScreenshot": "Ekran görüntüsü al",
+  "taskCenter": {
+    "advanceTask": "İleri Düzey Görevler",
+    "beginnerGuide": "Başlangıç Kılavuzu",
+    "chatDemoText": "Size nasıl yardımcı olabilirim?",
+    "claim": "Talep Et",
+    "claimed": "Talep Edildi",
+    "claimNow": "Şimdi talep et",
+    "claimRewards": "Ödüllerinizi talep etmek için Ödül Merkezi'ne gidin.",
+    "clickChatSetting": "Sohbet ayarlarına erişmek için {{button}} tıklayın",
+    "clickGoOptions": "{{button}} Seçeneklerini görüntülemek için {{name}} tıklayın",
+    "clickReadPage": "Web sayfasını okumak ve mesaj göndermek için {{button}} tıklayın",
+    "clickSavePage": "Sayfayı kaydetmek için {{button}} tıklayın",
+    "clickSend": "Bir mesaj göndermek için {{button}} tıklayın",
+    "clickSummaryVideo": "Videoyu özetlemek için bu düğmeye tıklayın",
+    "clickTranslatePage": "Sayfayı çevirmek için {{button}} tıklayın",
+    "clickTryDemo": "Demoyu görüntülemek ve denemek için {{button}} tıklayın",
+    "clickUploadImg": "Bir resim yüklemek ve mesaj göndermek için {{button}} tıklayın",
+    "completedTasks": "Tamamlanan Görevler",
+    "completeTaskTo": "Görevleri Tamamlayarak <a>Kredi Kazanın</a>",
+    "countdownTip": "<b>{{price}} İNDİRİM:</b> {{time}} Kaldı",
+    "expireIn": "{{time}} içinde sona erecek",
+    "exploreCenter": "{{name}} Keşfet",
+    "getAdvancedCredits": "{{count}} ileri düzey kredi kazanın",
+    "getAdvancedCredits_one": "{{count}} ileri düzey kredi kazanın",
+    "getAdvancedCredits_other": "{{count}} ileri düzey kredi kazanın",
+    "getBasicCredits": "{{count}} temel kredi kazanın",
+    "getExtraAdvancedCredits": "{{count}} ekstra ileri düzey kredi kazanın",
+    "goYoutube": "YouTube'a Git",
+    "gretNews": "Harika haber!",
+    "iconEntryTip": "{{name}} burada bulabilirsiniz.",
+    "inviteFriend": "Arkadaşlarınızı Davet Edin",
+    "name": "Ödül Merkezi",
+    "progress": "İlerleme",
+    "selectText": "Denemek için biraz metin seçin!",
+    "selectText2": "Metin seçmek için {{name}}'i etkinleştirin",
+    "siderMode": "Sider moduna geçilsin mi?",
+    "siderModeDesc": "Görevler Sider modunda tamamlanmalıdır, geçmek ister misiniz?",
+    "start": "Başla",
+    "starterTask": "Başlangıç Görevleri",
+    "taskCompleted": "Görev tamamlandı!",
+    "tasks": {
+      "chat": "Sohbette bir mesaj gönderin",
+      "chatImg": "Bir resimle sohbet edin",
+      "contextMenu": "{{name}} aracılığıyla bir kelime açıklayın",
+      "options": "{{APP_NAME}} Seçeneklerini 5 saniye boyunca keşfedin",
+      "pageTranslate": "{{APP_NAME}} simgesi ile bir sayfa çevirin",
+      "prompt": "Bir {{APP_NAME}} hazır komutunu deneyin",
+      "readPage": "Sohbette bir sayfa okuyun",
+      "webAccess": "Arama demosunu deneyin",
+      "wisebase": "Bir sayfayı {{name}}'e kaydedin",
+      "youtubeSummary": "Bir YouTube videosunu özetleyin"
+    },
+    "trunOn": "Aç",
+    "typePrompt": "Bir komut seçmek ve mesaj göndermek için {{key}} yazın",
+    "unlimitedPlan": "Sınırsız Plan(Yıllık)",
+    "unlockDiscount": "Sürpriz bir indirim kazandınız.",
+    "useNow": "Şimdi Kullan",
+    "watchYoutube": "YouTube kanalımızda eğitim videoları, güncellemeler ve daha fazlasını izleyin!",
+    "youtubeSummaryDisabled": "YouTube Özeti Devre Dışı",
+    "youtubeSummaryDisabledDesc": "Devam etmek için etkinleştirin. Şimdi açmak ister misiniz?"
+  },
+  "template": "şablon",
+  "textExtracted": "Metin çıkarıldı",
+  "textFromGrammar": "Gramerden Metin",
+  "textFromOCR": "OCR'den metin",
+  "textFromSearch": "Arama ajanından metin",
+  "textFromSelect": "Seçiminizden metin",
+  "textFromTranslate": "Çeviriden gelen metin",
+  "textFromWrite": "Yazıdan Metin",
+  "theme": "Tema",
+  "think": "Düşün ({{NAME}})",
+  "thinkOnly": "Düşün",
+  "thoughtProgress": "Düşünce süreci",
+  "timeUnit": {
+    "day": "Gün",
+    "day_one": "Gün",
+    "day_other": "Gün",
+    "hour": "Saat",
+    "hour_one": "Saat",
+    "hour_other": "Saat",
+    "minute": "Dakika",
+    "minute_one": "Dakika",
+    "minute_other": "Dakika",
+    "second": "Saniye",
+    "second_one": "Saniye",
+    "second_other": "Saniye"
+  },
+  "toolMoveTip": "Sohbet aracı yeni bir yere taşındı! Tüm sohbet kontrollerine buradan erişebilirsiniz.",
+  "Tools": {
+    "desc": {
+      "artifacts": [
+        {
+          "desc": "Fikirleri anında somut çıktılara dönüştürün!",
+          "title": "Gelişmiş Verimlilik"
+        },
+        {
+          "desc": "Yapay zeka tarafından oluşturulan web sayfalarını, belgeleri ve grafikleri anında görselleştirin.",
+          "title": "Gerçek Zamanlı Önizleme"
+        },
+        {
+          "desc": "Eserleri doğal konuşma yoluyla zahmetsizce geliştirin.",
+          "title": "Sorunsuz Yineleme"
+        }
+      ],
+      "create_image": [
+        {
+          "desc": "Açıklamaları anında yüksek kalitede dönüştürün.",
+          "title": "Yaratıcılığı Ateşle"
+        },
+        {
+          "desc": "Projelerinizi özel görsellerle geliştirin.",
+          "title": "İçeriği Geliştir"
+        }
+      ],
+      "custom_instruction": [
+        {
+          "desc": "Benzersiz tarzınıza ve tercihlerinize uygun yapay zeka yanıtları alın.",
+          "title": "Tamamen Size Özel"
+        },
+        {
+          "desc": "Kendinizi tekrar etmeye son. Nasıl etkileşimde bulunmayı sevdiğinizi hatırlayacağız.",
+          "title": "Her Zaman Zaman Kazanın"
+        }
+      ],
+      "data_analysis": [
+        {
+          "desc": "Verileri kolayca analiz edin ve görselleştirin ki net bulgular elde edin.",
+          "title": "İçgörüler Edinin"
+        },
+        {
+          "desc": "Etkili problem çözme için kodu inceleyin, yorumlayın ve çalıştırın.",
+          "title": "Daha Akıllı Kodlama"
+        },
+        {
+          "desc": "Karmaşık matematik problemlerini kolaylık ve doğrulukla çözün.",
+          "title": "Matematikte Üstün Ol"
+        }
+      ],
+      "deep_research": [
+        {
+          "desc": "Otomatik olarak bir araştırma planı oluşturun ve anahtar soruları parçalayın",
+          "title": "Önce Planla"
+        },
+        {
+          "desc": "Siteler arasında arama yapın, bakış açılarını karşılaştırın ve gürültüyü filtreleyin",
+          "title": "Kaynaklar Arası Kanıt"
+        },
+        {
+          "desc": "Her iddia alıntılar içerir; yapılandırılmış bir raporu tek tıkla dışa aktarın",
+          "title": "İzlenebilir Sonuçlar"
+        }
+      ],
+      "search": [
+        {
+          "desc": "Web'de güncel bilgilere erişin.",
+          "title": "Güncel Kalın"
+        },
+        {
+          "desc": "Daha doğru ve alakalı yanıtlar alın.",
+          "title": "Doğruluğu Artır"
+        }
+      ],
+      "text_to_image": [
+        {
+          "desc": "Tanımlamaları anında yüksek kaliteli hale getir.",
+          "title": "Yaratıcılığı Tetikle"
+        },
+        {
+          "desc": "Projelerinizi özel görsellerle zenginleştirin.",
+          "title": "İçeriği Geliştir"
+        }
+      ],
+      "thinking_mode": [
+        {
+          "desc": "Çok adımlı akıl yürütme ile karmaşık zorlukları aşın!",
+          "title": "Gelişmiş Problem Çözme"
+        },
+        {
+          "desc": "Kritik kararlar için anında derinlemesine içgörüler elde edin.",
+          "title": "Kapsamlı Analiz"
+        },
+        {
+          "desc": "Yönlendirilmiş düşünme ile çözümleri zahmetsizce geliştirin.",
+          "title": "Zeki İterasyon"
+        }
+      ]
+    },
+    "title": {
+      "artifacts": "Kilidi Aç {{ARTIFACTS}}",
+      "create_image": "Görüntü Oluşturmayı Aç",
+      "custom_instruction": "Kişiselleştirilmiş Yapay Zekayı Açın",
+      "data_analysis": "Veri Analizini Aç",
+      "deep_research": "Derin Araştırmayı Aç",
+      "search": "Web Erişimini Aç",
+      "text_to_image": "Görüntü Oluşturmanın Kilidini Aç",
+      "thinking_mode": "Düşünce Modu'nu Aç"
+    }
+  },
+  "tools": {
+    "artifacts": {
+      "demos": [
+        {
+          "title": "Sanal Ksilofon Oluştur",
+          "value": "{{ARTIFACT}} içinde renkli tuşlara sahip HTML tabanlı bir ksilofon oluştur. Vurulan tuşlar için görsel geri bildirim sağla ve frekans parametrelerine dayalı olarak Web Audio API kullanarak basit, gerçekçi sesler üret. Temel talimatları dahil et."
+        },
+        {
+          "title": "Yiyecek Yiyen Emoji Oyunu Oluştur",
+          "value": "{{ARTIFACT}} içinde, Candy'yi Yakala'ya benzer basit bir HTML tabanlı oyun oluştur. Oyuncu, ekranın altındaki bir emojiyi kontrol eder, yukarıdan düşen yiyecekleri (örneğin, 🍓, 🍔, 🍎) yakalamak ve yemek için hızlıca sola ve sağa hareket ettirir ve bombalardan (💣) kaçınır. Oyuncu her yiyecek emojisini yakaladığında, emojisi daha abartılı bir olumlu ifadeye (örneğin, 🤩, 😆, 😋) dönüşerek başarıyı gösterir. Eğer oyuncu yanlışlıkla bir bombayı yakalarsa, emoji önce bir patlama (💥) gösterir ve ardından sersemlemiş bir ifadeye (😵‍💫) dönüşür."
+        },
+        {
+          "title": "Akıllı Telefon Sevkiyat Grafiği Oluştur",
+          "value": "Aşağıdaki tabloya dayalı olarak bir {{ARTIFACT}} içinde güzel bir çizgi grafiği oluşturmak için React kullanın.\n------\n\nSon On Yılda Büyük Markalara Göre Akıllı Telefon Sevkiyatları (Milyar Cinsinden)\n\n| Yıl | Samsung | Apple | Huawei | Xiaomi | OPPO |\n|------|---------|-------|--------|--------|------|\n| 2014 | 3.24 | 1.76 | 0.75 | 0.50 | 0.40 |\n| 2015 | 3.36 | 2.00 | 1.00 | 1.00 | 0.80 |\n| 2016 | 3.43 | 2.16 | 1.40 | 1.50 | 1.20 |\n| 2017 | 3.20 | 2.10 | 1.60  | 2.00 | 1.50 |\n| 2018 | 2.94 | 2.20 | 1.70 | 2.50 | 1.80 |\n| 2019 | 3.00 | 2.50 | 2.20 | 3.00 | 2.00 |\n| 2020 | 2.80 | 2.80 | 2.50 | 4.00 | 3.00 |\n| 2021 | 2.90 | 2.90 | 2.00 | 4.50 | 3.50 |\n| 2022 | 2.60 | 2.25 | 1.60 | 3.50 | 3.00 |\n| 2023 | 2.26 | 2.34 | 1.20 | 3.00 | 3.50 |"
+        }
+      ],
+      "desc": "Web sayfaları veya akış şemaları gibi içerikleri kolayca oluşturun ve yeni bir pencerede sunun. Gerçek zamanlı etkileşimler ve odaklanmış bir çalışma alanı ile verimliliği artırın.",
+      "name": "Artefaktlar"
+    },
+    "create_image": {
+      "desc": "Ne istediğinizi tarif ederek yüksek kaliteli görüntüler oluşturun. Metin açıklamalarından yeni görüntüler oluşturun veya mevcut görüntüleri metin komutlarıyla dönüştürüp düzenleyin. Aracımız, fikirlerinizi anında hayata geçirir.",
+      "name": "Görüntü"
+    },
+    "data_analysis": {
+      "demos": [
+        {
+          "title": "Dosya verilerini okuyun ve çeşitli harcama bütçelerinin oranını gösteren bir pasta grafiği oluşturun.",
+          "value": "Dosya verilerini okuyun ve çeşitli harcama bütçelerinin oranını gösteren bir pasta grafiği oluşturun."
+        }
+      ],
+      "desc": "Gelişmiş matematik, istatistik, makine öğrenimi ve veri işleme için Python kodunu gerçek zamanlı çalıştırın, çeşitli formatlarda görevleri kolaylaştırın.",
+      "name": "Veri Analizi"
+    },
+    "search": {
+      "demos": [
+        {
+          "title": "",
+          "value": "Şu anda ABD sinemalarında en yüksek puan alan filmler hangileri?"
+        },
+        {
+          "title": "",
+          "value": "Bugün hangi hisseler dikkate değer artışlar yaşadı?"
+        },
+        {
+          "title": "",
+          "value": "Bugün piyasaya sürülen en dikkat çekici yeni elektronik ürün nedir?"
+        }
+      ],
+      "desc": "Önceden eğitilmiş bilgi sınırlarının ötesinde gerçek zamanlı içgörülere erişin. Derin çok kaynaklı analiz yoluyla, bu özellik mevcut olayların, piyasa eğilimlerinin ve ortaya çıkan gelişmelerin kesin yorumlarını sunar—hızla değişen dünyamızda daha iyi kararlar almayı sağlar.",
+      "name": "Ara"
+    },
+    "text_to_image": {
+      "demos": [
+        {
+          "title": "",
+          "value": "Fütüristik bir uçan araba tasarımı yap."
+        },
+        {
+          "title": "",
+          "value": "Çimenler üzerinde koşan bir golden retriever çizin."
+        },
+        {
+          "title": "",
+          "value": "Rahat bir şekilde kahve içen yaşlı bir kadını tasvir et."
+        }
+      ],
+      "desc": "Aklınızdakileri basitçe tarif edin ve anında yüksek kaliteli görseller oluşturun. Tasarım becerilerine gerek yok – sadece hayal gücünüz yeterli.",
+      "name": "Görüntü Oluştur"
+    },
+    "thinking_mode": {
+      "demos": [
+        {
+          "title": "",
+          "value": "Düşün: 9.11 mi yoksa 9.8 mi daha büyük"
+        },
+        {
+          "title": "",
+          "value": "'Altı Derece Ayrılık' teorisini modellemek için bir fonksiyon düşünün ve yazın. Bir sosyal ağı grafik olarak verildiğinde, herhangi iki kişi arasındaki en kısa yolu bulun."
+        }
+      ],
+      "desc": "DeepSeek R1'in güçlü akıl yürütme yeteneği ile herhangi bir sohbet modelini geliştirin. Etkinleştirildiğinde, seçilen modeliniz R1'in gelişmiş Düşünce Zinciri işlemesini alır ve karmaşık sorgular için daha doğru, mantıklı ve içgörülü yanıtlar sunar. Sorgu başına 1 ekstra gelişmiş kredi maliyeti.",
+      "name": "Düşün"
+    }
+  },
+  "toolsTitle": "Araçlar",
+  "toolsUpgradeContent": {
+    "content1": "Güçlü yetenekleri açmak için sohbet araçlarını etkinleştirin.",
+    "content2": [
+      "Dünya çapında web'i sorunsuz bir şekilde keşfedin.",
+      "Fikirlerinizi etkileyici görsellere dönüştürün.",
+      "Uzman analiziyle verilere derinlemesine dalın."
+    ]
+  },
+  "toolsUpgradeTitle": "Sohbet Deneyiminizi Yükseltmek İçin Yükseltin!",
+  "toSlides": "Web'den Slaytlara",
+  "toSlidesDesc": "Herhangi bir web sayfasını tek bir tıklamayla kullanıma hazır bir sunuma dönüştürün.",
+  "total": "Toplam",
+  "transcriptFailed": "Transkript oluşturma başarısız oldu",
+  "transcriptGenerated": "Transkript oluşturuldu",
+  "transcriptReady": "Transkript hazır",
+  "translate": "Çevir",
+  "translateBackInto": "Şuna geri çevir: {{lang}}",
+  "translateInto": "Şuna çevir: {{lang}}",
+  "trial": "Deneme",
+  "troubleshooting": "Sorun giderme",
+  "tryArtifact": "{{ARTIFACTS}} deneyin",
+  "tryArtifactNow": "{{ARTIFACTS}}'i Şimdi Deneyin",
+  "tryDemo": "Bir demoyu deneyin",
+  "tryItNow": "Şimdi deneyin",
+  "tryNow": "Örnekleri deneyin",
+  "tryWisebaseTip": "Yan yana dosya sohbetini deneyin",
+  "tryWisebaseTip2": "{{WISEBASE}} içinde Saf Okuma ve Sohbet",
+  "tryWisebaseTip3": "Daha fazla dosya mı? {{WISEBASE}}'de devam edin",
+  "ttsDemo": "Örnek",
+  "tweetit": "{{X}} üzerinde bizi takip edin",
+  "unarchive": "arşivden çıkar",
+  "unlimited": "Sınırsız",
+  "unlimitedCredits": "Sınırsız Krediler",
+  "unlock": "Kilidi Aç",
+  "unlockFeatMsg": "Planınızın sınırına ulaştınız. Tüm özelliklerin kilidini açmak için şimdi yükseltin!",
+  "unpin": "sabitlemeyi kaldır",
+  "unpublish": "Yayından Kaldır",
+  "unpublishArtifact": "Eseri Yayından Kaldır",
+  "unrecognizedSpeaker": "Tanınmayan konuşmacı",
+  "updateNow": "Şimdi güncelle",
+  "updateSuccess": "Başarıyla güncellendi",
+  "upgrade": "Güncelleme",
+  "upgradeContent": {
+    "reader": {
+      "free": "Ücretsiz kota sınırınıza ulaştınız. Daha yüksek bir kota için yükseltme yapın ve gelişmiş özelliklerin kilidini açın.",
+      "pro": "Bu ayki kota sınırınıza ulaştınız. Ek kota için yükseltme yapın.",
+      "ultra": "Bu ayki kota sınırınıza ulaştınız. Önerilerinizi iletmek için lütfen <a>care@sider.ai</a> adresinden bizimle iletişime geçin."
+    }
+  },
+  "upgradeModal": {
+    "advancedModelUpgrade": "Gelişmiş modeller gerekli — kilidini açmak için yükseltin",
+    "allVoices": "Tüm Sesler",
+    "claude35SonnetDesc": "Claude 3.5 Sonnet, Anthropic'in en son modeli olup, Claude 3 Opus'tan iki kat daha hızlı ve daha yüksek zekaya sahip, akıl yürütme, bilgi, kodlama ve görsel görevlerde önemli ölçüde geliştirilmiş.",
+    "claude3OpusDesc": "Claude 3 Opus, karmaşık görevleri olağanüstü verimlilikle ele almak için gelişmiş bir AI'dır.",
+    "claude3SonnetDesc": "Claude 3 Sonnet, hassas ve nüanslı iletişim için rafine bir dil modelidir.",
+    "desc": "Daha fazla kredi ve daha fazla özellik",
+    "fullFeatures": "Tüm Özellikler",
+    "fullFeaturesDesc": "Gelişmiş görevler ve araştırmalar için AI Arama, Düşünce Modu ve Artifacts'a erişim.",
+    "getAllTTSVoices": "Tüm Seslerin Kilidini Aç",
+    "getAllTTSVoicesDesc": "Bu ses yalnızca premium kullanıcılar için özeldir. Tüm seslere erişmek için şimdi yükseltin.",
+    "getAllTTSVoicesDesc2": "Premium sesler için deneme sınırına ulaştınız. Şimdi yükseltin ve 9 doğal sesli AI sesine sınırsız erişim sağlayın veya ücretsiz sesi kullanın.",
+    "getWebAccess": "Web yanıtını almak için yükseltme yapın",
+    "gpt4Desc": "GPT-4o önemli ölçüde daha akıllıdır ve size daha mantıklı ve doğru yanıtlar elde etmenizde yardımcı olabilir.",
+    "higherLimits": "Daha yüksek limitler",
+    "higherLimitsDesc": "Daha uzun ve derin çalışmaları kolaylıkla yönetin.",
+    "hitLimitUpgrade": "Plan limitinize ulaştınız",
+    "instantAccess": "Anında erişim",
+    "instantAccessDesc": "Daha fazla kredi almak ve çalışmanıza hemen devam etmek için yükseltin.",
+    "instantRefill": "Anında doldurma",
+    "instantRefillDesc": "Şimdi yükseltin ve kredileri anında alın — bekleme yok.",
+    "off": "İndirim!",
+    "outOfCreditsUpgrade": "Krediniz tükendi. Devam etmek için yükseltme yapın",
+    "powerfulModels": "Güçlü modeller",
+    "powerfulModelsDesc": "Daha hızlı ve keskin cevaplar için GPT-5, Claude ve daha fazlasını açın.",
+    "smarterReasoning": "Daha akıllı akıl yürütme",
+    "smarterReasoningDesc": "Düşünme Modu ve uzun bağlam analizi kullanın.",
+    "stableResults": "Kararlı sonuçlar",
+    "stableResultsDesc": "Daha fazla kredi, daha hızlı ve tutarlı çıktı.",
+    "stayUninterrupted": "Kesintisiz kalın",
+    "stayUninterruptedDesc": "Sohbet etmeye veya araştırma yapmaya devam edin — tüm bağlam ve geçmiş eksiksiz kalır.",
+    "tryAllVoices": "Tüm Sesleri Denemekten Çekinmeyin",
+    "unlockModels": "Modellerin kilidini açın",
+    "unlockModelsDesc": "<list>GPT-5, Claude Sonnet ve Gemini 2.5 Pro</list> modellerine erişim sağlayın.",
+    "upgradeToUseXXX": "<b>bot</b>'u Kullanmak İçin Yükselt",
+    "videoSummaryDesc": "Ücretsiz kullanım sınırınıza ulaştınız. Bu özelliğe erişmeye devam etmek için lütfen premium üyeliğe yükseltmeyi düşünün.",
+    "videoSummay": "Video özetini kullanmak için yükseltin",
+    "webAccessDesc": "Sider, sorularınızın yanıtlarını Google'dan alır ve kısa ve öz bir düzenleme ve özetleme için yapay zekayı kullanır."
+  },
+  "upgradeNow": "Hemen Yükselt",
+  "upgradeoff": "{{NUM}}% indirimle yükselt",
+  "upgradeTitle": {
+    "reader": {
+      "free": "Sınırların ötesini Keşfet!",
+      "pro": "Kota Sınırına Ulaşıldı",
+      "ultra": "Kota Sınırına Ulaşıldı"
+    }
+  },
+  "upgradeUnlock": "Şimdi yükseltin ve kilidi açın!",
+  "uploadImage": "Bir görüntü yükle",
+  "uploadLocal": "Bilgisayarınızdan Yükle",
+  "upTo6file": "En fazla 6 dosya yükleyin",
+  "used": "Kullanılmış",
+  "usedIn": "Kullanılan",
+  "useFreeVoice": "Ücretsiz Sesi Kullan",
+  "using": "Kullanma",
+  "version": "Sürüm",
+  "videoTutorial": "Detayları Görüntüle",
+  "vote": "Oy",
+  "watchDemoVideo": "Demo Videosunu İzle",
+  "webAccess": "Web Erişimi",
+  "webApp": "internet uygulaması",
+  "webAssistant": "Web asistanı",
+  "webEnhance": {
+    "askQuestionBtn": "Cevapla",
+    "bilingual": "İki Dil Bilgisi",
+    "createShortenVideo": "Kısa Video Oluştur",
+    "displayTranslation": "Çeviriyi göster",
+    "expandAll": "Tümünü genişlet",
+    "freeLimitTips": "Ücretsiz deneme süreniz doldu, video özeti özelliğini kullanmaya devam etmek için şimdi yükseltin.",
+    "fullScreen": "Tam Ekran",
+    "generatedBy": "{{name}} tarafından oluşturuldu",
+    "hideHighlights": "Öne Çıkanları Gizle",
+    "hideSubtitles": "Altyazıları Gizle",
+    "keyMomentsClickExpand": "Genişletmek için tıklayın",
+    "keyMomentsCollapse": "Daralt",
+    "loginToAsk": "Sormak için giriş yapın",
+    "needLoginBilibiliTips": "Videoyu özetlemek için Bilibili hesabınıza giriş yapın ve sayfayı yeniden yükleyin",
+    "nextHighlight": "Sonraki Öne Çıkan",
+    "noQuestionTip": "{{APP_NAME}}, sorunu sayfaya alamıyor.",
+    "noSubtitleTips": "Şu anda özetleme yalnızca altyazılı videolar için mevcuttur.",
+    "originalSubtitles": "Orijinal altyazılar",
+    "playbackSpeed": "Oynatma Hızı",
+    "previousHighlight": "Önceki Öne Çıkan",
+    "responseLanguage": "Yanıt Dili",
+    "shareToComment": "Yorum yapmak için paylaş",
+    "shortenVideoTips": "Bu videoyu, ana noktaları yakalayan özlü bir özet videoya dönüştür!",
+    "showHighlights": "Öne Çıkanları Göster",
+    "shownotes": "Öne Çıkanlar",
+    "showSubtitles": "Altyazıları Göster",
+    "smartPlay": "Video Hızlı Bakış",
+    "smartPlayBtnTips": "Öne çıkanları hızlıca öğrenmenize ve zaman kazanmanıza yardımcı olan kısa bir video izleyin.",
+    "smartPlayCost": "Maliyeti 1 hızlı metin sorgusu ve 1 okuyucu sorgusu, sesli okuma kullandıkça öde olarak faturalandırılır",
+    "smartPlayOnlyCost": "sesli okuma kullandıkça öde olarak faturalandırılır",
+    "smartPlayPlaybackEnded": "Öne çıkanlar oynatma sona erdi",
+    "smartPlayReturnToCurrentProgress": "Mevcut ilerlemeye dön",
+    "smartPlaySwitchVoiceBtn": "Evet, Sesi Değiştir",
+    "smartPlaySwitchVoiceCancel": "Hayır, İptal",
+    "smartPlaySwitchVoiceContent": "Farklı bir sese geçmek, tam video senaryosu uzunluğuna göre kredilerinizi tekrar düşecektir. Video mevcut konumdan oynatılmaya devam edecektir. Devam etmek istiyor musunuz?",
+    "smartPlaySwtichVoiceTitle": "Kredi Kesinti Bildirimi",
+    "subtitle": "Altyazı",
+    "subtitleFailed": "Altyazı yüklenemedi",
+    "subtitles": "Altyazılar",
+    "summary": "Özetle",
+    "targetLanguage": "Hedef dil",
+    "transcribing": "Transkripsiyon",
+    "videoSummaryBtn": "Videoyu Özetle",
+    "videoSummaryCost": "1 temel kredi ve 1 okuyucu sorgusu maliyeti",
+    "videoSummaryMakeFullBtn": "Tam Bir Özet Yap",
+    "videoSummaryText": "Video özeti",
+    "videoTooLang": "Özetleme için videolar 10 saatten daha kısa olmalıdır.",
+    "whisperCostText": "Bu video dış altyazılara sahip değil ve özetlemek için transkribe edilmesi gerekiyor. (1 İleri Kredi/10 dakika veya daha az)"
+  },
+  "webStore": "İnternet mağazası",
+  "welcome": "Hoş Geldiniz",
+  "whatNew": "Yeni Özellikler",
+  "whatsnewInvite": "Ücretsiz denemeye davet et",
+  "wisebase": {
+    "addCollection": "Bir {{name}} ekle",
+    "createAndSave": "Oluştur & Kaydet",
+    "createFirstWisebaseDefaultName": "Benim {{WISEBASE_APP_NAME}}",
+    "createFirstWisebaseDesc": "{{WISEBASE_APP_NAME}}, Sider'ın AI bilgi tabanıdır. Sider web sitesinde topladığınız içerikleri kolayca yönetebilir, görüntüleyebilir ve sorular sorabilirsiniz.",
+    "createFirstWisebasePlaceholder": "{{WISEBASE_APP_NAME}} adını girin",
+    "createFirstWisebaseTitle": "İlk {{WISEBASE_APP_NAME}}'inizi oluşturmaya hoş geldiniz",
+    "editSavedPage": "Kaydedilen sayfayı düzenle",
+    "editSavedVideo": "Kaydedilen Videoyu Düzenle",
+    "errNameExists": "Bu isim zaten mevcut",
+    "failedToDelete": "Silme başarısız oldu",
+    "failedToSave": "Kaydetme başarısız oldu",
+    "highlight": "Vurgula",
+    "HighlightInvalid": "Vurgular eksik",
+    "HighlightInvalidDesc": "Bu web sayfasındaki değişiklikler nedeniyle vurgularınız artık görünmüyor. Yine de <a>{{name}}</a> içinde onlara erişebilirsiniz.",
+    "inbox": "AI Gelen Kutusu",
+    "myWisebase": "Benim {{name}}",
+    "name": "Wisebase",
+    "pageRemoved": "Sayfa silindi",
+    "pageSaved": "Sayfa kaydedildi",
+    "removePage": "Sayfa silinsin mi?",
+    "removePageDesc": "Bu, sayfayı ve vurgularını silecektir.",
+    "savedTo": "Kaydedildi: {{name}}",
+    "saveLoading": "Kaydediliyor...",
+    "saveNote": "Not olarak kaydet",
+    "savePage": "Sayfayı kaydet",
+    "saveTo": "{{name}}'e kaydet",
+    "saveVideo": "Videoyu Kaydet",
+    "saveVideoTo": "Videoyu {{WISEBASE_APP_NAME}}'e Kaydet",
+    "saving": "Kaydediliyor",
+    "unableToHighlight": "Bu seçimi vurgulamak mümkün değil",
+    "unhighlight": "Vurguyu Kaldır",
+    "view": "Görüntüle",
+    "viewInSite": "Sitede görüntüle",
+    "viewPageNoteTip": "Kaydedilen sayfalarınızı ve notlarınızı görüntülemek için buraya tıklayın.",
+    "vistMyWisebase": "{{name}}'i aç"
+  },
+  "writing": "Yazma",
+  "xmasSale": "Noel İndirimi",
+  "yearlyPlan": "Yıllık Plan",
+  "you": "Sen",
+  "yourEmailAddress": "E-posta Adresiniz",
+  "zoomIn": "Yakınlaştır",
+  "zoomOut": "Uzaklaştır"
+}

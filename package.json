@@ -1,0 +1,16 @@
+{
+  "name": "gmv-livelens",
+  "version": "1.0.0",
+  "description": "全渠道实时 GMV 采集看板，Windows 专用。通过 Playwright 控制 Microsoft Edge（CDP 协议）截图，结合 OCR 识别电商平台页面中的 GMV 数值，汇总展示在本地实时看板。",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

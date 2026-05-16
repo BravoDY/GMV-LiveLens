@@ -1,0 +1,16 @@
+[Unit]
+Description=GMV-LiveLens FastAPI service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/gmv-livelens
+EnvironmentFile=/opt/gmv-livelens/.env.production
+ExecStart=/opt/gmv-livelens/.venv/bin/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8100
+Restart=always
+RestartSec=5
+User=gmv
+Group=gmv
+
+[Install]
+WantedBy=multi-user.target

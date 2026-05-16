@@ -1,0 +1,453 @@
+@charset "UTF-8";:root {
+  font-family: system-ui, "PingFang SC", STHeiti, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  
+  body {
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 280px;
+    min-height: 220px;
+    max-height: 500px;
+  }
+  
+  #app {
+    max-width: 1280px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+select[data-v-b39297ae]:disabled {
+  color: #C8C9CC; /* 设置禁用状态的背景色 */
+  border: 1px solid #d0d0d0; /* 设置禁用状态的边框颜色 */
+  /* 其他您希望添加的样式 */
+}
+.settingIcon[data-v-b39297ae] {
+  height: 16px;
+  width: 16px;
+  margin-right: 6px;
+}
+.disabledSettingIcon[data-v-b39297ae] {
+  height: 16px;
+  width: 16px;
+  margin-right: 6px;
+  color: #C8C9CC;
+}
+.select-container[data-v-b39297ae] {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+  width: 240px;
+  height: 32px;
+}
+.selectLabel[data-v-b39297ae], .disabledSelectLabel[data-v-b39297ae] {
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #2A2B2E;
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.disabledSelectLabel[data-v-b39297ae] {
+  color: #C8C9CC;
+}
+.select-input[data-v-b39297ae] {
+  padding-left: 12px;
+  border-radius: 6px;
+  border: 1px solid #E6E7E8;
+  font-size: 14px;
+  width: 100px;
+  height: 24px;
+  max-width: 300px;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background-image: var(--bfbc6328);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+.select-input[data-v-b39297ae]::-ms-expand {
+  display: none;
+}
+select[data-v-333c6fb7]:disabled {
+  color: #C8C9CC; /* 设置禁用状态的背景色 */
+  border: 1px solid #d0d0d0; /* 设置禁用状态的边框颜色 */
+  /* 其他您希望添加的样式 */
+}
+.settingIcon[data-v-333c6fb7] {
+  height: 16px;
+  width: 16px;
+  margin-right: 6px;
+}
+.disabledSettingIcon[data-v-333c6fb7] {
+  height: 16px;
+  width: 16px;
+  margin-right: 6px;
+  color: #C8C9CC;
+}
+.select-container[data-v-333c6fb7] {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+  width: 240px;
+  height: 32px;
+  padding-left: 8px;
+  padding-right: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.select-container[data-v-333c6fb7]:hover {
+  background-color: rgba(77, 113, 255, 0.04);
+}
+.selectLabel[data-v-333c6fb7], .disabledSelectLabel[data-v-333c6fb7] {
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #2A2B2E;
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.disabledSelectLabel[data-v-333c6fb7] {
+  color: #C8C9CC;
+}
+.select-input[data-v-333c6fb7] {
+  position: absolute;
+  top: 0px;
+  background-color: transparent;
+  padding-left: 12px;
+  border-radius: 6px;
+  border: 0px solid #E6E7E8;
+  font-size: 14px;
+  width: 240px;
+  height: 32px;
+  max-width: 300px;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  z-index: 10;
+}
+.select-input[data-v-333c6fb7]:hover {
+  cursor: pointer;
+}
+.select-input[data-v-333c6fb7]:focus {
+  outline: none;
+  border: none;
+  --box-shadow: none;
+}
+.arrow[data-v-333c6fb7] {
+  background-image: var(--3f07ce43);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  height: 24px;
+  width: 24px;
+}
+.select-input[data-v-333c6fb7]::-ms-expand {
+  display: none;
+}
+.container[data-v-9b31eaea] {
+  width: 280px;
+  height: 343px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.container .header[data-v-9b31eaea] {
+  height: 36px;
+  padding: 0 16px;
+  width: 248px;
+  flex: 0 0 36px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  background-color: #FAFAFC;
+}
+.container .header .brand[data-v-9b31eaea] {
+  height: 18px;
+  width: 112px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.container .header .brand .icon[data-v-9b31eaea] {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+.container .header .brand .icon img[data-v-9b31eaea] {
+  width: 18px;
+  height: 18px;
+}
+.container .header .brand .text[data-v-9b31eaea] {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  display: flex;
+  justify-content: center;
+}
+.container .header .brand .text > img[data-v-9b31eaea] {
+  height: 15px;
+  width: 90px;
+}
+.container .header .setting[data-v-9b31eaea] {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.container .header .setting .settingIcon[data-v-9b31eaea] {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 0 12px 0 0;
+  cursor: pointer;
+}
+.container .header .setting .icon-shake[data-v-9b31eaea] {
+  width: 16px;
+  height: 16px;
+  display: inline-block; /* 确保可以使用transform属性 */
+  animation: shake-9b31eaea 1s alternate; /* 使用shake动画，持续0.5秒，无限循环，交替方向 */
+}
+@keyframes shake-9b31eaea {
+0% {
+    transform: rotate(-5deg);
+}
+50% {
+    transform: rotate(5deg);
+}
+100% {
+    transform: rotate(-5deg);
+}
+}
+.container .main[data-v-9b31eaea] {
+  height: calc(100vh - 36px);
+  flex: 1 1 auto;
+  margin: 20px 8px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.container .main .translate[data-v-9b31eaea] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #FB4A3E;
+  border-radius: 8px;
+  font-family: PingFang SC;
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: 0;
+  text-align: center;
+  height: 36px;
+  width: 240px;
+  border: 0px;
+  cursor: pointer;
+}
+.container .main .translate[data-v-9b31eaea]:hover {
+  background-color: #ED4D4D;
+}
+.container .main .disbaled[data-v-9b31eaea] {
+  background: #C8C9CC !important;
+  color: #ffffff;
+  cursor: not-allowed;
+}
+.container .main .divider[data-v-9b31eaea] {
+  border: none;
+  height: 1px; /* 确保有高度 */
+  background-color: #DCDFE5; /* 设置分割线的颜色 */
+  margin: 10px 0; /* 可以根据需要调整边距 */
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 7.5px;
+}
+.container .main .action[data-v-9b31eaea] {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  margin: 10px 0; /* 可以根据需要调整边距 */
+}
+.container .main .action .guide[data-v-9b31eaea], .container .main .action .audio[data-v-9b31eaea], .container .main .action .image[data-v-9b31eaea] {
+  width: 100px;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 8px;
+  font-family: PingFang SC;
+  font-size: 12px;
+  padding: 0px 5px;
+}
+.container .main .action .guide[data-v-9b31eaea]:hover, .container .main .action .audio[data-v-9b31eaea]:hover, .container .main .action .image[data-v-9b31eaea]:hover {
+  background-color: #eef0f1;
+}
+.container .main .checkboxContainer[data-v-9b31eaea] {
+  display: flex;
+  width: 240px;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-top: 20px;
+}
+.container .main .checkboxContainer .checkbox-container[data-v-9b31eaea] {
+  height: 14px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.container .main .checkboxContainer .checkbox-container input[data-v-9b31eaea] {
+  width: 14px;
+  height: 14px;
+  margin: 0px !important;
+}
+.container .main .checkboxContainer .checkbox-container .checkbox-custom[data-v-9b31eaea]:checked {
+  accent-color: #FB4A3E; /* 勾选时的背景颜色 */
+}
+.container .main .checkboxContainer .checkbox-container label[data-v-9b31eaea] {
+  margin-left: 8px;
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-weight: 400px;
+  user-select: none;
+}
+.container .main .switch[data-v-9b31eaea] {
+  width: 240px;
+  height: 38px;
+  margin-left: 12px;
+  margin-right: 12px;
+  position: relative;
+  border-radius: 8px;
+  border: 1px solid #E6E7E8;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.container .main .switch .youdao[data-v-9b31eaea] {
+  height: 30px;
+  width: 116px;
+  line-height: 30px;
+  font-family: PingFang SC;
+  font-size: 14px;
+  color: #FFFFFF;
+  background-color: #FB4A3E;
+  border-radius: 8px;
+  margin-left: 4px;
+  cursor: pointer;
+}
+.container .main .switch .youdao-nocheck[data-v-9b31eaea] {
+  height: 30px;
+  width: 116px;
+  line-height: 30px;
+  font-family: PingFang SC;
+  font-size: 14px;
+  color: #939599;
+  background-color: unset;
+  border-radius: 8px;
+  margin-left: 4px;
+  cursor: pointer;
+}
+.container .main .switch .llm[data-v-9b31eaea] {
+  height: 30px;
+  width: 116px;
+  line-height: 30px;
+  font-family: PingFang SC;
+  font-size: 14px;
+  border-radius: 8px;
+  margin-right: 4px;
+  background: linear-gradient(to right, #7B53FA, #2485FF);
+  color: #FFFFFF;
+  cursor: pointer;
+}
+.container .main .switch .llm-nocheck[data-v-9b31eaea] {
+  height: 30px;
+  width: 116px;
+  line-height: 30px;
+  font-family: PingFang SC;
+  font-size: 14px;
+  border-radius: 8px;
+  margin-right: 4px;
+  color: #2A2B2E;
+  cursor: pointer;
+}
+.container .main .disable-switch[data-v-9b31eaea] {
+  pointer-events: none;
+  filter: grayscale(1);
+}
+.container .main .switch[data-v-9b31eaea]::before {
+  display: var(--384bd7ff);
+  position: absolute;
+  content: "限免";
+  top: -7px;
+  right: 0px;
+  font-family: Gilory;
+  width: 33px;
+  color: white;
+  font-size: 10px;
+  line-height: 14px;
+  height: 14px;
+  background: linear-gradient(to right, #7B53FA, #2485FF);
+  border-radius: 6px 2px 6px 2px;
+}
+.container .footer[data-v-9b31eaea] {
+  width: 240px;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.container .footer .version[data-v-9b31eaea] {
+  width: 100px;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 12px;
+  text-align: left;
+}
+.container .footer .message[data-v-9b31eaea] {
+  color: #FB4A3E;
+  font-family: PingFang SC;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 12px;
+  letter-spacing: 0em;
+  text-align: left;
+  height: 12px;
+}

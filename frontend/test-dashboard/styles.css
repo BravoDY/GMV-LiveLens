@@ -1,0 +1,135 @@
+body.dashboard-page .app-header {
+  position: relative;
+}
+
+.app-header .test-dataset-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.test-dataset-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow-x: auto;
+  min-height: 36px;
+}
+
+.test-dataset-bar.is-loading {
+  opacity: 0.78;
+}
+
+.test-dataset-chip {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 9px 22px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.test-dataset-chip:hover {
+  background: rgba(24, 217, 210, 0.08);
+  border-color: rgba(24, 217, 210, 0.32);
+  color: #e0eaf5;
+}
+
+.test-dataset-chip.is-active {
+  background: rgba(24, 217, 210, 0.16);
+  border-color: rgba(24, 217, 210, 0.56);
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(24, 217, 210, 0.14) inset;
+}
+
+.test-dataset-chip.is-disabled,
+.test-dataset-chip:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.test-dataset-empty {
+  color: rgba(220, 231, 245, 0.75);
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.test-dataset-empty.is-bad {
+  color: #ff8d8d;
+}
+
+.header-actions .test-dataset-refresh-btn {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  background: rgba(24, 217, 210, 0.06);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.header-actions .test-dataset-refresh-btn:hover {
+  background: rgba(24, 217, 210, 0.16);
+  border-color: rgba(24, 217, 210, 0.5);
+  color: #ffffff;
+}
+
+.header-actions .test-dataset-refresh-btn.is-refreshing,
+.header-actions .test-dataset-refresh-btn:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.data-status-banner-container {
+  margin-bottom: 20px;
+}
+
+.data-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.data-status-banner.is-empty {
+  background: rgba(21, 213, 224, 0.09);
+  border: 1px solid rgba(21, 213, 224, 0.22);
+  color: #aedce6;
+}
+
+.data-status-banner.is-error {
+  background: rgba(255, 141, 141, 0.12);
+  border: 1px solid rgba(255, 141, 141, 0.28);
+  color: #ffb6b6;
+}
+
+.data-status-icon {
+  flex: 0 0 auto;
+  font-size: 18px;
+}
+
+.data-status-text {
+  flex: 1;
+}

@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GMV-LiveLens · 实时/累计切换 Demo</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(11, 20, 35, 0.72);
+      --panel-2: rgba(18, 30, 52, 0.72);
+      --line: rgba(148, 163, 184, 0.14);
+      --text: #e7f0ff;
+      --muted: #8fa3bf;
+      --brand: #6ee7ff;
+      --brand2: #8b5cf6;
+      --ok: #34d399;
+      --warn: #fbbf24;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(110, 231, 255, 0.14), transparent 24%),
+        radial-gradient(circle at 84% 8%, rgba(139, 92, 246, 0.16), transparent 22%),
+        linear-gradient(160deg, #07111f, #0b1728 55%, #09101a);
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header,
+    .panel {
+      background: linear-gradient(180deg, rgba(18, 30, 52, 0.52), rgba(10, 18, 31, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(145%);
+      -webkit-backdrop-filter: blur(22px) saturate(145%);
+    }
+
+    .header {
+      border-radius: 24px;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .switcher {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn.active {
+      background: linear-gradient(135deg, rgba(110,231,255,0.18), rgba(139,92,246,0.16));
+      border-color: rgba(110,231,255,0.32);
+      box-shadow: 0 12px 28px rgba(110,231,255,0.12);
+    }
+
+    .panel {
+      margin-top: 18px;
+      border-radius: 28px;
+      padding: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2,
+    .section-head h3 { margin: 0; }
+    .section-head p { margin: 6px 0 0; color: var(--muted); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148,163,184,0.14);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .main-card,
+    .card {
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      overflow: hidden;
+    }
+
+    .main-card {
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(16, 27, 46, 0.62), rgba(9, 16, 27, 0.82));
+    }
+
+    .main-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .main-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .main-value {
+      font-size: 46px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .metric small { display:block; color: var(--muted); margin-bottom: 6px; }
+    .metric strong { font-size: 22px; }
+
+    .progress {
+      margin-top: 14px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(148,163,184,0.12);
+      overflow: hidden;
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--brand), var(--brand2));
+    }
+
+    .card { padding: 16px; }
+    .card .title { color: var(--muted); font-size: 12px; }
+    .card .value { margin-top: 8px; font-size: 24px; font-weight: 800; }
+    .card .sub { margin-top: 8px; color: var(--muted); font-size: 12px; }
+
+    .section {
+      margin-top: 18px;
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(148,163,184,0.10);
+    }
+
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .store {
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(8, 15, 27, 0.72);
+      border: 1px solid rgba(148,163,184,0.12);
+    }
+
+    .store-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.14);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .store h4 { margin: 10px 0 0; font-size: 18px; }
+    .store .gmv { margin-top: 14px; font-size: 30px; font-weight: 800; }
+    .store .meta { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+    .hint {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .empty {
+      padding: 18px;
+      border: 1px dashed rgba(148,163,184,0.2);
+      border-radius: 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1200px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid .main-card { grid-column: 1 / -1; }
+      .store-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 12px; }
+      .header, .panel { border-radius: 20px; }
+      .grid { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: 1fr; }
+      .main-value { font-size: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="brand">
+        <h1>GMV-LiveLens 看板切换 Demo</h1>
+        <p>支持“实时 / 累计”切换；累计看板数量根据 `to_date.csv` 的 product 动态生成。</p>
+      </div>
+      <div class="switcher" id="switcher"></div>
+    </header>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2 id="boardTitle">实时看板</h2>
+          <p id="boardDesc">展示当前最新采样结果，适合盯盘和波动追踪。</p>
+        </div>
+        <div class="pill" id="boardMeta">实时 · 1 秒刷新预览</div>
+      </div>
+
+      <div class="grid" id="summaryGrid"></div>
+
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <h3>下方内容区</h3>
+            <p>这里是同一套布局的内容区，切换不同看板时会联动变化。</p>
+          </div>
+          <div class="pill" id="storeMeta">当前视图：实时</div>
+        </div>
+        <div class="store-grid" id="storeGrid"></div>
+      </div>
+
+      <div class="hint" id="hint"></div>
+    </section>
+  </div>
+
+  <script>
+    // 这里先用 demo 里的数组模拟 `to_date.csv` 读取结果。
+    // 你后面接真实 CSV 时，只要把这个数组替换成解析结果即可。
+    const toDateRows = [
+      { product: 'product_a', chinese_product: '累计看板 A', date: '2026-05-14' },
+      { product: 'product_b', chinese_product: '累计看板 B', date: '2026-05-14' }
+    ];
+
+    const boards = [
+      {
+        key: 'live',
+        title: '实时看板',
+        desc: '展示当前最新采样结果，适合盯盘和波动追踪。',
+        meta: '实时 · 1 秒刷新预览',
+        hint: '当前是实时入口。后续这里会继续保留，和累计看板并列存在。',
+        main: { value: '¥1,280,000', target: '¥1,480,000', progress: 86, label: '全渠道实时 GMV' },
+        cards: [
+          { title: '天猫', value: '¥932,000', sub: '当前最新采样' },
+          { title: '京东', value: '¥423,000', sub: '当前最新采样' },
+          { title: '得物', value: '¥124,000', sub: '当前最新采样' },
+          { title: '抖音', value: '¥93,000', sub: '当前最新采样' }
+        ],
+        stores: [
+          { platform: '天猫', name: '迪桑特旗舰店', value: '¥628,000', meta: '最新更新时间：10:12:08' },
+          { platform: '京东', name: '迪桑特京东自营店', value: '¥341,000', meta: '最新更新时间：10:12:03' },
+          { platform: '得物', name: '迪桑特运动旗舰店', value: '¥124,000', meta: '最新更新时间：10:11:56' },
+          { platform: '抖音', name: '迪桑特直播店', value: '¥93,000', meta: '最新更新时间：10:09:29' }
+        ]
+      },
+      ...toDateRows.map((row, index) => ({
+        key: row.product,
+        title: row.chinese_product,
+        desc: `对应 ` + '`to_date.csv`' + ` 的 product：${row.product}，页面按配置动态生成。`,
+        meta: `累计口径 · ${row.product}`,
+        hint: `当前是累计入口：${row.chinese_product}。如果 ` + '`to_date.csv`' + ` 增加第 3 个 product，这里会自动多一个按钮。`,
+        main: {
+          value: index === 0 ? '¥3,260,000' : '¥1,940,000',
+          target: index === 0 ? '¥3,800,000' : '¥2,500,000',
+          progress: index === 0 ? 86 : 78,
+          label: `${row.chinese_product} 累计 GMV`
+        },
+        cards: index === 0
+          ? [
+              { title: '天猫累计', value: '¥1,760,000', sub: '累计范围 A' },
+              { title: '京东累计', value: '¥820,000', sub: '累计范围 A' },
+              { title: '得物累计', value: '¥410,000', sub: '累计范围 A' },
+              { title: '抖音累计', value: '¥270,000', sub: '累计范围 A' }
+            ]
+          : [
+              { title: '天猫累计', value: '¥960,000', sub: '累计范围 B' },
+              { title: '京东累计', value: '¥580,000', sub: '累计范围 B' },
+              { title: '抖音累计', value: '¥400,000', sub: '累计范围 B' }
+            ],
+        stores: index === 0
+          ? [
+              { platform: '天猫', name: '累计旗舰店 A', value: '¥1,760,000', meta: `日期：${row.date}` },
+              { platform: '京东', name: '累计自营店 A', value: '¥820,000', meta: `日期：${row.date}` },
+              { platform: '得物', name: '累计专供店 A', value: '¥410,000', meta: `日期：${row.date}` },
+              { platform: '抖音', name: '累计直播店 A', value: '¥270,000', meta: `日期：${row.date}` }
+            ]
+          : [
+              { platform: '天猫', name: '累计旗舰店 B', value: '¥960,000', meta: `日期：${row.date}` },
+              { platform: '京东', name: '累计自营店 B', value: '¥580,000', meta: `日期：${row.date}` },
+              { platform: '抖音', name: '累计直播店 B', value: '¥400,000', meta: `日期：${row.date}` }
+            ]
+      }))
+    ];
+
+    const switcher = document.getElementById('switcher');
+    const summaryGrid = document.getElementById('summaryGrid');
+    const storeGrid = document.getElementById('storeGrid');
+    const boardTitle = document.getElementById('boardTitle');
+    const boardDesc = document.getElementById('boardDesc');
+    const boardMeta = document.getElementById('boardMeta');
+    const storeMeta = document.getElementById('storeMeta');
+    const hint = document.getElementById('hint');
+
+    let activeKey = 'live';
+
+    function renderSwitcher() {
+      switcher.innerHTML = boards.map(board => `
+        <button class="btn ${board.key === activeKey ? 'active' : ''}" data-key="${board.key}" type="button">${board.title}</button>
+      `).join('');
+
+      switcher.querySelectorAll('[data-key]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeKey = btn.dataset.key;
+          render();
+        });
+      });
+    }
+
+    function render() {
+      const board = boards.find(item => item.key === activeKey) || boards[0];
+      boardTitle.textContent = board.title;
+      boardDesc.textContent = board.desc;
+      boardMeta.textContent = board.meta;
+      storeMeta.textContent = `当前视图：${board.title}`;
+      hint.textContent = board.hint;
+
+      summaryGrid.innerHTML = `
+        <article class="main-card">
+          <div class="main-label">${board.main.label}</div>
+          <div class="main-title">${board.title}</div>
+          <div class="main-value">${board.main.value}</div>
+          <div class="metrics">
+            <div class="metric"><small>目标</small><strong>${board.main.target}</strong></div>
+            <div class="metric"><small>达成进度</small><strong>${board.main.progress}%</strong></div>
+          </div>
+          <div class="progress"><span style="width:${board.main.progress}%"></span></div>
+        </article>
+        ${board.cards.map(card => `
+          <article class="card">
+            <div class="title">${card.title}</div>
+            <div class="value">${card.value}</div>
+            <div class="sub">${card.sub}</div>
+          </article>
+        `).join('')}
+      `;
+
+      storeGrid.innerHTML = board.stores.map(store => `
+        <article class="store">
+          <div class="store-top">
+            <span class="tag">${store.platform}</span>
+            <span class="tag">动态切换</span>
+          </div>
+          <h4>${store.name}</h4>
+          <div class="gmv">${store.value}</div>
+          <div class="meta">${store.meta}</div>
+        </article>
+      `).join('') || `<div class="empty">当前没有可展示的店铺数据</div>`;
+
+      renderSwitcher();
+    }
+
+    render();
+  </script>
+</body>
+</html>

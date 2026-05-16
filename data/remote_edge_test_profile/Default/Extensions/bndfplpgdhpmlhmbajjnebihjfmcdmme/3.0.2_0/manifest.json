@@ -1,0 +1,42 @@
+{
+   "action": {
+   },
+   "background": {
+      "service_worker": "background.js"
+   },
+   "content_scripts": [ {
+      "js": [ "libs/jquery.js", "libs/jszip.min.js" ],
+      "matches": [ "*://*/*", "\u003Call_urls>" ],
+      "run_at": "document_start"
+   }, {
+      "js": [ "content-scripts/content.js" ],
+      "matches": [ "*://*.jdchacha.com/*", "*://*.jsiwa.com/*", "*://haohuo.jinritemai.com/ecommerce/trade/detail/index.html*", "*://mobile.yangkeduo.com/goods*", "*://www.xiaohongshu.com/goods-detail/*", "https://*.taobao.com/category.htm*", "https://*.taobao.com/search.htm*", "https://*.taobao.com/shop/view_shop.htm*", "https://*.tmall.com/category-*", "https://*.tmall.com/category.htm*", "https://*.tmall.com/search.htm*", "https://ai.taobao.com/*", "https://buyertrade.taobao.com/*", "https://chaoshi.detail.tmall.com/item.htm*", "https://content.tmall.com/wow/pegasus/subject/*", "https://detail.ju.taobao.com/*", "https://detail.liangxinyao.com/*", "https://detail.tmall.com/*", "https://detail.tmall.hk/*", "https://fuwu.taobao.com/*", "https://g.taobao.com/brand_detail.htm*", "https://item.taobao.com/*", "https://ju.taobao.com/*", "https://ju.tmall.com/*", "https://jupage.taobao.com/wow/tttj/act/index", "https://jusp.tmall.com/act/o/*", "https://list.tmall.com/search_product.htm*", "https://list.tmall.com/search_product.htm*", "https://newamp.taobao.com/*", "https://s.taobao.com/*", "https://s.taobao.com/list*", "https://s.taobao.com/search*", "https://shoucang.taobao.com/*", "https://subway.simba.taobao.com/*", "https://trade.taobao.com/*", "https://traveldetail.fliggy.com/item.htm*", "https://weike.taobao.com/*", "https://www.taobao.com/", "https://www.taobao.com/markets/*" ],
+      "run_at": "document_end"
+   } ],
+   "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
+      "sandbox": "sandbox allow-scripts; script-src 'self' https://*.taobao.com; object-src 'self';"
+   },
+   "description": "店查查插件极速版本支持淘宝天猫主流电商",
+   "host_permissions": [ "https://s.taobao.com/search*", "https://s.taobao.com/list*", "https://list.tmall.com/search_product*", "https://*.taobao.com/shop/view_shop*", "https://*.taobao.com/search*", "https://*.taobao.com/category*", "https://*.tmall.com/category*", "https://*.tmall.com/search*", "https://jupage.taobao.com/wow/tttj/act/index", "https://g.taobao.com/brand_detail*", "https://ju.taobao.com/*", "https://ju.tmall.com/*", "https://jusp.tmall.com/act/o/*", "https://content.tmall.com/wow/pegasus/subject/*", "https://www.taobao.com/", "https://www.taobao.com/markets/*", "https://fuwu.taobao.com/*", "https://weike.taobao.com/*", "https://newamp.taobao.com/*", "https://trade.taobao.com/*", "https://buyertrade.taobao.com/*", "https://subway.simba.taobao.com/*", "https://shoucang.taobao.com/*", "https://ai.taobao.com/*", "https://www.jdchacha.com/*" ],
+   "icons": {
+      "128": "icon/128.png",
+      "16": "icon/16.png",
+      "32": "icon/32.png",
+      "48": "icon/48.png",
+      "96": "icon/96.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtSlBEg0mQhvwqH++qoT0nvj/+LSBy/l7W7dqWIeXazyliX4xOoFfl0znbh6OM26BT/zkDpE0gzM57Zoeq7dy/5kloWyZthJRnb0xlEYhryk6x+0GG5GItvhxAeOX9/26VLJnjNl89aW6UPdbTtPVYQ9leDwy/QdBWLldQzDr6OHvf2QhdYxcXd7j4XT8OsAi8S1XKqr8jC68Hqrj1FealPCg2iTBYMDaMPH+cx0b/zeBbi52GRpWsrs/ot5I4HdTRoXCXW6R6AkKPlFfAr1ITnEZdvgIln+PI4FLwuX3tNqsanySYg+dIZ+xaUSyoat9+VQXMgaI1qmqZAMvLa2JxwIDAQAB",
+   "manifest_version": 3,
+   "name": "店查查-淘宝店铺数据分析-天猫店侦探监控",
+   "permissions": [ "storage", "sidePanel" ],
+   "side_panel": {
+      "default_path": "sidepanel.html"
+   },
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "3.0.2",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "injected.js", "content-scripts/content.css", "tailwind.css", "assets/*", "icon/*", "libs/*" ]
+   } ]
+}

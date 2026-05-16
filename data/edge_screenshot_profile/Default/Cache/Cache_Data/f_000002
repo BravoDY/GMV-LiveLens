@@ -1,0 +1,848 @@
+const state = {
+  snapshot: { tasks: [], summary: {} },
+  preview: null,
+  selection: null,
+  editingTaskId: null,
+  currentPreviewSource: null,
+  platformFilter: "all",
+  statusFilter: "all",
+};
+
+const $ = (id) => document.getElementById(id);
+const fmtMoney = (value) => `¥${Number(value || 0).toLocaleString("zh-CN")}`;
+const fmtTime = (value) => value || "-";
+const escapeHtml = (text) =>
+  String(text ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+const platformMeta = {
+  天猫: { label: "天猫", icon: "天猫", color: "#ff4055", glow: "rgba(255, 64, 85, 0.22)" },
+  京东: { label: "京东", icon: "京东", color: "#ff3b25", glow: "rgba(255, 59, 37, 0.22)" },
+  抖音: { label: "抖音", icon: "抖", color: "#18d9d2", glow: "rgba(24, 217, 210, 0.2)" },
+  其他平台: { label: "其他平台", icon: "其", color: "#9a68ff", glow: "rgba(154, 104, 255, 0.2)" },
+};
+
+function normalizePlatform(platform) {
+  const text = String(platform || "其他平台");
+  if (text.includes("天猫") || text.includes("淘宝") || text.includes("生意参谋")) return "天猫";
+  if (text.includes("京东") || text.includes("商智")) return "京东";
+  if (text.includes("抖音") || text.includes("巨量")) return "抖音";
+  return "其他平台";
+}
+
+function showMessage(text, isError = false) {
+  const el = $("configMessage");
+  el.textContent = text;
+  el.classList.toggle("bad-text", isError);
+}
+
+function parseApiError(error) {
+  try {
+    const parsed = JSON.parse(error.message);
+    if (typeof parsed.detail === "string") return parsed.detail;
+    if (parsed.detail?.error) return parsed.detail.error;
+    return JSON.stringify(parsed.detail || parsed);
+  } catch {
+    return error.message;
+  }
+}
+
+async function api(path, options = {}) {
+  const response = await fetch(path, {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return response.json();
+}
+
+function switchView(view) {
+  document.querySelectorAll(".view").forEach((el) => el.classList.toggle("active", el.id === view));
+  document.querySelectorAll(".tab").forEach((el) => el.classList.toggle("active", el.dataset.view === view));
+}
+
+function liveTasks() {
+  return (state.snapshot.tasks || []).filter((task) => task.enabled);
+}
+
+function aggregatePlatforms(tasks) {
+  const groups = new Map();
+  for (const task of tasks) {
+    const key = normalizePlatform(task.platform);
+    if (!groups.has(key)) {
+      groups.set(key, { key, total: 0, tasks: [], meta: platformMeta[key] || platformMeta["其他平台"] });
+    }
+    const group = groups.get(key);
+    group.total += Number(task.last_trusted_value || 0);
+    group.tasks.push(task);
+  }
+  return Array.from(groups.values()).sort((a, b) => b.total - a.total);
+}
+
+function sparklineSvg(value, color = "#18d9d2") {
+  const seed = Math.max(1, Number(value || 1));
+  const points = Array.from({ length: 11 }, (_, index) => {
+    const x = 6 + index * 13;
+    const base = 45 - index * 2.6;
+    const wave = Math.sin((seed % 97) + index * 1.7) * 7;
+    const y = Math.max(8, Math.min(54, base + wave));
+    return `${x},${y}`;
+  }).join(" ");
+  return `
+    <svg class="sparkline" viewBox="0 0 150 62" aria-hidden="true">
+      <defs>
+        <linearGradient id="spark-${Math.abs(seed)}" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="${color}" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <polyline points="${points}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <polygon points="6,58 ${points} 136,58" fill="url(#spark-${Math.abs(seed)})" />
+    </svg>
+  `;
+}
+
+function renderTotalSpark(total) {
+  const el = $("totalSpark");
+  const color = "#18d9d2";
+  const points = Array.from({ length: 22 }, (_, index) => {
+    const x = index * 13;
+    const y = 58 - Math.sin(index / 2 + (total % 13)) * 9 - index * 0.75;
+    return `${x},${Math.max(10, Math.min(64, y))}`;
+  }).join(" ");
+  el.innerHTML = `<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.6" opacity="0.75" /><polyline points="0,68 ${points} 260,68" fill="rgba(24,217,210,0.11)" stroke="none" />`;
+}
+
+function renderDashboard() {
+  const tasks = liveTasks();
+  const total = tasks.reduce((sum, task) => sum + Number(task.last_trusted_value || 0), 0);
+  const platforms = aggregatePlatforms(tasks);
+  $("totalGmv").textContent = fmtMoney(total);
+  $("lastUpdate").textContent = `刷新于 ${state.snapshot.updated_at || "-"}`;
+  renderTotalSpark(total);
+
+  $("platformCards").innerHTML =
+    platforms
+      .map((group) => {
+        const share = total ? ((group.total / total) * 100).toFixed(1) : "0.0";
+        return `
+          <article class="platform-card" style="--card-color:${group.meta.color}; --card-glow:${group.meta.glow}">
+            <div class="platform-head">
+              <span class="platform-icon">${group.meta.icon}</span>
+              <strong>${group.meta.label}</strong>
+            </div>
+            <div class="platform-value">${fmtMoney(group.total)}</div>
+            <div class="share">${share}%</div>
+            ${sparklineSvg(group.total, group.meta.color)}
+          </article>
+        `;
+      })
+      .join("") || `<article class="empty-card">暂无启用任务，请先到采集配置创建任务。</article>`;
+
+  const filters = [{ key: "all", label: "全部" }, ...platforms.map((group) => ({ key: group.key, label: group.meta.label }))];
+  $("platformFilters").innerHTML = filters
+    .map((item) => `<button class="chip ${state.platformFilter === item.key ? "active" : ""}" data-platform="${item.key}">${item.label}</button>`)
+    .join("");
+
+  const visibleGroups = state.platformFilter === "all" ? platforms : platforms.filter((group) => group.key === state.platformFilter);
+  $("platformGroups").innerHTML =
+    visibleGroups
+      .map((group) => `
+        <section class="platform-group" style="--group-color:${group.meta.color}; --group-glow:${group.meta.glow}">
+          <div class="group-head">
+            <div><span class="platform-icon">${group.meta.icon}</span><strong>${group.meta.label}平台</strong><span>（${group.tasks.length}家）</span></div>
+            <div>平台合计 <b>${fmtMoney(group.total)}</b></div>
+          </div>
+          <div class="store-grid">
+            ${group.tasks
+              .map((task) => {
+                const alertClass = task.status === "ok" || task.status === "pending_confirm" ? "" : "is-alert";
+                return `
+                  <article class="store-card ${alertClass}">
+                    <div class="store-title">${escapeHtml(task.shop_name || "未命名店铺")}<span>${group.meta.label}</span></div>
+                    <strong>${fmtMoney(task.last_trusted_value || 0)}</strong>
+                    <div class="store-foot">更新时间 ${fmtTime(task.last_success_at || task.last_sample_at)}</div>
+                    ${sparklineSvg(task.last_trusted_value || 0, group.meta.color)}
+                  </article>
+                `;
+              })
+              .join("")}
+          </div>
+        </section>
+      `)
+      .join("") || `<div class="empty-card">当前筛选下暂无销售数据。</div>`;
+}
+
+function renderManager() {
+  const tasks = state.snapshot.tasks || [];
+  const filtered = tasks.filter((task) => {
+    if (state.statusFilter === "all") return true;
+    if (state.statusFilter === "paused") return !task.enabled;
+    if (state.statusFilter === "ok") return task.enabled && task.status === "ok";
+    if (state.statusFilter === "alert") return task.enabled && task.status !== "ok";
+    return true;
+  });
+  $("managerGrid").innerHTML =
+    filtered
+      .map((task) => {
+        const mode = task.capture_mode === "managed_browser" ? "托管页面" : "窗口截图";
+        const identity = task.capture_mode === "managed_browser" ? task.page_url || task.page_title || "-" : task.window_keyword || "-";
+        return `
+          <article class="manager-card ${task.status}" data-task-id="${task.id}">
+            <div class="task-head">
+              <div>
+                <div class="task-title">${escapeHtml(task.shop_name || "未命名店铺")}</div>
+                <div class="task-meta">${escapeHtml(task.platform || "-")} · ${mode} · ${task.enabled ? "启用" : "暂停"}</div>
+                <div class="task-meta line-clamp">${escapeHtml(identity)}</div>
+              </div>
+              <span class="status ${task.status}">${task.status}</span>
+            </div>
+            <div class="manager-value">${fmtMoney(task.last_trusted_value || 0)}</div>
+            <div class="debug-lines">
+              <div>最后成功：${fmtTime(task.last_success_at)}</div>
+              <div>最近采样：${fmtTime(task.last_sample_at)}</div>
+              <div>原因：${escapeHtml(task.last_reason || "-")}</div>
+              <div>OCR：${escapeHtml(task.last_ocr_text || "-")}</div>
+            </div>
+            <div class="task-actions">
+              <button data-action="capture" data-task-id="${task.id}">采一次</button>
+              <button data-action="edit" data-task-id="${task.id}">编辑</button>
+              <button data-action="toggle" data-task-id="${task.id}" data-enabled="${task.enabled ? "0" : "1"}">${task.enabled ? "暂停" : "启用"}</button>
+              <button data-action="samples" data-task-id="${task.id}">历史</button>
+              <button data-action="rebind" data-task-id="${task.id}">重绑页面</button>
+              <button data-action="delete" data-task-id="${task.id}" class="danger">删除</button>
+            </div>
+          </article>
+        `;
+      })
+      .join("") || `<div class="empty-card">当前没有匹配任务。</div>`;
+}
+
+function renderSnapshot(snapshot) {
+  state.snapshot = snapshot;
+  renderDashboard();
+  renderManager();
+}
+
+async function refreshHealth() {
+  try {
+    const health = await api("/api/managed-pages/health");
+    $("browserHealth").innerHTML = `
+      <div>状态：${health.context_started ? "已启动" : "未启动"}，页面：${health.visible_pages}/${health.total_pages}</div>
+      <div>最近动作：${escapeHtml(health.last_action || "-")}</div>
+      <div>最近错误：${escapeHtml(health.last_error || "-")}</div>
+    `;
+  } catch (err) {
+    $("browserHealth").textContent = `健康检查失败：${parseApiError(err)}`;
+  }
+}
+
+async function refreshManagedPages(preferredPageId = "") {
+  const pages = await api("/api/managed-pages");
+  const select = $("managedPageSelect");
+  const realPages = pages.filter((page) => page.url && page.url !== "about:blank").reverse();
+  select.innerHTML =
+    realPages
+      .map((page) => {
+        const label = page.title || page.url;
+        return `<option value="${page.page_id}" data-url="${escapeHtml(page.url)}" data-title="${escapeHtml(page.title)}">${escapeHtml(label)} (${page.page_id})</option>`;
+      })
+      .join("") || `<option value="">暂无托管页面</option>`;
+  if (preferredPageId && realPages.some((page) => page.page_id === preferredPageId)) {
+    select.value = preferredPageId;
+  } else if (realPages.length) {
+    select.value = realPages[0].page_id;
+  }
+  showMessage(`托管页面 ${realPages.length} 个`);
+  await refreshHealth();
+}
+
+async function openManagedPage() {
+  const button = $("openManagedPage");
+  const url = $("managedUrl").value.trim();
+  if (!url) {
+    showMessage("请先输入要打开的平台 URL", true);
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "打开中...";
+  showMessage("正在启动托管 Edge 并打开页面。若 Edge 在后面，请看任务栏图标。");
+  try {
+    const page = await api("/api/managed-pages/open", { method: "POST", body: JSON.stringify({ url }) });
+    await refreshManagedPages(page.page_id);
+    showMessage("托管页面已创建。请在弹出的 Edge 中完成登录/跳转，再回到这里截取页面预览。");
+  } catch (err) {
+    await refreshHealth();
+    showMessage(`打开失败：${parseApiError(err)}`, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = "打开托管页面";
+  }
+}
+
+async function previewManagedPage() {
+  const pageId = $("managedPageSelect").value;
+  if (!pageId) {
+    showMessage("请先选择托管页面", true);
+    return;
+  }
+  const preview = await api(`/api/managed-pages/${pageId}/preview`, { method: "POST" });
+  state.preview = preview;
+  state.selection = null;
+  state.currentPreviewSource = { capture_mode: "managed_browser", page_id: pageId, page_url: preview.page.url, page_title: preview.page.title };
+  renderPreviewImage(preview);
+  showMessage(`页面预览已生成：${preview.width}x${preview.height}`);
+}
+
+async function reloadManagedPage() {
+  const pageId = $("managedPageSelect").value;
+  if (!pageId) {
+    showMessage("请先选择托管页面", true);
+    return;
+  }
+  await api(`/api/managed-pages/${pageId}/reload`, { method: "POST" });
+  await refreshManagedPages(pageId);
+  showMessage("托管页面已重载");
+}
+
+async function closeManagedPage() {
+  const pageId = $("managedPageSelect").value;
+  if (!pageId) {
+    showMessage("请先选择托管页面", true);
+    return;
+  }
+  await api(`/api/managed-pages/${pageId}/close`, { method: "POST" });
+  await refreshManagedPages();
+  clearPreview();
+  showMessage("托管页面已关闭，任务不会被删除。");
+}
+
+async function refreshWindows() {
+  const windows = await api("/api/windows");
+  $("windowSelect").innerHTML = windows
+    .map((item) => `<option value="${item.hwnd}" data-title="${escapeHtml(item.title)}">${escapeHtml(item.title)} (${item.width}x${item.height})</option>`)
+    .join("");
+  showMessage(`找到 ${windows.length} 个窗口`);
+}
+
+async function previewWindow() {
+  const hwnd = Number($("windowSelect").value);
+  if (!hwnd) {
+    showMessage("请先选择窗口", true);
+    return;
+  }
+  const preview = await api("/api/window-preview", { method: "POST", body: JSON.stringify({ hwnd }) });
+  const title = $("windowSelect").selectedOptions[0]?.dataset.title || "";
+  $("windowKeyword").value = title;
+  state.preview = preview;
+  state.selection = null;
+  state.currentPreviewSource = { capture_mode: "window_capture", hwnd, window_keyword: title };
+  renderPreviewImage(preview);
+  showMessage(`窗口预览已生成：${preview.width}x${preview.height}`);
+}
+
+function clearPreview() {
+  state.preview = null;
+  state.selection = null;
+  state.currentPreviewSource = null;
+  $("previewImage").removeAttribute("src");
+  $("previewImage").style.display = "none";
+  $("selectionBox").style.display = "none";
+  $("ocrResult").textContent = "";
+}
+
+function renderPreviewImage(preview) {
+  const image = $("previewImage");
+  image.src = preview.image;
+  image.style.display = "block";
+  $("selectionBox").style.display = "none";
+  $("coordX").textContent = "-";
+  $("coordY").textContent = "-";
+  $("coordW").textContent = "-";
+  $("coordH").textContent = "-";
+  $("ocrResult").textContent = "";
+}
+
+function updateSelectionBox() {
+  const image = $("previewImage");
+  const box = $("selectionBox");
+  if (!state.selection || !image.src) {
+    box.style.display = "none";
+    return;
+  }
+  const { x, y, width, height } = state.selection;
+  box.style.display = "block";
+  box.style.left = `${image.offsetLeft + x}px`;
+  box.style.top = `${image.offsetTop + y}px`;
+  box.style.width = `${width}px`;
+  box.style.height = `${height}px`;
+  const ratio = selectionRatios();
+  $("coordX").textContent = Math.round(ratio.x_ratio * state.preview.width);
+  $("coordY").textContent = Math.round(ratio.y_ratio * state.preview.height);
+  $("coordW").textContent = Math.round(ratio.width_ratio * state.preview.width);
+  $("coordH").textContent = Math.round(ratio.height_ratio * state.preview.height);
+}
+
+function selectionRatios() {
+  const image = $("previewImage");
+  const naturalW = image.naturalWidth || image.clientWidth;
+  const naturalH = image.naturalHeight || image.clientHeight;
+  const scaleX = naturalW / image.clientWidth;
+  const scaleY = naturalH / image.clientHeight;
+  const sel = state.selection;
+  const x = sel.x * scaleX;
+  const y = sel.y * scaleY;
+  const width = sel.width * scaleX;
+  const height = sel.height * scaleY;
+  return {
+    x_ratio: x / naturalW,
+    y_ratio: y / naturalH,
+    width_ratio: width / naturalW,
+    height_ratio: height / naturalH,
+  };
+}
+
+function hasUsableSelection() {
+  if (!state.preview || !state.selection) return false;
+  const image = $("previewImage");
+  const scaleX = (image.naturalWidth || image.clientWidth) / image.clientWidth;
+  const scaleY = (image.naturalHeight || image.clientHeight) / image.clientHeight;
+  return state.selection.width * scaleX >= 40 && state.selection.height * scaleY >= 24;
+}
+
+async function testOcr() {
+  if (!hasUsableSelection()) {
+    showMessage("选区太小，请拖拽框住完整 GMV 数字区域", true);
+    return;
+  }
+  const source = state.currentPreviewSource || {};
+  const result = await api("/api/test-ocr", {
+    method: "POST",
+    body: JSON.stringify({
+      capture_mode: source.capture_mode || $("captureMode").value,
+      hwnd: source.hwnd || null,
+      page_id: source.page_id || "",
+      ...selectionRatios(),
+      safety_margin: Number($("safetyMargin").value || 0.3),
+      keyword_hint: $("keywordHint").value,
+    }),
+  });
+  const engines = result.engines ? Object.entries(result.engines).filter(([, ok]) => ok).map(([name]) => name).join(", ") : "-";
+  const sources = [...new Set((result.details || []).filter((item) => item.text).map((item) => `${item.engine}/${item.variant}`))].join(", ") || "-";
+  $("ocrResult").innerHTML = `
+    <b>最终纯数字：</b>${result.suggested_value ? String(result.suggested_value) : "未识别"}\n
+    <b>可用引擎：</b>${escapeHtml(engines)}\n
+    <b>命中来源：</b>${escapeHtml(sources)}\n
+    <b>OCR 原文：</b>${escapeHtml(result.ocr_text || "-")}\n
+    <b>候选纯数字：</b>\n${result.candidates.map((c) => `${c.value}  score=${c.score}  ${c.reason}`).join("\n") || "-"}
+  `;
+  showMessage("测试识别完成");
+}
+
+async function saveTask() {
+  if (!hasUsableSelection()) {
+    showMessage("请先截取预览并框选 GMV 区域", true);
+    return;
+  }
+  const source = state.currentPreviewSource || {};
+  const ratios = selectionRatios();
+  const selectedPage = $("managedPageSelect").selectedOptions[0];
+  const payload = {
+    id: state.editingTaskId,
+    capture_mode: source.capture_mode || $("captureMode").value,
+    page_id: source.page_id || "",
+    page_url: source.page_url || selectedPage?.dataset.url || "",
+    page_title: source.page_title || selectedPage?.dataset.title || "",
+    browser_profile: "default",
+    platform: $("platform").value || "其他平台",
+    shop_name: $("shopName").value || "未命名店铺",
+    window_keyword: source.window_keyword || $("windowKeyword").value || "",
+    keyword_hint: $("keywordHint").value || "",
+    interval_seconds: Number($("intervalSeconds").value || 1),
+    enabled: true,
+    base_width: state.preview.width,
+    base_height: state.preview.height,
+    x: Math.round(ratios.x_ratio * state.preview.width),
+    y: Math.round(ratios.y_ratio * state.preview.height),
+    width: Math.round(ratios.width_ratio * state.preview.width),
+    height: Math.round(ratios.height_ratio * state.preview.height),
+    ...ratios,
+    safety_margin: Number($("safetyMargin").value || 0.3),
+    confirm_count: Number($("confirmCount").value || 2),
+  };
+  const saved = await api("/api/tasks", { method: "POST", body: JSON.stringify(payload) });
+  state.editingTaskId = null;
+  showMessage(`任务已保存：${saved.shop_name}`);
+  await loadTasks();
+  switchView("dashboard");
+}
+
+async function loadTasks() {
+  renderSnapshot(await api("/api/tasks"));
+}
+
+async function showSamples(taskId) {
+  const samples = await api(`/api/tasks/${taskId}/samples?limit=12`);
+  $("samplePanel").innerHTML =
+    samples
+      .map((item) => `
+        <div class="sample-item" data-sample-task-id="${taskId}">
+          <b>${item.sampled_at}</b> · ${item.status} · 候选 ${item.selected_value || "-"} · 可信 ${item.trusted_value || "-"}
+          <div>原因：${escapeHtml(item.reason || "-")}</div>
+          <div>OCR：${escapeHtml(item.ocr_text || "-")}</div>
+          <div class="task-actions">
+            ${(item.candidates || []).slice(0, 4).map((candidate) => `<button data-action="correct" data-task-id="${taskId}" data-value="${candidate.value}">设为可信 ${candidate.value}</button>`).join("")}
+          </div>
+        </div>
+      `)
+      .join("") || "暂无采样。";
+}
+
+async function handleTaskAction(button, card) {
+  const taskId = Number((button || card)?.dataset.taskId);
+  if (!taskId) return;
+  const task = state.snapshot.tasks.find((item) => item.id === taskId);
+  if (!button) {
+    await showSamples(taskId);
+    return;
+  }
+  const action = button.dataset.action;
+  if (action === "capture") {
+    await api(`/api/tasks/${taskId}/capture-once`, { method: "POST" });
+    await loadTasks();
+  }
+  if (action === "toggle") {
+    await api(`/api/tasks/${taskId}/enabled`, { method: "POST", body: JSON.stringify({ enabled: button.dataset.enabled === "1" }) });
+    await loadTasks();
+  }
+  if (action === "samples") {
+    await showSamples(taskId);
+  }
+  if (action === "edit") {
+    loadTaskIntoConfig(task);
+  }
+  if (action === "rebind") {
+    loadTaskIntoConfig(task);
+    showMessage("请在采集配置里选择新的托管页面，截取预览后保存。");
+  }
+  if (action === "delete") {
+    const name = task ? `${task.platform} / ${task.shop_name}` : `任务 ${taskId}`;
+    if (!window.confirm(`确定删除 ${name}？历史采样会一起删除，但不会关闭托管浏览器页面。`)) return;
+    await api(`/api/tasks/${taskId}/delete`, { method: "POST" });
+    $("samplePanel").textContent = "任务已删除。";
+    await loadTasks();
+  }
+}
+
+function loadTaskIntoConfig(task) {
+  if (!task) return;
+  state.editingTaskId = task.id;
+  $("captureMode").value = task.capture_mode || "managed_browser";
+  $("platform").value = task.platform || "";
+  $("shopName").value = task.shop_name || "";
+  $("keywordHint").value = task.keyword_hint || "";
+  $("intervalSeconds").value = task.interval_seconds || 1;
+  $("confirmCount").value = task.confirm_count || 2;
+  $("safetyMargin").value = task.safety_margin || 0.3;
+  $("windowKeyword").value = task.window_keyword || "";
+  $("managedUrl").value = task.page_url || "";
+  $("captureMode").dispatchEvent(new Event("change"));
+  switchView("config");
+  showMessage("已载入任务。请重新截取预览并框选后保存。");
+}
+
+function connectWs() {
+  const status = $("wsStatus");
+  const ws = new WebSocket(`ws://${location.host}/ws/live`);
+  ws.onopen = () => {
+    status.textContent = "实时连接";
+    status.className = "pill";
+    ws.send("hello");
+  };
+  ws.onmessage = (event) => renderSnapshot(JSON.parse(event.data));
+  ws.onclose = () => {
+    status.textContent = "已断线，重连中";
+    status.className = "pill bad";
+    setTimeout(connectWs, 1500);
+  };
+  ws.onerror = () => ws.close();
+}
+
+function setupSelection() {
+  const image = $("previewImage");
+  image.addEventListener("dragstart", (event) => event.preventDefault());
+  image.addEventListener("selectstart", (event) => event.preventDefault());
+  let start = null;
+
+  function pointFromEvent(event) {
+    const rect = image.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(image.clientWidth, event.clientX - rect.left)),
+      y: Math.max(0, Math.min(image.clientHeight, event.clientY - rect.top)),
+    };
+  }
+
+  image.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    image.setPointerCapture(event.pointerId);
+    start = pointFromEvent(event);
+    state.selection = { x: start.x, y: start.y, width: 1, height: 1 };
+    updateSelectionBox();
+  });
+
+  image.addEventListener("pointermove", (event) => {
+    if (!start) return;
+    event.preventDefault();
+    const current = pointFromEvent(event);
+    state.selection = {
+      x: Math.min(start.x, current.x),
+      y: Math.min(start.y, current.y),
+      width: Math.abs(current.x - start.x),
+      height: Math.abs(current.y - start.y),
+    };
+    updateSelectionBox();
+  });
+
+  image.addEventListener("pointerup", (event) => {
+    event.preventDefault();
+    if (image.hasPointerCapture(event.pointerId)) image.releasePointerCapture(event.pointerId);
+    start = null;
+  });
+  image.addEventListener("pointercancel", () => {
+    start = null;
+  });
+}
+
+function setupEvents() {
+  document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
+  $("captureMode").addEventListener("change", () => {
+    $("windowCompatBox").style.display = $("captureMode").value === "window_capture" ? "block" : "none";
+  });
+  $("platformFilters").addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-platform]");
+    if (!button) return;
+    state.platformFilter = button.dataset.platform;
+    renderDashboard();
+  });
+  $("statusFilters").addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-status]");
+    if (!button) return;
+    state.statusFilter = button.dataset.status;
+    document.querySelectorAll("#statusFilters .chip").forEach((el) => el.classList.toggle("active", el === button));
+    renderManager();
+  });
+  $("openManagedPage").addEventListener("click", () => openManagedPage());
+  $("refreshManagedPages").addEventListener("click", () => refreshManagedPages().catch((err) => showMessage(parseApiError(err), true)));
+  $("previewManagedPage").addEventListener("click", () => previewManagedPage().catch((err) => showMessage(parseApiError(err), true)));
+  $("reloadManagedPage").addEventListener("click", () => reloadManagedPage().catch((err) => showMessage(parseApiError(err), true)));
+  $("closeManagedPage").addEventListener("click", () => closeManagedPage().catch((err) => showMessage(parseApiError(err), true)));
+  $("refreshWindows").addEventListener("click", () => refreshWindows().catch((err) => showMessage(parseApiError(err), true)));
+  $("previewWindow").addEventListener("click", () => previewWindow().catch((err) => showMessage(parseApiError(err), true)));
+  $("testOcr").addEventListener("click", () => testOcr().catch((err) => showMessage(parseApiError(err), true)));
+  $("saveTask").addEventListener("click", () => saveTask().catch((err) => showMessage(parseApiError(err), true)));
+  $("managerGrid").addEventListener("click", async (event) => {
+    const button = event.target.closest("button");
+    const card = event.target.closest(".manager-card");
+    if (!button && !card) return;
+    event.preventDefault();
+    if (button) event.stopPropagation();
+    try {
+      await handleTaskAction(button, card);
+    } catch (err) {
+      alert(`操作失败：${parseApiError(err)}`);
+      await loadTasks().catch(() => {});
+    }
+  });
+  $("samplePanel").addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-action='correct']");
+    if (!button) return;
+    await api(`/api/tasks/${button.dataset.taskId}/manual-correction`, {
+      method: "POST",
+      body: JSON.stringify({ value: Number(button.dataset.value), reason: "人工从历史候选设为可信值" }),
+    });
+    await loadTasks();
+    await showSamples(Number(button.dataset.taskId));
+  });
+}
+
+function setupRemoteEdgeUi() {
+  const captureMode = $("captureMode");
+  if (captureMode && !Array.from(captureMode.options).some((option) => option.value === "remote_edge")) {
+    const option = document.createElement("option");
+    option.value = "remote_edge";
+    option.textContent = "真实 Edge 调试页面";
+    captureMode.appendChild(option);
+  }
+
+  const healthBox = $("browserHealth");
+  if (!healthBox || $("remoteEdgeBox")) return;
+  const box = document.createElement("div");
+  box.id = "remoteEdgeBox";
+  box.className = "health-box";
+  box.innerHTML = `
+    <b>真实 Edge 调试模式</b>
+    <div id="remoteHealth">未连接</div>
+    <label>打开真实 Edge 页面 URL<input id="remoteUrl" placeholder="https://sycm.taobao.com/..." /></label>
+    <div class="button-row">
+      <button id="startRemoteEdge" type="button">启动真实 Edge 调试</button>
+      <button id="openRemotePage" type="button" class="primary">打开真实 Edge 页面</button>
+    </div>
+    <button id="refreshRemotePages" type="button" class="wide-button">刷新真实 Edge 页面</button>
+    <label>选择真实 Edge 页面<select id="remotePageSelect"></select></label>
+    <div class="button-row">
+      <button id="previewRemotePage" type="button">截取真实 Edge 预览</button>
+      <button id="reloadRemotePage" type="button">重载真实 Edge 页面</button>
+    </div>
+  `;
+  healthBox.insertAdjacentElement("afterend", box);
+
+  $("startRemoteEdge").addEventListener("click", () => startRemoteEdge().catch((err) => showMessage(parseApiError(err), true)));
+  $("openRemotePage").addEventListener("click", () => openRemotePage().catch((err) => showMessage(parseApiError(err), true)));
+  $("refreshRemotePages").addEventListener("click", () => refreshRemotePages().catch((err) => showMessage(parseApiError(err), true)));
+  $("previewRemotePage").addEventListener("click", () => previewRemotePage().catch((err) => showMessage(parseApiError(err), true)));
+  $("reloadRemotePage").addEventListener("click", () => reloadRemotePage().catch((err) => showMessage(parseApiError(err), true)));
+  refreshRemoteHealth().catch(() => {});
+}
+
+async function refreshRemoteHealth() {
+  const health = await api("/api/remote-edge/health");
+  const el = $("remoteHealth");
+  if (!el) return;
+  el.innerHTML = `
+    <div>调试端口：${health.debug_available ? "已开启" : "未开启"}，连接：${health.connected ? "已连接" : "未连接"}</div>
+    <div>页面：${health.visible_pages}/${health.total_pages}</div>
+    <div>命令：${escapeHtml(health.edge_command || "-")}</div>
+    <div>错误：${escapeHtml(health.last_error || "-")}</div>
+  `;
+}
+
+async function startRemoteEdge() {
+  const button = $("startRemoteEdge");
+  button.disabled = true;
+  button.textContent = "启动中...";
+  showMessage("正在用调试命令启动真实 Edge。若失败，请先关闭所有普通 Edge 后再点一次。");
+  try {
+    await api("/api/remote-edge/start", { method: "POST" });
+    await refreshRemoteHealth();
+    await refreshRemotePages();
+    showMessage("真实 Edge 调试已尝试启动。请在打开的真实 Edge 中进入目标页面，然后刷新真实 Edge 页面列表。");
+  } finally {
+    button.disabled = false;
+    button.textContent = "启动真实 Edge 调试";
+  }
+}
+
+async function openRemotePage() {
+  const button = $("openRemotePage");
+  const input = $("remoteUrl");
+  const url = input?.value.trim();
+  if (!url) {
+    showMessage("请先输入要打开的真实 Edge 页面 URL", true);
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "打开中...";
+  showMessage("正在真实 Edge 调试窗口中打开新标签页。同一个调试 Edge 可以反复打开多个页面。");
+  try {
+    const page = await api("/api/remote-edge/open", { method: "POST", body: JSON.stringify({ url }) });
+    await refreshRemotePages(page.page_id);
+    showMessage("真实 Edge 页面已打开并已加入页面列表。每个店铺可以重复打开一次，再分别标定保存任务。");
+  } finally {
+    button.disabled = false;
+    button.textContent = "打开真实 Edge 页面";
+  }
+}
+
+async function refreshRemotePages(preferredPageId = "") {
+  const pages = await api("/api/remote-edge/pages");
+  const select = $("remotePageSelect");
+  if (!select) return;
+  select.innerHTML =
+    pages
+      .map((page) => `<option value="${page.page_id}" data-url="${escapeHtml(page.url)}" data-title="${escapeHtml(page.title)}">${escapeHtml(page.title || page.url)} (${page.page_id})</option>`)
+      .join("") || `<option value="">暂无真实 Edge 页面</option>`;
+  if (preferredPageId && pages.some((page) => page.page_id === preferredPageId)) {
+    select.value = preferredPageId;
+  } else if (pages.length) {
+    select.value = pages[0].page_id;
+  }
+  await refreshRemoteHealth();
+  showMessage(`真实 Edge 页面 ${pages.length} 个`);
+}
+
+async function previewRemotePage() {
+  const pageId = $("remotePageSelect")?.value;
+  if (!pageId) {
+    showMessage("请先选择真实 Edge 页面", true);
+    return;
+  }
+  const preview = await api(`/api/remote-edge/${pageId}/preview`, { method: "POST" });
+  state.preview = preview;
+  state.selection = null;
+  state.currentPreviewSource = { capture_mode: "remote_edge", page_id: pageId, page_url: preview.page.url, page_title: preview.page.title };
+  $("captureMode").value = "remote_edge";
+  renderPreviewImage(preview);
+  showMessage(`真实 Edge 页面预览已生成：${preview.width}x${preview.height}`);
+}
+
+async function reloadRemotePage() {
+  const pageId = $("remotePageSelect")?.value;
+  if (!pageId) {
+    showMessage("请先选择真实 Edge 页面", true);
+    return;
+  }
+  await api(`/api/remote-edge/${pageId}/reload`, { method: "POST" });
+  await refreshRemotePages(pageId);
+  showMessage("真实 Edge 页面已重载");
+}
+
+function setupSchedulerUi() {
+  const nav = document.querySelector(".tabs");
+  let button = $("schedulerToggle");
+  if (!button) {
+    const target = document.querySelector(".top-actions") || nav?.parentElement;
+    if (!target) return;
+    button = document.createElement("button");
+    button.id = "schedulerToggle";
+    button.className = "scheduler-button";
+    button.type = "button";
+    button.textContent = "启动采集";
+    target.prepend(button);
+  }
+  button.addEventListener("click", () => toggleScheduler().catch((err) => alert(`调度操作失败：${parseApiError(err)}`)));
+  refreshSchedulerStatus().catch(() => {});
+}
+
+async function refreshSchedulerStatus() {
+  const status = await api("/api/scheduler");
+  const button = $("schedulerToggle");
+  if (!button) return status;
+  button.dataset.running = status.running ? "1" : "0";
+  button.textContent = status.running ? "暂停采集" : "启动采集";
+  button.classList.toggle("active", status.running);
+  return status;
+}
+
+async function toggleScheduler() {
+  const button = $("schedulerToggle");
+  const running = button?.dataset.running === "1";
+  await api(running ? "/api/scheduler/pause" : "/api/scheduler/start", { method: "POST" });
+  await refreshSchedulerStatus();
+}
+
+setupEvents();
+setupRemoteEdgeUi();
+setupSchedulerUi();
+setupSelection();
+$("captureMode").dispatchEvent(new Event("change"));
+refreshHealth().catch(() => {});
+refreshManagedPages().catch(() => {});
+refreshRemoteHealth().catch(() => {});
+refreshWindows().catch(() => {});
+loadTasks().catch(() => {});
+connectWs();

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatgot</title>
+    <style>
+      :root {
+        --color-m1: #fff;
+        --color-b5: #fff;
+        --color-t2: #3c3c58;
+      }
+      html {
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          'Helvetica Neue',
+          Helvetica,
+          Segoe UI,
+          Arial,
+          Roboto,
+          'PingFang SC',
+          'miui',
+          'Hiragino Sans GB',
+          'Microsoft Yahei',
+          sans-serif;
+      }
+      .main-container {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-m1);
+      }
+
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 520px;
+        height: 280px;
+        background-color: var(--color-b5);
+        padding: 0 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow:
+          0px 0px 2px 0px rgba(0, 0, 0, 0.1),
+          0px 4px 24px 0px rgba(0, 0, 0, 0.08);
+        border-radius: 16px;
+      }
+
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo-img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .title {
+        margin-top: 12px;
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 32px;
+        color: var(--color-t2);
+      }
+
+      .message {
+        margin: 24px 0 16px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 20px;
+        color: var(--color-t2);
+      }
+
+      .contact {
+        font-size: 16px;
+        font-weight: 500;
+        color: #4646f6;
+      }
+
+      @media screen and (max-width: 480px) {
+        .wrapper {
+          width: calc(100vw - 32px) !important;
+          min-width: 300px;
+          padding: 0 24px;
+        }
+      }
+
+      @media screen and (max-width: 768px) and (min-width: 480px) {
+        .wrapper {
+          width: min(calc(100vw - 48px), 520px);
+          padding: 0 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main-container">
+      <div class="wrapper">
+        <span class="logo">
+          <img
+            class="logo-img"
+            src="data:image/png;base64,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"
+            alt="Chatgot Logo"
+          />
+        </span>
+        <span class="title" style="user-select: none">App unavailable</span>
+        <span class="message" style="user-select: none">
+          Unfortunately, Chatgot is not available in your current region. Please check your VPN
+          configuration or contact support if you believe you are receiving this message in error.
+        </span>
+        <a href="mailto:contact@chatgot.io">contact@chatgot.io</a>
+      </div>
+    </main>
+  </body>
+</html>

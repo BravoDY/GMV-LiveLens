@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 105.7 122.1" style="enable-background:new 0 0 105.7 122.1;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#Rectangle_00000037668407081282724390000009348124100311788715_);}
+	.st1{fill:url(#Rectangle-2_00000126301415589590871390000010075968318433543603_);}
+	.st2{fill:url(#Rectangle-3_00000090252315012068205760000001877062890071869631_);}
+	.st3{fill:url(#Rectangle-Copy_00000086655976935581129850000015687055161832260745_);}
+</style>
+<g id="sb-logo">
+	
+		<linearGradient id="Rectangle_00000152260936138415919530000014556273877679743645_" gradientUnits="userSpaceOnUse" x1="-2834.8689" y1="-2498.9104" x2="-2833.1489" y2="-2504.4204" gradientTransform="matrix(-45 0 0 -38 -127464.5234 -95098.5312)">
+		<stop  offset="0" style="stop-color:#62E698"/>
+		<stop  offset="1" style="stop-color:#2D7668"/>
+	</linearGradient>
+	<polygon id="Rectangle" style="fill:url(#Rectangle_00000152260936138415919530000014556273877679743645_);" points="105.7,0 0,0 
+		0,89.2 	"/>
+	
+		<linearGradient id="Rectangle-2_00000074440776573252410620000009169726734652233885_" gradientUnits="userSpaceOnUse" x1="-2709.7817" y1="-2501.2395" x2="-2709.7817" y2="-2506.9395" gradientTransform="matrix(45 0 0 -38 121993.0312 -95098.5312)">
+		<stop  offset="9.000000e-02" style="stop-color:#03224D"/>
+		<stop  offset="0.13" style="stop-color:#174B5D"/>
+		<stop  offset="0.18" style="stop-color:#286F6A"/>
+		<stop  offset="0.23" style="stop-color:#388F77"/>
+		<stop  offset="0.28" style="stop-color:#45AB81"/>
+		<stop  offset="0.35" style="stop-color:#50C18A"/>
+		<stop  offset="0.42" style="stop-color:#58D290"/>
+		<stop  offset="0.51" style="stop-color:#5EDD95"/>
+		<stop  offset="0.64" style="stop-color:#61E497"/>
+		<stop  offset="1" style="stop-color:#62E698"/>
+	</linearGradient>
+	<polygon id="Rectangle-2" style="fill:url(#Rectangle-2_00000074440776573252410620000009169726734652233885_);" points="0,0 
+		105.7,0 105.7,89.2 	"/>
+	
+		<linearGradient id="Rectangle-3_00000109719376968978609680000000301295744472584329_" gradientUnits="userSpaceOnUse" x1="-2585.4712" y1="-2547.8833" x2="-2585.0012" y2="-2549.6233" gradientTransform="matrix(15 0 0 -27 38847.5117 -68727.8516)">
+		<stop  offset="0" style="stop-color:#2D7668"/>
+		<stop  offset="1" style="stop-color:#62E698"/>
+	</linearGradient>
+	<polygon id="Rectangle-3" style="fill:url(#Rectangle-3_00000109719376968978609680000000301295744472584329_);" points="
+		51.7,58.7 86.9,91 86.9,122.1 51.7,90.4 	"/>
+	
+		<linearGradient id="Rectangle-Copy_00000066486858619332084030000016388663629826810282_" gradientUnits="userSpaceOnUse" x1="-2957.1948" y1="-2547.8818" x2="-2956.7249" y2="-2549.6218" gradientTransform="matrix(-15 0 0 -27 -44320.0078 -68727.8516)">
+		<stop  offset="0" style="stop-color:#62E698"/>
+		<stop  offset="1" style="stop-color:#2D7668"/>
+	</linearGradient>
+	<polygon id="Rectangle-Copy" style="fill:url(#Rectangle-Copy_00000066486858619332084030000016388663629826810282_);" points="
+		51.7,58.7 16.4,91 16.4,122.1 51.7,90.4 	"/>
+</g>
+</svg>

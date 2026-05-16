@@ -1,0 +1,8 @@
+{
+  "name": "DeepSider",
+  "short_name": "DeepSider",
+  "icons": [
+    { "src": "/chat/assets/imgs/icon/icon_120_w.png", "sizes": "120x120", "type": "image/png" },
+    { "src": "/chat/assets/imgs/icon/icon_180_w.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

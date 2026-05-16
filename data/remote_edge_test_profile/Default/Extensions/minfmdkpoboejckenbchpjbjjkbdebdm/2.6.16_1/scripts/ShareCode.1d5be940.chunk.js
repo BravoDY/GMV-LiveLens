@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkchatgot_client_deepsider=self.webpackChunkchatgot_client_deepsider||[]).push([[9191],{55908:function(e,t,n){n.r(t),n.d(t,{default:function(){return u}});var r=n(20641);const c={};var u=(0,n(66262).A)(c,[["render",function(e,t){const n=(0,r.g2)("router-view");return(0,r.uX)(),(0,r.Wv)(n)}]])}}]);

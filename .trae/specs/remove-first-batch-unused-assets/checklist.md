@@ -1,0 +1,10 @@
+- [x] 已复核本次范围仅包含高置信无引用对象
+- [x] 已删除 `tmp_verify_target_consistency.py`
+- [x] 已删除 `frontend/store-card-top-flash-demo.html`
+- [x] 已删除 `frontend/favicon.svg`
+- [x] 已删除 `backend/main.py` 中零调用函数 `_select_auto_rebind_candidate()`
+- [x] 已删除 `backend/main.py` 中不可达旧实现代码块
+- [x] 已删除 `backend/collectors/window_control.py` 中零调用辅助函数
+- [x] 变更文件无新增明显诊断错误
+- [x] 最小回归验证未破坏 FastAPI 主入口、前端正式入口和 Edge 绑定主链
+- [x] 最终说明已明确本次未处理的中低置信对象

@@ -1,0 +1,107 @@
+.file-viewer[data-v-46ed6e41] {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+.tab-menu[data-v-46ed6e41] {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 0 20px;
+}
+.tab-menu .tab-button[data-v-46ed6e41] {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+  transition: all 0.2s;
+  position: relative;
+  flex-shrink: 0;
+}
+.tab-menu .tab-button[data-v-46ed6e41]:hover {
+  color: #333;
+  background: rgba(0, 0, 0, 0.04);
+}
+.tab-menu .tab-button.active[data-v-46ed6e41] {
+  color: #4675f6;
+  border-bottom-color: #4675f6;
+  font-weight: 500;
+}
+.file-content[data-v-46ed6e41],
+.result-content[data-v-46ed6e41] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.loading-container[data-v-46ed6e41],
+.error-container[data-v-46ed6e41],
+.unsupported-container[data-v-46ed6e41] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 24px;
+}
+.loading-spinner[data-v-46ed6e41] {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1890ff;
+  border-radius: 50%;
+  animation: spin-46ed6e41 1s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin-46ed6e41 {
+0% {
+    transform: rotate(0deg);
+}
+100% {
+    transform: rotate(360deg);
+}
+}
+.loading-container p[data-v-46ed6e41] {
+  color: #666;
+  margin: 0;
+}
+.error-icon[data-v-46ed6e41],
+.unsupported-icon[data-v-46ed6e41] {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.error-container h3[data-v-46ed6e41],
+.unsupported-container h3[data-v-46ed6e41] {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+.error-container h3[data-v-46ed6e41] {
+  color: #ff4d4f;
+}
+.error-container p[data-v-46ed6e41],
+.unsupported-container p[data-v-46ed6e41] {
+  color: #666;
+  margin: 0 0 16px 0;
+}
+.file-info[data-v-46ed6e41] {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: left;
+  max-width: 400px;
+}
+.file-info p[data-v-46ed6e41] {
+  margin: 4px 0;
+  color: #495057;
+}
+.file-info strong[data-v-46ed6e41] {
+  color: #212529;
+}
+

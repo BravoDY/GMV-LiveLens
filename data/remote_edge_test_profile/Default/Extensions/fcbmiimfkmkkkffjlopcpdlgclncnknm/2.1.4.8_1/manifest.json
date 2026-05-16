@@ -1,0 +1,61 @@
+{
+   "action": {
+      "default_popup": "fsPopup.html"
+   },
+   "background": {
+      "service_worker": "scripts/fsServiceWorker.js"
+   },
+   "commands": {
+      "capture-entire-page-action": {
+         "description": "__MSG_action_capture_entire_lite__",
+         "suggested_key": {
+            "default": "Alt+Shift+1",
+            "mac": "Command+Shift+1"
+         }
+      },
+      "capture-selection-action": {
+         "description": "__MSG_action_capture_selection_lite__",
+         "suggested_key": {
+            "default": "Alt+Shift+4",
+            "mac": "Command+Shift+6"
+         }
+      },
+      "capture-visible-page-action": {
+         "description": "__MSG_action_capture_visible_lite__",
+         "suggested_key": {
+            "default": "Alt+Shift+3",
+            "mac": "Command+Shift+2"
+         }
+      },
+      "last-used-action": {
+         "description": "__MSG_options_label_last_action_hotkey__",
+         "suggested_key": {
+            "default": "Ctrl+Shift+S",
+            "mac": "Command+Shift+S"
+         }
+      }
+   },
+   "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+   },
+   "default_locale": "en",
+   "description": "__MSG_application_description__",
+   "icons": {
+      "128": "images/sss_128.png",
+      "16": "images/sss_16.png",
+      "32": "images/sss_32.png",
+      "48": "images/sss_48.png"
+   },
+   "incognito": "spanning",
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApSJjMOIau8OE6swRIX4vzspsRmAPV3yBPFSyLbEHK61UlOA8wwDsXpJTRt3JtVp9aQToe5DBfc5rTn3fF2BA6RFKZBZavhA5Hgf8uHgF8DP0fw76RCfpYAPhQWwfFitzHhzgjxa5d7R/FMhNxuE4y3AEf96P2dtHDVis29XY9+PyerzgiBn5DWQYhyoqr36OV4leQaQeCADerCsuat6+Z7nFsAXoOfxBH0Sq43Us+Z4njk7baW101kQ8fWbBnUKcd3E/VeiKh55tJBclnOr63WutL+KsFNsIt/xvJEzjemwD5Wa0d9MkbM16WfsQemXgAj8Ey2VtqDLQkz6b6FxEnQIDAQAB",
+   "manifest_version": 3,
+   "minimum_chrome_version": "114",
+   "name": "__MSG_application_title__",
+   "offline_enabled": true,
+   "optional_host_permissions": [ "https://mail.google.com/*", "\u003Call_urls>" ],
+   "optional_permissions": [ "tabs", "downloads" ],
+   "options_page": "fsOptions.html",
+   "permissions": [ "storage", "alarms", "scripting", "activeTab", "nativeMessaging", "contextMenus" ],
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "2.1.4.8"
+}

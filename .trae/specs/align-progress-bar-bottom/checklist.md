@@ -1,0 +1,4 @@
+- [x] 全渠道卡进度条底边与平台卡进度条底边在同一水平线
+- [x] `.total-progress-track` 正确使用 `margin-top: auto` 推底
+- [x] `.platform-progress-track` 正确使用 `margin-top: auto` 推底
+- [x] `.platform-progress-track` 有 `overflow: hidden` 与 `.total-progress-track` 一致

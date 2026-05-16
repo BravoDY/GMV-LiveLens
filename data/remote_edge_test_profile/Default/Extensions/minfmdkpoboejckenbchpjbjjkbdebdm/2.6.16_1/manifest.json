@@ -1,0 +1,40 @@
+{
+   "action": {
+      "default_icon": {
+         "48": "extIcons/action_48.png"
+      },
+      "default_title": "Open DeepSider"
+   },
+   "background": {
+      "service_worker": "serviceworker.js"
+   },
+   "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://* http://*;"
+   },
+   "default_locale": "en",
+   "description": "__MSG_ext_desc__",
+   "externally_connectable": {
+      "matches": [ "https://*.deepsider.ai/*", "https://*.deepsider.net/*", "https://*.deepsider.me/*", "https://*.deepsider.pro/*", "https://*.deepsider.app/*", "https://*.deepsider.online/*", "http://localhost:8080/*" ]
+   },
+   "icons": {
+      "128": "extIcons/icon_128.png",
+      "16": "extIcons/icon_16.png",
+      "32": "extIcons/icon_32.png",
+      "48": "extIcons/icon_48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4fLWzrAJVsDb6bUfm2th+04it/IS8X81U0la9tfTJB5IwkdqxMhmaXLdw+ZV8A1j6ZF140k4UbjfZtxiIiyR+7wQmiUF9w4UugTsD11hbFNzNCZhpvrgMWb/hx8OmJ4+OqyFt0+Zg7lOZOZ8iBFhdwuTmWbSPmaC6WUTkZfiiy97TdRRoAK1OvLoCaJrhpd7EwmzFRH3brN71AiY/GYkkpqlscCkDIHfyIjHw31YzUaXNnTTMbYe++ou0/JEXB6dgbQdXGQQ5dxJ+X9wN46lfvObxLlsFtD3p2EALaysQpHYNPu/SOhFdmzRcS1eILjg7jYysFWu7+Bcl2ae0yttaQIDAQAB",
+   "manifest_version": 3,
+   "name": "__MSG_ext_edge_title__",
+   "optional_host_permissions": [ "\u003Call_urls>" ],
+   "optional_permissions": [ "tabs" ],
+   "permissions": [ "sidePanel", "storage", "scripting" ],
+   "side_panel": {
+      "default_path": "sidePanel.html"
+   },
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "2.6.16",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "*" ]
+   } ]
+}

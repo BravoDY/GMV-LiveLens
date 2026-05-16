@@ -1,0 +1,2 @@
+- [x] `backend/collectors/ocr_reader.py` 中的 `_dddd_engine` 函数不再调用 `set_ranges(0)`。
+- [x] 确保 `_dddd_engine` 依然正确配置了 `ocr=True, det=False, show_ad=False`。

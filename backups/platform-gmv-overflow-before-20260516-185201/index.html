@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GMV-LiveLens</title>
+    <link rel="icon" type="image/png" href="/static/assets/descente-logo.png?v=20260430-0005" />
+    <link rel="stylesheet" href="/static/assets/open-props.min.css" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260516-ui-obvious-0032" />
+  </head>
+  <body class="dashboard-page">
+    <header class="app-header">
+      <div class="header-brand">
+        <img class="header-logo" src="/static/assets/descente-logo.png?v=20260430-0005" alt="DESCENTE LOGO" />
+        <h1 class="header-title">迪桑特 · 平台实时GMV监控</h1>
+      </div>
+      <nav class="header-nav">
+        <button class="tab nav-item active" data-view="dashboard">实时看板</button>
+        <button class="tab nav-item" data-view="config">采集配置</button>
+        <button class="tab nav-item" data-view="manager">任务管理</button>
+      </nav>
+      <div class="header-actions">
+        <button id="captureAllButton" class="collect-all-btn" type="button">采集全部</button>
+        <div class="control-group">
+          <div class="control-label">OCR引擎</div>
+          <select id="globalOcrEngine" class="control-select">
+            <option value="auto">自动 (RapidOCR优先)</option>
+            <option value="ddddocr">ddddocr (艺术字/验证码)</option>
+            <option value="rapidocr">RapidOCR</option>
+            <option value="paddleocr">PaddleOCR-v3</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <div class="control-label">正式采集频率</div>
+          <select id="globalInterval" class="control-select" style="min-width:90px;">
+            <option value="0.5">0.5秒</option>
+            <option value="1" selected>1秒</option>
+            <option value="2">2秒</option>
+            <option value="5">5秒</option>
+            <option value="10">10秒</option>
+            <option value="30">30秒</option>
+            <option value="60">60秒</option>
+          </select>
+        </div>
+        <button id="schedulerToggle" class="scheduler-button" type="button">启动采集</button>
+        <button id="debugPanelToggle" class="debug-toggle-button" type="button" title="部署与接口调试">调试</button>
+        <button id="fullscreenToggle" class="icon-button" type="button" title="全屏看板" style="display:none;">⛶</button>
+        <div id="wsStatus" class="live-pill"><span class="live-dot"></span>实时连接</div>
+      </div>
+    </header>
+
+    <aside id="debugStatusPanel" class="debug-status-panel" aria-live="polite">
+      <div class="debug-status-head">
+        <div>
+          <strong>部署调试 / 安全状态</strong>
+          <span id="debugStatusSubtitle">正在加载后端状态...</span>
+        </div>
+        <button id="debugPanelClose" type="button" aria-label="关闭调试面板">×</button>
+      </div>
+      <div id="debugStatusBody" class="debug-status-body">
+        <div class="debug-kv"><span>后端健康</span><b id="debugHealthStatus">-</b></div>
+        <div class="debug-kv"><span>运行环境</span><b id="debugAppEnv">-</b></div>
+        <div class="debug-kv"><span>写接口 Token</span><b id="debugTokenRequired">-</b></div>
+        <div class="debug-kv"><span>Token 状态</span><b id="debugTokenState">-</b></div>
+        <div class="debug-kv"><span>最近 Request ID</span><b id="debugLastRequestId">-</b></div>
+      </div>
+      <label class="debug-token-field">
+        <span>管理员 API Token</span>
+        <input id="apiTokenInput" type="password" autocomplete="off" placeholder="公网写操作需要填写" />
+      </label>
+      <div class="debug-status-actions">
+        <button id="saveApiToken" type="button" class="primary">保存 Token</button>
+        <button id="clearApiToken" type="button">清空</button>
+        <button id="refreshDebugStatus" type="button">刷新状态</button>
+      </div>
+      <div id="debugStatusMessage" class="debug-status-message"></div>
+    </aside>
+
+    <main>
+      <section id="dashboard" class="view active dashboard-view">
+        <section class="dashboard-top-frame">
+          <div id="summaryGrid" class="summary-grid"></div>
+        </section>
+
+        <section class="dashboard-section dashboard-brand-section">
+          <div id="storeGrid" class="store-grid"></div>
+        </section>
+      </section>
+
+      <section id="config" class="view">
+        <div class="config-layout">
+          <aside class="config-panel">
+            <section class="setup-workbench">
+              <div class="section-title setup-title">
+                <div>
+                  <h2>采集配置工作台</h2>
+                  <span>只保留真实 Edge 三步主流程，右侧截图会持续常驻</span>
+                </div>
+              </div>
+
+              <div class="setup-current-card setup-guide-card" id="setupCurrentCard">
+                <div class="setup-current-head">
+                  <div>
+                    <div class="setup-current-kicker">当前处理店铺</div>
+                    <strong id="setupCurrentName">暂无待处理店铺</strong>
+                  </div>
+                  <span id="setupCurrentStatus" class="status">未开始</span>
+                </div>
+                <div class="setup-current-meta" id="setupCurrentMeta">请从任务管理选择店铺进入编辑。</div>
+                <div class="setup-next-step" id="setupNextStep">下一步：请从任务管理选择要配置的店铺。</div>
+                <div class="setup-summary-line" id="setupSummaryLine">待处理统计：总店铺 0，待绑定 0，待标定 0，已完成 0。</div>
+                <div id="setupShopJumperRow" style="margin-top:6px;display:none;">
+                  <label style="font-size:12px;color:var(--text-secondary)">切换店铺：<select id="setupShopJumper" style="max-width:260px;"></select></label>
+                </div>
+                <div class="button-row setup-actions">
+                  <button id="focusNextSetup" type="button" class="primary">进入下一家</button>
+                  <button id="rescanCurrentSetup" type="button">重新扫描</button>
+                </div>
+              </div>
+
+              <div class="setup-step-card" id="setupStepBind">
+                <h3 class="setup-block-title">步骤 1. 选择当前任务页面</h3>
+                <div id="bindHint" class="helper-text">工作台只负责当前任务的页签选择与绑定；Edge 的启动、显示和页面切换请在任务管理完成。</div>
+                <label style="margin-bottom:6px">当前店铺 Edge 会话
+                  <select id="bindSessionSelect">
+                    <option value="">加载中...</option>
+                  </select>
+                </label>
+                <div id="bindContext" class="bind-context">尚未选择店铺上下文。</div>
+                <button id="scanBind" class="primary wide-button">扫描当前会话页签</button>
+                <button id="resumeAfterLogin" class="primary wide-button" style="display:none;margin-top:8px">已登录，打开业务页并自动继续</button>
+                <div id="bindTable" class="bind-table"></div>
+                <button id="confirmBind" class="primary wide-button" style="display:none;margin-top:8px">使用此页面</button>
+              </div>
+
+              <div class="setup-step-card" id="setupStepSave">
+                <h3 class="setup-block-title">步骤 2. 保存并进入下一家</h3>
+                  <div class="helper-text">选择正式采集方式后保存任务：已支持只读的平台默认优先使用 `大屏只读`，不支持的平台继续使用 `OCR识别`。顶部“正式采集频率”会统一作用于全部正式任务。</div>
+                <label style="margin:8px 0 6px;display:block">当前采集方式
+                  <select id="valueSourceSelect">
+                    <option value="ocr">OCR识别</option>
+                    <option value="screen_readonly">大屏只读</option>
+                  </select>
+                </label>
+                <div id="valueSourceHint" class="helper-text">已选择大屏只读：支持的平台会默认优先使用页面只读；若切换到 OCR，则仍需先生成预览并框选 GMV 区域。</div>
+                <button id="resetCurrentSetup" type="button" class="wide-button">清空当前标定并重来</button>
+                <div id="configMessage" class="message"></div>
+              </div>
+            </section>
+            <section class="setup-hidden-fields" aria-hidden="true">
+              <input id="captureMode" type="hidden" value="remote_edge" />
+              <input id="platform" />
+              <input id="shopName" />
+              <input id="keywordHint" />
+              <input id="confirmCount" type="number" value="2" />
+              <input id="safetyMargin" type="number" value="0.05" />
+              <input id="windowKeyword" value="" />
+              <select id="windowSelect"></select>
+            </section>
+          </aside>
+
+          <section class="preview-panel">
+            <div class="section-title">
+              <h2>截图标定</h2>
+              <span id="previewStepHint">先完成页签绑定，再在这里生成预览并框选 GMV 区域</span>
+            </div>
+            <div class="preview-toolbar">
+              <button id="previewRemotePage" type="button" class="primary">生成预览</button>
+              <button id="testOcr" type="button">测试识别</button>
+              <button id="saveTask" type="button" class="primary">保存并进入下一家</button>
+            </div>
+            <div id="previewWrap" class="preview-wrap">
+              <img id="previewImage" alt="页面预览" draggable="false" />
+              <div id="selectionBox"></div>
+            </div>
+            <div class="coords">
+              <span>x: <b id="coordX">-</b></span>
+              <span>y: <b id="coordY">-</b></span>
+              <span>w: <b id="coordW">-</b></span>
+              <span>h: <b id="coordH">-</b></span>
+            </div>
+            <div id="ocrResult" class="ocr-result"></div>
+            <section id="screenReadonlyCard" class="setup-step-card" style="margin-top:12px;">
+              <h3 id="screenReadonlyTitle" class="setup-block-title">大屏只读测试</h3>
+              <div id="screenReadonlyHelper" class="helper-text">测试模式：请先在真实页面进入大屏，再点击“开启只读”。系统只在页面内读取 `payAmt.value`，不做接口重放。</div>
+              <div class="button-row" style="margin-top:8px;">
+                <button id="startScreenReadonly" type="button">开启只读</button>
+                <button id="refreshScreenReadonly" type="button">刷新只读结果</button>
+                <button id="clearScreenReadonly" type="button">清空测试记录</button>
+              </div>
+              <div id="screenReadonlySummary" class="helper-text" style="margin-top:8px;">状态：未开启</div>
+              <pre id="screenReadonlyLatest" class="ocr-result" style="margin-top:8px;white-space:pre-wrap;">还没有读取到大屏 payAmt。请先在真实页面进入大屏，再点击“开启只读”。</pre>
+              <pre id="screenReadonlyRecords" class="ocr-result" style="max-height:240px;overflow:auto;white-space:pre-wrap;">暂无测试记录。</pre>
+            </section>
+          </section>
+        </div>
+      </section>
+
+      <section id="manager" class="view">
+        <section class="manager-tools">
+          <h2>任务管理</h2>
+          <div id="managerViewToggle"></div>
+          <div class="filter-row compact" id="statusFilters">
+            <button class="chip active" data-status="all">全部</button>
+            <button class="chip" data-status="ok">正常</button>
+            <button class="chip" data-status="alert">告警</button>
+            <button class="chip" data-status="paused">暂停</button>
+          </div>
+        </section>
+        <div id="managerGrid" class="manager-grid"></div>
+        <section class="debug-panel">
+          <div class="section-title">
+            <h2>最近采样</h2>
+            <span>点击任务卡片或历史按钮查看</span>
+          </div>
+          <div id="samplePanel" class="sample-panel">请选择一个任务。</div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/static/core.js?v=20260515-config-bindings-0012"></script>
+    <script src="/static/dashboard-shared.js?v=20260516-date-range-align-0018"></script>
+    <script src="/static/dashboard.js?v=20260516-date-range-0014"></script>
+    <script src="/static/edge.js?v=20260507-global-interval-default-readonly-0016"></script>
+    <script src="/static/config.js?v=20260515-config-bindings-0017"></script>
+    <script src="/static/debug.js?v=20260514-debug-panel-0001"></script>
+    <script src="/static/app.js?v=20260515-ws-live-0010"></script>
+  </body>
+</html>

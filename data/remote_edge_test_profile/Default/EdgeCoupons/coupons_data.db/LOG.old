@@ -1,0 +1,6 @@
+2026/04/28-22:02:06.300 8da8 Reusing MANIFEST C:\Users\yjd22\Desktop\python项目\GMV-LiveLens\data\remote_edge_test_profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/04/28-22:02:06.301 8da8 Recovering log #7
+2026/04/28-22:02:06.302 8da8 Reusing old log C:\Users\yjd22\Desktop\python项目\GMV-LiveLens\data\remote_edge_test_profile\Default\EdgeCoupons/coupons_data.db/000007.log 
+2026/04/28-22:02:07.139 7ba8 Level-0 table #11: started
+2026/04/28-22:02:07.142 7ba8 Level-0 table #11: 682372 bytes OK
+2026/04/28-22:02:07.143 7ba8 Delete type=0 #7
