@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from backend.models import CaptureTask
 from backend.services import store
+
+logger = logging.getLogger(__name__)
 
 
 def page_to_dict(page: Any) -> dict[str, Any]:
@@ -233,4 +236,9 @@ def restore_task_binding_from_pages(
         return saved, decision
 
     decision = {**decision, "restored": False}
+    reason_code = str(decision.get("reason_code") or "no_candidate")
+    logger.debug(
+        "edge_bind_restore_skip task_id=%s session=%s platform=%s shop=%s reason=%s",
+        task.id, session_id, task.platform, task.shop_name, reason_code,
+    )
     return task, decision

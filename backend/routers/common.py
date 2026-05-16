@@ -4,6 +4,7 @@ import asyncio
 import base64
 import io
 import json as _json
+import logging
 import sqlite3
 from collections.abc import Callable
 from pathlib import Path
@@ -685,6 +686,14 @@ def auto_restore_edge_session_task_bindings_with_report(
     target_task = None
     if target_task_id is not None:
         target_task = next((item for item in decisions if int(item.get("task_id") or 0) == int(target_task_id)), None)
+    _log = logging.getLogger(__name__)
+    restored_count = len(restored)
+    if restored_count > 0 or decisions:
+        skipped = [d for d in decisions if not d.get("restored")]
+        _log.info(
+            "edge_bind_restore_summary session=%s restored=%s skipped=%s total=%s",
+            session_id, restored_count, len(skipped), len(decisions),
+        )
     return {
         "session_id": session_id,
         "restored": restored,

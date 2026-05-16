@@ -1,0 +1,10 @@
+platform,companyshop_name,brand,shop_name,default_page_url,keyword_hint,url_patterns,url_must_contain,enabled,Target
+天猫,DST天猫,大货独立店,天猫官旗店,https://sycm.taobao.com/datawar/screen.htm,成交金额,sycm.taobao.com/datawar/screen.htm,,FALSE,"55,000,000"
+天猫,DESCENTE迪桑特童装旗舰店,子品牌独立店,KIDS官旗店,https://sycm.taobao.com/datawar/screen.htm,成交金额,sycm.taobao.com/datawar/screen.htm,,FALSE,"520,000"
+天猫,DSTBLANC天猫店,子品牌独立店,BlANC官旗店,https://sycm.taobao.com/datawar/screen.htm,成交金额,sycm.taobao.com/datawar/screen.htm,,FALSE,"600,000"
+天猫,DST天猫高尔夫旗舰店,子品牌独立店,GOLF官旗店,https://sycm.taobao.com/datawar/screen.htm,成交金额,sycm.taobao.com/datawar/screen.htm,,FALSE,"500,000"
+京东,DST京东,大货独立店,京东官旗店,https://sz.jd.com/sz/view/realTime/realKanBans.html,成交金额,jd.com/merchant;shangzhi.jd.com;pop.jd.com,,FALSE,"8,000,000"
+唯品,唯品会,大货独立店,唯品官旗店,https://compass.vip.com/live/index.html#/daily,成交金额,https://compass.vip.com/live/index.html#/daily,,FALSE,"1,200,000"
+抖音,DST抖店,大货独立店,抖音官旗店,https://compass.jinritemai.com/screen/shop/single,成交金额,,,FALSE,"2,300,000"
+抖音,DSTGOLF抖店,子品牌独立店,GOLF官旗店,https://compass.jinritemai.com/screen/shop/single,成交金额,,,FALSE,"80,000"
+得物,DST得物,大货独立店,得物官旗店,https://stark.dewu.com/main/transaction/adjustment?noLayout=1,成交金额,,,FALSE,"950,000"
