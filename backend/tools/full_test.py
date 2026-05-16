@@ -343,6 +343,41 @@ def run_section_b() -> None:
         ok = got_fast == 0.5 and got_slow == 3.0
         return ok, f"fast={got_fast}, slow={got_slow}"
     _check("B", "B4: 调度器按任务 interval_seconds 取执行频率", b4_task_interval)
+    # ── B4.5: 跨天检测 ────────────────────────────────
+    def b4_crossday_reset():
+        from datetime import datetime, timedelta
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d 10:00:00")
+        t = _task(last_trusted_value=200000, last_success_at=yesterday, confirm_count=1)
+        status, reason, trusted, pv, pc, required, accepted = sched._judge(t, 50000, {"engine": "rapidocr"})
+        ok = status == "ok" and trusted == 50000 and "跨天重置" in reason
+        return ok, f"status={status}, trusted={trusted}, reason={reason[:50]}"
+    _check("B", "B4.5: 跨天检测（昨天可信值20万→今天5万）→ 接受跨天重置", b4_crossday_reset)
+
+    def b4_crossday_sameday():
+        from datetime import datetime
+        today = datetime.now().strftime("%Y-%m-%d 10:00:00")
+        t = _task(last_trusted_value=200000, last_success_at=today, confirm_count=1)
+        status, reason, trusted, pv, pc, required, accepted = sched._judge(t, 50000, {"engine": "rapidocr"})
+        ok = status == "ok" and trusted is None and "同一天" in reason
+        return ok, f"status={status}, trusted={trusted}, reason={reason[:50]}"
+    _check("B", "B4.5: 同日检测（今天20万→5万）→ 忽略下降不更新", b4_crossday_sameday)
+
+    def b4_crossday_empty_last_success():
+        t = _task(last_trusted_value=200000, last_success_at="")
+        status, reason, trusted, pv, pc, required, accepted = sched._judge(t, 50000, {"engine": "rapidocr"})
+        ok = status == "ok" and trusted is None and "同一天" in reason
+        return ok, f"status={status}, reason={reason[:50]}"
+    _check("B", "B4.5: last_success_at 为空 → 跳过跨天检测，同日逻辑兜底", b4_crossday_empty_last_success)
+
+    def b4_crossday_invalid_format():
+        t = _task(last_trusted_value=200000, last_success_at="bad-date-format")
+        # Should log warning but not crash; falls through to same-day logic
+        status, reason, trusted, pv, pc, required, accepted = sched._judge(t, 50000, {"engine": "rapidocr"})
+        ok = status == "ok"
+        return ok, f"status={status}, reason={reason[:50]} (异常格式未崩溃)"
+    _check("B", "B4.5: last_success_at 非标准格式 → 不崩溃且日志告警", b4_crossday_invalid_format)
+
+
 
 
 # ══════════════════════════════════════════════════════════
@@ -503,6 +538,34 @@ def run_section_c() -> None:
                 f"reason_code={updated.last_reason_code if updated else None}"
             )
         _check("C", "C4: delete_edge_session() 清空旧页面绑定并要求重绑", c4_delete_edge_session_resets_binding)
+        def c5_screenshot_cleanup_count():
+            import tempfile, shutil
+            from backend.services.scheduler import CaptureScheduler
+
+            tmp = Path(tempfile.mkdtemp(prefix="gmv_test_"))
+            try:
+                for i in range(5):
+                    (tmp / f"task_99_{i}.png").write_text(f"screenshot_{i}")
+                original_dir = store_mod.SCREENSHOT_DIR
+                store_mod.SCREENSHOT_DIR = tmp
+                # Override max count for test (module-level constant)
+                import backend.services.scheduler as sched_mod
+                old_max = sched_mod._SCREENSHOT_MAX_COUNT_PER_TASK
+                sched_mod._SCREENSHOT_MAX_COUNT_PER_TASK = 2
+                try:
+                    CaptureScheduler._cleanup_old_screenshots(99)
+                finally:
+                    sched_mod._SCREENSHOT_MAX_COUNT_PER_TASK = old_max
+                store_mod.SCREENSHOT_DIR = original_dir
+
+                remaining = sorted(tmp.glob("task_99_*.png"))
+                ok = len(remaining) <= 2
+                return ok, f"创建5张→清理后保留{len(remaining)}张（上限2）"
+            finally:
+                shutil.rmtree(tmp, ignore_errors=True)
+        _check("C", "C5: _cleanup_old_screenshots() 截图数量上限控制", c5_screenshot_cleanup_count)
+
+
 
     finally:
         store_mod.DB_PATH = _orig_db
