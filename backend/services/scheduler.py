@@ -22,6 +22,7 @@ from backend.services import edge_binding, shop_config, store
 logger = logging.getLogger(__name__)
 
 _SCREENSHOT_MAX_AGE_DAYS = int(os.environ.get("GMV_SCREENSHOT_MAX_AGE_DAYS", "1"))
+_SCREENSHOT_MAX_COUNT_PER_TASK = int(os.environ.get("GMV_SCREENSHOT_MAX_COUNT_PER_TASK", "200"))
 _PREVIEW_MIN_INTERVAL_SECONDS = int(os.environ.get("GMV_PREVIEW_MIN_INTERVAL_SECONDS", "180"))
 _PREVIEW_MAX_INTERVAL_SECONDS = int(os.environ.get("GMV_PREVIEW_MAX_INTERVAL_SECONDS", "480"))
 _PREVIEW_MAX_WIDTH = int(os.environ.get("GMV_PREVIEW_MAX_WIDTH", "720"))
@@ -675,15 +676,29 @@ class CaptureScheduler:
         is_cross_day = False
         if last is not None and task.last_success_at:
             try:
+                last_success_str = str(task.last_success_at).strip()
+                if not last_success_str:
+                    raise ValueError("empty last_success_at")
                 if isinstance(task.last_success_at, (int, float)):
                     last_date = datetime.fromtimestamp(task.last_success_at).date()
                 else:
-                    last_date = datetime.strptime(str(task.last_success_at), "%Y-%m-%d %H:%M:%S").date()
+                    last_date = None
+                    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"):
+                        try:
+                            last_date = datetime.strptime(last_success_str, fmt).date()
+                            break
+                        except ValueError:
+                            continue
+                    if last_date is None:
+                        raise ValueError(f"unrecognized last_success_at format: {last_success_str[:50]}")
                 current_date = datetime.now().date()
                 if current_date > last_date:
                     is_cross_day = True
             except Exception:
-                pass
+                logger.warning(
+                    "cross_day_check_failed task_id=%s platform=%s shop=%s last_success_at=%s",
+                    task.id, task.platform, task.shop_name, repr(task.last_success_at)[:80],
+                )
 
         if last is not None:
             if selected < last:
@@ -801,7 +816,15 @@ class CaptureScheduler:
         patterns = (f"task_{task_id}_*.png", f"task_preview_{task_id}_*.png")
         try:
             for pattern in patterns:
-                for file in store.SCREENSHOT_DIR.glob(pattern):
+                files = sorted(
+                    store.SCREENSHOT_DIR.glob(pattern),
+                    key=lambda f: f.stat().st_mtime,
+                    reverse=True,
+                )
+                max_count = max(1, _SCREENSHOT_MAX_COUNT_PER_TASK)
+                for file in files[max_count:]:
+                    file.unlink(missing_ok=True)
+                for file in files[:max_count]:
                     if file.stat().st_mtime < cutoff:
                         file.unlink(missing_ok=True)
         except Exception:

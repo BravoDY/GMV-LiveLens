@@ -11,7 +11,13 @@ from typing import Any
 
 import pymysql
 
-from backend.services.dashboard_dataset import DATA_DIR, TO_DATE_PATH, build_dataset_overview, load_target_rows, load_to_date_rows
+from backend.services.dashboard_dataset import (
+    DATA_DIR,
+    TO_DATE_PATH,
+    build_dataset_overview,
+    load_target_rows,
+    load_to_date_rows,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -690,7 +696,7 @@ async def _cache_refresh_loop() -> None:
         except Exception:
             logger.exception("缓存定时刷新异常")
 
-_cache_scheduler_task: "asyncio.Task[None] | None" = None
+_cache_scheduler_task: asyncio.Task[None] | None = None
 
 
 def start_cache_scheduler() -> None:

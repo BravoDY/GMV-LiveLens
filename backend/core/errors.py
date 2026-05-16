@@ -8,7 +8,6 @@ from fastapi.responses import JSONResponse
 
 from backend.core.response import error_response
 
-
 HTTP_STATUS_CODE_MAP = {
     400: "BAD_REQUEST",
     401: "UNAUTHORIZED",
