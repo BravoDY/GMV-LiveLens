@@ -22,6 +22,7 @@ env/
 # === 数据目录（包含敏感信息，严禁提交） ===
 data/edge_profiles/
 data/browser_profile/
+data/remote_edge_test_profile/
 data/*.sqlite3
 data/*.sqlite3-journal
 data/*.sqlite3-wal
@@ -30,6 +31,7 @@ data/ocr_datasets/
 data/ocr_samples/
 
 # === 运行时日志 ===
+logs/
 *.log
 data/*.log
 
@@ -46,3 +48,5 @@ Desktop.ini
 # === 临时文件 ===
 .trae/tmp/
 *.tmp
+*.bin
+test.png
