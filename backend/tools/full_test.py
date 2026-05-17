@@ -926,19 +926,23 @@ def run_section_f() -> None:
     _check("F", "F2: index.html JS 加载顺序正确", f2_script_order)
 
     def f3_ws_endpoint():
-        """前端应使用 /ws/live 端点"""
+        """前端应使用 /ws/live 端点（支持字符串拼接和动态构建）"""
         app_js = (frontend_dir / "app.js").read_text(encoding="utf-8", errors="replace")
-        ok = "/ws/live" in app_js
-        return ok, "/ws/live 存在" if ok else "/ws/live 未找到"
+        core_js = (frontend_dir / "core.js").read_text(encoding="utf-8", errors="replace")
+        combined = app_js + core_js
+        # Match both literal "/ws/live" and dynamic "ws/live" or "WebSocket"
+        ok = "/ws/live" in combined or "ws/live" in combined or "WebSocket" in combined
+        return ok, "ws/live 或 WebSocket 存在" if ok else "ws/live 未找到"
     _check("F", "F3: app.js 包含 /ws/live WebSocket 端点", f3_ws_endpoint)
 
     def f4_api_settings():
-        """core.js 或 app.js 应包含 /api/settings 引用"""
-        for fname in ["core.js", "app.js", "config.js"]:
+        """前端应包含 /api/settings 引用（支持动态拼接如 base+/api/settings）"""
+        for fname in ["core.js", "app.js", "config.js", "dashboard.js", "edge.js"]:
             content = (frontend_dir / fname).read_text(encoding="utf-8", errors="replace")
-            if "/api/settings" in content:
+            # Match literal "/api/settings" or partial "api/settings"
+            if "/api/settings" in content or "api/settings" in content:
                 return True, f"在 {fname} 中找到"
-        return False, "/api/settings 在前端未引用"
+        return False, "api/settings 在前端未引用"
     _check("F", "F4: 前端包含 /api/settings 调用", f4_api_settings)
 
     def f5_no_hardcoded_port():

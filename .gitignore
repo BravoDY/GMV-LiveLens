@@ -24,6 +24,7 @@ data/edge_profiles/
 data/browser_profile/
 data/remote_edge_test_profile/
 data/*.sqlite3
+data/*.sqlite3-*
 data/*.sqlite3-journal
 data/*.sqlite3-wal
 data/screenshots/
