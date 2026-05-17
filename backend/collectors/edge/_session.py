@@ -247,6 +247,12 @@ class RemoteEdgeSessionMixin:
                 result_queue.put((False, exc))
 
     def _call(self, action_name: str, func: Callable[[], T], timeout_seconds: float | None = None) -> T:
+        if self._window_op_running and action_name in ("show_edge", "hide_edge", "close_edge"):
+            exc = RuntimeError(f"窗口操作正在进行中，当前无法执行 {action_name}")
+            exc.reason_code = "window_op_in_progress"
+            self._last_reason_code = "window_op_in_progress"
+            self._last_error = str(exc)
+            raise exc
         result_queue: queue.Queue = queue.Queue(maxsize=1)
         self._current_action = action_name
         self._jobs.put((action_name, func, result_queue))
@@ -580,14 +586,18 @@ class RemoteEdgeManager:
         session_id = (session_id or "default_real_edge").strip()
         with self._lock:
             client = self._clients.get(session_id)
-            if client is not None and (
-                client.debug_port != int(debug_port)
-                or client.user_data_dir != user_data_dir
-                or client.session_mode != ("real_profile" if session_mode == "real_profile" else ("real_profile" if not user_data_dir else "isolated"))
-                or client.profile_directory != (profile_directory or "Default")
-                or client.is_stale
-            ):
-                client = None
+            if client is not None:
+                should_replace = (
+                    client.debug_port != int(debug_port)
+                    or client.user_data_dir != user_data_dir
+                    or client.session_mode != ("real_profile" if session_mode == "real_profile" else ("real_profile" if not user_data_dir else "isolated"))
+                    or client.profile_directory != (profile_directory or "Default")
+                    or client.is_stale
+                )
+                if should_replace:
+                    if not client.is_stale:
+                        client.mark_stale("manager_replaced")
+                    client = None
             if client is None:
                 from . import RemoteEdge
 

@@ -106,6 +106,16 @@ async def start_edge_session(session_id: str, launch_url: str = Query(default=""
 @router.post("/api/edge-sessions/{session_id}/show")
 async def show_edge_session(session_id: str, launch_url: str = Query(default="")) -> dict[str, Any]:
     client = edge_client_for(session_id)
+    if client.is_window_op_running:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": "当前店铺 Edge 窗口操作正在进行中，请稍后再试。",
+                "reason_code": "window_op_in_progress",
+                "action": "show_edge",
+                "session_id": session_id,
+            },
+        )
     resolved_launch_url = (launch_url or "").strip() or store.preferred_launch_url_for_session(session_id)
     try:
         result = await asyncio.to_thread(client.show_edge, resolved_launch_url)
@@ -159,6 +169,16 @@ async def show_edge_session(session_id: str, launch_url: str = Query(default="")
 @router.post("/api/edge-sessions/{session_id}/hide")
 async def hide_edge_session(session_id: str) -> dict[str, Any]:
     client = edge_client_for(session_id)
+    if client.is_window_op_running:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": "当前店铺 Edge 窗口操作正在进行中，请稍后再试。",
+                "reason_code": "window_op_in_progress",
+                "action": "hide_edge",
+                "session_id": session_id,
+            },
+        )
     try:
         result = await asyncio.to_thread(client.hide_edge)
     except EdgeActionTimeoutError as exc:
@@ -200,6 +220,16 @@ async def hide_edge_session(session_id: str) -> dict[str, Any]:
 @router.post("/api/edge-sessions/{session_id}/close")
 async def close_edge_session(session_id: str) -> dict[str, Any]:
     client = edge_client_for(session_id)
+    if client.is_window_op_running:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": "当前店铺 Edge 窗口操作正在进行中，请稍后再试。",
+                "reason_code": "window_op_in_progress",
+                "action": "close_edge",
+                "session_id": session_id,
+            },
+        )
     try:
         result = await asyncio.to_thread(client.close_edge)
     except EdgeActionTimeoutError as exc:

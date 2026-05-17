@@ -223,6 +223,12 @@ def _edge_processes() -> list[dict[str, object]]:
     return normalized
 
 
+def invalidate_edge_process_cache() -> None:
+    """强制刷新 Edge 进程缓存，用于 close 后验证等关键路径"""
+    global _EDGE_PROC_CACHE
+    _EDGE_PROC_CACHE = (0.0, [])
+
+
 def _match_edge_processes(
     *,
     debug_port: int = 0,
@@ -587,6 +593,7 @@ def close_edge_window_native(
     timeout_seconds: float = 8.0,
 ) -> EdgeWindowActionResult:
     """向 Edge 主窗口发送 WM_CLOSE，与用户点击 X 按钮完全等效。"""
+    invalidate_edge_process_cache()
     if user32 is None:
         return EdgeWindowActionResult(ok=False, error="当前环境不支持 Windows 窗口控制")
     window = find_edge_window(debug_port=debug_port, user_data_dir=user_data_dir, pid=pid)
@@ -598,6 +605,7 @@ def close_edge_window_native(
         return EdgeWindowActionResult(ok=False, hwnd=window.hwnd, pid=window.pid, error=str(exc))
     deadline = time.time() + max(1.0, timeout_seconds)
     while time.time() < deadline:
+        invalidate_edge_process_cache()
         remaining = find_edge_process_ids(
             debug_port=debug_port,
             user_data_dir=user_data_dir,

@@ -191,9 +191,11 @@ function bindTaskEdgeButtons() {
     if (!sessionId) return;
 
     const actionLabels = { start: "启动 Edge", show: "显示", hide: "隐藏", close: "关闭" };
+    const progressLabels = { start: "启动中...", show: "显示中...", hide: "隐藏中...", close: "关闭中..." };
     const label = actionLabels[action] || action;
+    const progressLabel = progressLabels[action] || "处理中...";
     btn.disabled = true;
-    btn.textContent = "处理中...";
+    btn.textContent = progressLabel;
     try {
       if (action === "start") {
         await startAndShowEdgeSession(sessionId);
@@ -213,6 +215,9 @@ function bindTaskEdgeButtons() {
         }
       }, 1500);
     } catch (err) {
+      const detail = parseApiErrorPayload(err);
+      const errorMsg = detail?.error || `Edge操作失败: ${label}`;
+      showMessage(errorMsg, true);
       console.error(`Edge操作失败: ${label}`, err);
     } finally {
       btn.disabled = false;

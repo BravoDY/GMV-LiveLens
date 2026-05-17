@@ -113,6 +113,7 @@ class RemoteEdgeActionsMixin:
     def _start_edge(self, launch_url: str = "", reset_context: bool = True, visible: bool = False) -> RemoteEdgeHealth:
         if reset_context:
             self._reset_action_context("start_edge")
+        _prev_action = self._last_action
         self._last_action = "start_real_edge_debug"
         self._set_stage("start:locating_edge")
         target_url = self._normalize_launch_url(launch_url)
@@ -133,15 +134,18 @@ class RemoteEdgeActionsMixin:
             self._set_stage("start:conflict_detected")
             return self._health()
         if self.user_data_dir:
-            diagnostics = self._window_diagnostics()
-            commands = [str(item or "") for item in diagnostics.get("candidate_commands", [])]
-            has_profile_process = bool(diagnostics.get("candidate_pids"))
-            has_debug_flag = any(f"--remote-debugging-port={self.debug_port}" in command for command in commands)
-            if has_profile_process and not has_debug_flag:
-                self._last_error = "当前店铺 Profile 已被一个未开启调试端口的 Edge 进程占用。为保护登录态，系统不会自动强杀重启；请手动关闭该店铺 Edge 窗口后再启动。"
-                self._last_reason_code = "profile_locked_without_debug"
-                self._set_stage("start:profile_locked_without_debug")
-                return self._health()
+            if _prev_action == "safe_close_edge":
+                pass
+            else:
+                diagnostics = self._window_diagnostics()
+                commands = [str(item or "") for item in diagnostics.get("candidate_commands", [])]
+                has_profile_process = bool(diagnostics.get("candidate_pids"))
+                has_debug_flag = any(f"--remote-debugging-port={self.debug_port}" in command for command in commands)
+                if has_profile_process and not has_debug_flag:
+                    self._last_error = "当前店铺 Profile 已被一个未开启调试端口的 Edge 进程占用。为保护登录态，系统不会自动强杀重启；请手动关闭该店铺 Edge 窗口后再启动。"
+                    self._last_reason_code = "profile_locked_without_debug"
+                    self._set_stage("start:profile_locked_without_debug")
+                    return self._health()
 
         # 多会话模式：每个会话有独立 user_data_dir，将窗口移出可见屏幕区域
         # CDP 截图不依赖窗口可见性，这样所有 Edge 进程都可以隐藏在看板后面

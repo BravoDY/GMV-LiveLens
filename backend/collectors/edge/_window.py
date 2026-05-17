@@ -9,6 +9,7 @@ from backend.collectors.window_control import (
     close_edge_window_native,
     edge_window_diagnostics,
     hide_edge_window,
+    invalidate_edge_process_cache,
     show_edge_window,
 )
 
@@ -323,15 +324,22 @@ class RemoteEdgeWindowMixin:
         self._reset_browser()
         self._last_pid = 0
         self._cached_hwnd = 0
+        for _ in range(12):
+            if not self._debug_available():
+                break
+            time.sleep(0.25)
         self._set_stage("close:verifying_shutdown")
         debug_available = self._debug_available()
         profile_diagnostics = self._profile_diagnostics()
         window_diagnostics = self._window_diagnostics()
         residual_pids = [int(item) for item in (window_diagnostics.get("candidate_pids") or []) if int(item or 0) > 0]
         if result.ok and not debug_available and not residual_pids:
+            self._stale = False
+            self._stale_reason = ""
             self._last_error = ""
             self._last_reason_code = ""
             self._set_stage("close:closed")
+            invalidate_edge_process_cache()
         else:
             if result.ok and not debug_available and residual_pids:
                 self._last_error = f"调试端口已关闭，但仍检测到 Profile 进程残留: {residual_pids}"
@@ -376,7 +384,6 @@ class RemoteEdgeWindowMixin:
                 timeout_seconds=8.0,
             )
             if result.ok:
-                self._reset_browser()
                 return True
         except Exception:
             pass

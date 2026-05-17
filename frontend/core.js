@@ -296,7 +296,38 @@ function switchView(view) {
 // ===== Edge 会话 API 封装 =====
 
 async function callEdgeAction(path, { actionName, timeoutMs } = {}) {
-  return api(path, { method: "POST", actionName, timeoutMs: timeoutMs || 20_000 });
+  const ms = timeoutMs || 20_000;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), ms);
+  try {
+    const token = currentApiToken();
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["X-API-Token"] = token;
+    const response = await fetch(path, {
+      method: "POST",
+      signal: controller.signal,
+      headers,
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      const detail = { status: response.status, ...body };
+      throw new Error(JSON.stringify({ detail }));
+    }
+    return await response.json();
+  } catch (error) {
+    if (error.name === "AbortError") {
+      const detail = {
+        error: `操作超时 (${ms / 1000}秒)`,
+        reason_code: "edge_action_timeout",
+        action: actionName || path,
+        timeout_ms: ms,
+      };
+      throw new Error(JSON.stringify({ detail }));
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 async function startEdgeSession(sessionId, launchUrl = "") {
