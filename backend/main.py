@@ -30,7 +30,7 @@ from backend.services.scheduler import scheduler
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-app = FastAPI(title="GMV-LiveLens", version="0.1.0")
+app = FastAPI(title="GMV-LiveLens", version="0.3.0")
 app.add_middleware(RequestIdMiddleware)
 app.add_middleware(WriteTokenMiddleware)
 app.add_middleware(
