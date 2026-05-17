@@ -67,6 +67,33 @@ def test_dashboard_entries_share_public_dashboard_module() -> None:
     assert "/api/dashboard-datasets-test" not in test_app
 
 
+def test_dashboard_mobile_responsive_rules_hide_time_and_prevent_overflow() -> None:
+    styles_css = ROOT_DIR / "frontend" / "styles.css"
+    official_html = ROOT_DIR / "frontend" / "index.html"
+    test_html = ROOT_DIR / "frontend" / "test-dashboard" / "index.html"
+
+    styles_content = styles_css.read_text(encoding="utf-8")
+    official_content = official_html.read_text(encoding="utf-8")
+    test_content = test_html.read_text(encoding="utf-8")
+
+    assert "@media (max-width: 768px)" in styles_content
+    assert "@media (max-width: 420px)" in styles_content
+    assert ".summary-time-row {\n    display: none;" in styles_content
+    assert ".summary-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));" in styles_content
+    assert ".total-card-shell,\n  .total-card {\n    grid-column: 1 / -1;" in styles_content
+    assert 'grid-template-areas:\n      "target ."\n      "progress yoy";' in styles_content
+    assert ".brand-store-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));" in styles_content
+    assert ".store-metrics {\n    display: flex;\n    flex-direction: column;" in styles_content
+    assert ".store-metrics-sep {\n    display: none;" in styles_content
+    assert "body.dashboard-page.public-dashboard-mode .app-header .test-dataset-nav-row" in styles_content
+    assert "overflow-x: hidden;" in styles_content
+    assert "overflow-x: auto;" in styles_content
+    assert "clamp(18px, 5.6vw, 23px)" in styles_content
+    assert "@media (max-width: 380px)" in styles_content
+    assert "20260517-mobile-two-col-0003" in official_content
+    assert "20260517-mobile-two-col-0003" in test_content
+
+
 def test_dashboard_api_and_test_api_share_realtime_payload() -> None:
     client = TestClient(app)
 
