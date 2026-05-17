@@ -148,7 +148,13 @@ class CaptureScheduler:
             except asyncio.CancelledError:
                 raise
             except Exception as exc:
-                logger.error("调度循环发生未预期异常，1s 后继续：%s", exc, exc_info=True)
+                from backend.utils.log_throttle import global_throttle
+
+                fp = f"run_loop:{type(exc).__name__}:{str(exc)[:120]}"
+                if global_throttle.should_log(fp):
+                    logger.error("调度循环发生未预期异常，1s 后继续：%s", exc, exc_info=True)
+                else:
+                    logger.warning("调度循环异常（已限流）: %s", exc)
                 await asyncio.sleep(1.0)
 
     def _next_due_preview_task_id(self, tasks: list[CaptureTask], now: float) -> int | None:
@@ -355,8 +361,28 @@ class CaptureScheduler:
                 value_source=task.value_source or "ocr",
             )
         except Exception as exc:
-            import traceback
-            logger.error(f"Capture error: {exc}\n{traceback.format_exc()}")
+            from backend.utils.log_throttle import global_throttle
+
+            fp = f"capture:task_{task.id}:{type(exc).__name__}:{str(exc)[:120]}"
+            if global_throttle.should_log(fp):
+                import traceback
+
+                logger.error(
+                    "Capture error task_id=%s platform=%s type=%s: %s\n%s",
+                    task.id,
+                    task.platform,
+                    type(exc).__name__,
+                    exc,
+                    traceback.format_exc(),
+                )
+            else:
+                logger.warning(
+                    "Capture error (suppressed repeat) task_id=%s platform=%s type=%s: %s",
+                    task.id,
+                    task.platform,
+                    type(exc).__name__,
+                    exc,
+                )
             if task.capture_mode == "remote_edge":
                 if "真实 Edge 调试端口未连接" in str(exc):
                     return self._record_failure(

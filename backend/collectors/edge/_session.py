@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+import os
 import queue
 import shutil
 import subprocess
@@ -16,9 +18,15 @@ from playwright.sync_api import Browser, Page, Playwright, sync_playwright
 if TYPE_CHECKING:
     from . import RemoteEdge
 
+logger = logging.getLogger(__name__)
+
 DEBUG_HOST = "127.0.0.1"
 DEBUG_PORT = 9222
 DEBUG_URL = f"http://{DEBUG_HOST}:{DEBUG_PORT}"
+
+_WORKER_IDLE_TIMEOUT = float(os.environ.get("GMV_EDGE_WORKER_IDLE_TIMEOUT", "300"))
+_JOBS_QUEUE_MAXSIZE = int(os.environ.get("GMV_EDGE_JOBS_QUEUE_MAXSIZE", "10"))
+_WORKER_JOIN_TIMEOUT = float(os.environ.get("GMV_EDGE_WORKER_JOIN_TIMEOUT", "5.0"))
 
 _ROOT_DIR = Path(__file__).resolve().parents[2]
 _ALLOWED_PROFILE_BASE = (_ROOT_DIR / "data" / "edge_profiles").resolve()
@@ -212,8 +220,10 @@ class RemoteEdgeSessionMixin:
         self.user_data_dir = _validate_user_data_dir(user_data_dir)
         self.session_mode = "real_profile" if session_mode == "real_profile" else ("real_profile" if not self.user_data_dir else "isolated")
         self.profile_directory = profile_directory or "Default"
-        self._jobs: queue.Queue = queue.Queue()
+        self._jobs: queue.Queue = queue.Queue(maxsize=_JOBS_QUEUE_MAXSIZE)
         self._ready = threading.Event()
+        self._worker_stop = threading.Event()
+        self._worker_exited = threading.Event()
         self._playwright: Playwright | None = None
         self._browser: Browser | None = None
         self._pages: dict[str, Page] = {}
@@ -238,15 +248,61 @@ class RemoteEdgeSessionMixin:
 
     def _worker_loop(self) -> None:
         self._ready.set()
-        while True:
-            action_name, func, result_queue = self._jobs.get()
+        while not self._worker_stop.is_set():
             try:
-                result_queue.put((True, func()))
+                job = self._jobs.get(timeout=5.0)
+            except queue.Empty:
+                continue
+            action_name, func, result_queue, job_id = job
+            try:
+                result = func()
+                if not self._worker_stop.is_set():
+                    try:
+                        result_queue.put((True, result), timeout=1.0)
+                    except queue.Full:
+                        logger.warning(
+                            "worker result_queue full, discarding result for action=%s job_id=%s",
+                            action_name,
+                            job_id,
+                        )
             except Exception as exc:
                 self._last_error = str(exc)
-                result_queue.put((False, exc))
+                from backend.utils.log_throttle import global_throttle
+
+                fp = f"worker:{action_name}:{type(exc).__name__}:{str(exc)[:120]}"
+                if global_throttle.should_log(fp):
+                    logger.error("worker action=%s failed: %s", action_name, exc, exc_info=True)
+                if not self._worker_stop.is_set():
+                    try:
+                        result_queue.put((False, exc), timeout=1.0)
+                    except queue.Full:
+                        logger.warning(
+                            "worker result_queue full, discarding exception for action=%s job_id=%s: %s",
+                            action_name,
+                            job_id,
+                            exc,
+                        )
+        self._worker_exited.set()
+        logger.info("worker thread exiting gracefully, session_id=%s", self.session_id)
+
+    def _shutdown_worker(self) -> None:
+        if not self._thread.is_alive():
+            return
+        self._worker_stop.set()
+        try:
+            self._jobs.put(("__shutdown__", lambda: None, queue.Queue(maxsize=1), -1), timeout=1.0)
+        except queue.Full:
+            pass
+        self._thread.join(timeout=_WORKER_JOIN_TIMEOUT)
+        if self._thread.is_alive():
+            logger.warning("worker thread did not exit in time for session_id=%s", self.session_id)
 
     def _call(self, action_name: str, func: Callable[[], T], timeout_seconds: float | None = None) -> T:
+        if self._worker_stop.is_set() or not self._thread.is_alive():
+            exc = RuntimeError(f"Edge worker 已停止，无法执行 {action_name}")
+            self._stale = True
+            self._stale_reason = f"worker_stopped:{action_name}"
+            raise exc
         if self._window_op_running and action_name in ("show_edge", "hide_edge", "close_edge"):
             exc = RuntimeError(f"窗口操作正在进行中，当前无法执行 {action_name}")
             exc.reason_code = "window_op_in_progress"
@@ -255,8 +311,18 @@ class RemoteEdgeSessionMixin:
             raise exc
         result_queue: queue.Queue = queue.Queue(maxsize=1)
         self._current_action = action_name
-        self._jobs.put((action_name, func, result_queue))
+        self._action_stage = f"{action_name}:queued"
+        job_id = id(result_queue)
         effective_timeout = float(timeout_seconds or ACTION_TIMEOUTS.get(action_name, 20.0))
+        try:
+            self._jobs.put((action_name, func, result_queue, job_id), timeout=effective_timeout * 0.5)
+        except queue.Full:
+            self._stale = True
+            self._stale_reason = f"job_queue_full:{action_name}"
+            self._last_reason_code = "edge_action_timeout"
+            self._last_error = f"Edge 任务队列已满，无法提交动作: {action_name}"
+            raise EdgeActionTimeoutError(action_name, "queue_full", effective_timeout)
+        self._action_stage = f"{action_name}:waiting"
         try:
             ok, value = result_queue.get(timeout=effective_timeout)
         except queue.Empty as exc:
@@ -266,6 +332,8 @@ class RemoteEdgeSessionMixin:
             self._last_error = f"Edge 动作超时: {action_name} @ {self._action_stage} ({effective_timeout:.1f}s)"
             raise EdgeActionTimeoutError(action_name, self._action_stage, effective_timeout) from exc
         if ok:
+            self._last_error = ""
+            self._last_reason_code = ""
             return value
         raise value
 
@@ -573,6 +641,13 @@ class RemoteEdgeManager:
         self._clients: dict[str, RemoteEdge] = {}
         self._lock = threading.Lock()
 
+    def _dispose_client(self, client: RemoteEdge) -> None:
+        try:
+            client.mark_stale("manager_dispose")
+            client._shutdown_worker()
+        except Exception:
+            pass
+
     def get_client(
         self,
         session_id: str = "default_real_edge",
@@ -597,6 +672,8 @@ class RemoteEdgeManager:
                 if should_replace:
                     if not client.is_stale:
                         client.mark_stale("manager_replaced")
+                    self._dispose_client(client)
+                    del self._clients[session_id]
                     client = None
             if client is None:
                 from . import RemoteEdge
@@ -617,7 +694,7 @@ class RemoteEdgeManager:
         with self._lock:
             client = self._clients.pop(session_id, None)
         if client is not None:
-            client.mark_stale("manager_reset")
+            self._dispose_client(client)
 
     def default_client(self) -> RemoteEdge:
         return self.get_client("default_real_edge", name="真实 Edge Default", debug_port=DEBUG_PORT)
