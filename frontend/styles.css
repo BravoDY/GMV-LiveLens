@@ -316,6 +316,8 @@ body.test-dashboard-mode .test-dataset-nav-row {
 body.public-dashboard-mode .header-actions .test-dataset-refresh-btn,
 body.test-dashboard-mode .header-actions .test-dataset-refresh-btn {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-actions .test-dataset-refresh-btn:hover {
@@ -3347,7 +3349,7 @@ body.dashboard-page {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 10px;
     overflow-x: auto;
     overflow-y: hidden;
