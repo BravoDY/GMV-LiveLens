@@ -122,23 +122,7 @@ function taskHasPersistedOcrSelection(task = {}) {
 }
 
 function defaultValueSourceForTask(task = currentSetupTask()) {
-  const platform = currentTaskPlatform(task);
-  const saved = normalizeValueSourceKey(task?.value_source || "");
-  if (saved === "screen_readonly") return "screen_readonly";
-  if (saved === "ocr") {
-    const hasPersistedOcrRuntime = Boolean(
-      task?.last_sample_at
-      || task?.last_success_at
-      || task?.last_value_source === "ocr"
-      || task?.last_ocr_text
-      || task?.last_screenshot_path
-    );
-    if (hasPersistedOcrRuntime || taskHasPersistedOcrSelection(task)) {
-      return "ocr";
-    }
-  }
-  if (supportsScreenReadonlyPlatform(platform)) return "screen_readonly";
-  return "ocr";
+  return "screen_readonly";
 }
 
 function screenReadonlyModeDescription(platform = "", mode = "saved") {

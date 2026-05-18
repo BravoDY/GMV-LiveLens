@@ -24,6 +24,7 @@ const STATUS_BADGE_MAP = {
 const BRAND_PANEL_LEFT = "大货独立店";
 const BRAND_PANEL_RIGHT = "子品牌独立店";
 let _beijingClockTimer = null;
+let _summaryGridResizeObserver = null;
 
 function formatCurrency(value) {
   return `¥${Math.round(Number(value || 0)).toLocaleString("zh-CN")}`;
@@ -290,11 +291,59 @@ function renderPlatformCard(p, yoyText) {
   `;
 }
 
+function updateSummaryCardLayout() {
+  const row = document.querySelector(".summary-card-row");
+  if (!row) return;
+
+  const gap = 14;
+  const minPlatformWidth = 214;
+  const platformCount = row.querySelectorAll(".platform-summary-card").length;
+  const featuredTotalSpan = 2;
+  const featuredColumns = platformCount + featuredTotalSpan;
+  const width = row.getBoundingClientRect().width;
+  const featuredUnitWidth = (width - ((featuredColumns - 1) * gap)) / featuredColumns;
+  const canFeaturedLine = featuredUnitWidth >= minPlatformWidth;
+
+  if (canFeaturedLine) {
+    row.dataset.layout = "featured-line";
+    row.style.setProperty("--summary-columns", String(featuredColumns));
+    row.style.setProperty("--total-span", String(featuredTotalSpan));
+    return;
+  }
+
+  const rawColumns = Math.floor((width + gap) / (minPlatformWidth + gap));
+  const columns = Math.max(2, Math.min(5, rawColumns || 2));
+
+  row.dataset.layout = "stacked-featured";
+  row.style.setProperty("--summary-columns", String(columns));
+  row.style.setProperty("--total-span", String(columns));
+}
+
+function bindSummaryCardLayoutObserver() {
+  const row = document.querySelector(".summary-card-row");
+  if (!row) return;
+  updateSummaryCardLayout();
+
+  if (typeof ResizeObserver === "undefined") return;
+  if (_summaryGridResizeObserver) _summaryGridResizeObserver.disconnect();
+  _summaryGridResizeObserver = new ResizeObserver(updateSummaryCardLayout);
+  _summaryGridResizeObserver.observe(row);
+}
+
 function renderSummaryGrid(model, platformYoy, dateRange) {
   const yoy = model.total.yoy || "--";
   const pyoy = platformYoy || {};
   const cardsHtml = model.platforms.map(p => renderPlatformCard(p, pyoy[p.platform] || yoy)).join("");
-  $("summaryGrid").innerHTML = renderSummaryTimeRow(dateRange) + renderTotalCard(model.total) + cardsHtml;
+  $("summaryGrid").innerHTML = `
+    ${renderSummaryTimeRow(dateRange)}
+    <div class="summary-card-row">
+      ${renderTotalCard(model.total)}
+      <div class="platform-summary-grid">
+        ${cardsHtml}
+      </div>
+    </div>
+  `;
+  bindSummaryCardLayoutObserver();
 }
 
 function renderStoreCard(store, yoyText) {
@@ -311,13 +360,17 @@ function renderStoreCard(store, yoyText) {
         <div class="store-title-wrap">
           <span class="platform-badge ${store.className}">${escapeHtml(store.platformLabel)}</span>
           <span class="store-name" title="${escapeHtml(store.shopName)}">${escapeHtml(store.shopName)}</span>
-          <span class="store-status-tags">
+          <span class="store-status-tags store-status-tags-inline">
             <span class="store-chip">${escapeHtml(store.valueSourceShortLabel)}</span>
             ${badge}
           </span>
         </div>
       </div>
       <div class="store-gmv">${formatCurrency(store.gmv)}</div>
+      <div class="store-status-tags store-status-tags-mobile">
+        <span class="store-chip">${escapeHtml(store.valueSourceShortLabel)}</span>
+        ${badge}
+      </div>
       <div class="store-card-bottom">
         <div class="store-metrics">
           <div>

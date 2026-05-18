@@ -209,7 +209,7 @@ function applyPublicDashboardMode() {
   document.querySelectorAll(".header-nav, #config, #manager").forEach((el) => {
     if (el) el.style.display = "none";
   });
-  document.querySelectorAll("#captureAllButton, #schedulerToggle, #debugPanelToggle, #debugStatusPanel, #refreshCacheBtn").forEach((el) => {
+  document.querySelectorAll("#captureAllButton, #schedulerToggle, #debugPanelToggle, #debugStatusPanel").forEach((el) => {
     if (el) el.style.display = "none";
   });
   document.querySelectorAll(".control-group").forEach((el) => {
@@ -247,7 +247,7 @@ function bindSharedRefreshButton(options = {}) {
 async function startSharedPublicDashboard(options = {}) {
   const { publicMode = true, preserveLocalSnapshot = false } = options;
   if (publicMode) applyPublicDashboardMode();
-  if (!publicMode) bindSharedRefreshButton({ preserveLocalSnapshot });
+  bindSharedRefreshButton({ preserveLocalSnapshot });
   setPublicNavLoading(true);
   try {
     await loadSharedDashboardDatasets();

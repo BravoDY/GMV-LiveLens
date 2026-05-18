@@ -1,0 +1,21 @@
+# GMV-LiveLens FRP client config.
+# Copy to deploy/frp/frpc.toml on the Windows machine and replace the token.
+
+serverAddr = "124.223.70.233"
+serverPort = 7000
+loginFailExit = false
+
+[auth]
+method = "token"
+token = "replace-with-the-same-strong-random-frp-token"
+
+[[proxies]]
+name = "gmv-livelens-dashboard"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 8100
+remotePort = 18100
+
+[proxies.transport]
+useEncryption = true
+useCompression = true

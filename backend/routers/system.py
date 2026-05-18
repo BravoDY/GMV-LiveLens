@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 
 from backend.core.config import get_settings as get_app_settings
 from backend.core.response import success_response
@@ -15,6 +15,7 @@ from backend.routers.common import (
     broadcast_snapshot,
     build_snapshot,
     clients,
+    html_with_static_version,
 )
 from backend.services import store
 from backend.services.dashboard_query import build_dashboard_view
@@ -40,19 +41,13 @@ async def task_preview_image(filename: str) -> FileResponse:
 
 
 @router.get("/")
-async def index() -> FileResponse:
-    return FileResponse(
-        FRONTEND_DIR / "index.html",
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"},
-    )
+async def index() -> HTMLResponse:
+    return html_with_static_version(FRONTEND_DIR / "index.html")
 
 
 @router.get("/dashboard")
-async def public_dashboard_page() -> FileResponse:
-    return FileResponse(
-        FRONTEND_DIR / "index.html",
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"},
-    )
+async def public_dashboard_page() -> HTMLResponse:
+    return html_with_static_version(FRONTEND_DIR / "index.html")
 
 
 @router.get("/api/windows")

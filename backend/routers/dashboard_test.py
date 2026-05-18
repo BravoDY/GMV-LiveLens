@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from fastapi import APIRouter
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse
 
 from backend.core.response import success_response
-from backend.routers.common import FRONTEND_DIR
+from backend.routers.common import FRONTEND_DIR, html_with_static_version
 from backend.services.dashboard_dataset import build_dataset_overview
 from backend.services.dashboard_query import build_dashboard_view, force_refresh_cache, get_cache_status
 
@@ -12,11 +12,8 @@ router = APIRouter(tags=["dashboard-test"])
 
 
 @router.get("/dashboard-test")
-async def dashboard_test_page() -> FileResponse:
-    return FileResponse(
-        FRONTEND_DIR / "test-dashboard" / "index.html",
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"},
-    )
+async def dashboard_test_page() -> HTMLResponse:
+    return html_with_static_version(FRONTEND_DIR / "test-dashboard" / "index.html")
 
 
 @router.get("/api/dashboard-test")

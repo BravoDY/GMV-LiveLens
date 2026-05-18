@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from backend.main import app
+from backend.routers.common import frontend_static_version
 from backend.services.dashboard_dataset import TargetRow
 from backend.services.dashboard_query import build_dashboard_view
 
@@ -67,6 +68,19 @@ def test_dashboard_entries_share_public_dashboard_module() -> None:
     assert "/api/dashboard-datasets-test" not in test_app
 
 
+def test_dashboard_html_responses_rewrite_static_asset_versions() -> None:
+    client = TestClient(app)
+    version = frontend_static_version()
+
+    for path in ["/", "/dashboard", "/dashboard-test"]:
+        response = client.get(path)
+        assert response.status_code == 200
+        assert response.headers["cache-control"] == "no-store, no-cache, must-revalidate, max-age=0"
+        assert f"/static/styles.css?v={version}" in response.text
+        assert f"/static/dashboard-public.js?v={version}" in response.text
+        assert "dashboard-public.js?v=20260516-unified-dashboard-0001" not in response.text
+
+
 def test_dashboard_mobile_responsive_rules_hide_time_and_prevent_overflow() -> None:
     styles_css = ROOT_DIR / "frontend" / "styles.css"
     official_html = ROOT_DIR / "frontend" / "index.html"
@@ -79,7 +93,13 @@ def test_dashboard_mobile_responsive_rules_hide_time_and_prevent_overflow() -> N
     assert "@media (max-width: 768px)" in styles_content
     assert "@media (max-width: 420px)" in styles_content
     assert ".summary-time-row {\n    display: none;" in styles_content
-    assert ".summary-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));" in styles_content
+    assert ".summary-card-row {" in styles_content
+    assert ".platform-summary-grid {" in styles_content
+    assert "grid-template-columns: repeat(var(--summary-columns, 4), minmax(0, 1fr));" in styles_content
+    assert "grid-column: span var(--total-span, 2);" in styles_content
+    assert ".platform-summary-grid {\n  display: contents;" in styles_content
+    assert ".summary-grid,\n  .summary-card-row {\n    grid-template-columns: minmax(0, 1fr);" in styles_content
+    assert ".platform-summary-grid {\n    display: grid;\n    grid-template-columns: repeat(2, minmax(0, 1fr));" in styles_content
     assert ".total-card-shell,\n  .total-card {\n    grid-column: 1 / -1;" in styles_content
     assert 'grid-template-areas:\n      "target ."\n      "progress yoy";' in styles_content
     assert ".brand-store-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));" in styles_content
@@ -90,8 +110,38 @@ def test_dashboard_mobile_responsive_rules_hide_time_and_prevent_overflow() -> N
     assert "overflow-x: auto;" in styles_content
     assert "clamp(18px, 5.6vw, 23px)" in styles_content
     assert "@media (max-width: 380px)" in styles_content
-    assert "20260517-mobile-two-col-0003" in official_content
-    assert "20260517-mobile-two-col-0003" in test_content
+    assert "20260518-mobile-store-rows-0007" in official_content
+    assert "20260518-mobile-store-rows-0007" in test_content
+    assert ".store-status-tags-inline {\n    display: none;" in styles_content
+    assert ".store-status-tags-mobile {\n    display: flex;" in styles_content
+    assert ".store-card .card-badge" in styles_content
+
+
+def test_store_card_renders_mobile_status_row() -> None:
+    dashboard_js = ROOT_DIR / "frontend" / "dashboard-shared.js"
+    content = dashboard_js.read_text(encoding="utf-8")
+
+    assert "store-status-tags store-status-tags-inline" in content
+    assert "store-status-tags store-status-tags-mobile" in content
+    assert content.index('<div class="store-gmv">') < content.index('store-status-tags store-status-tags-mobile')
+
+
+def test_dashboard_summary_grid_uses_fluid_resize_observer() -> None:
+    dashboard_js = ROOT_DIR / "frontend" / "dashboard-shared.js"
+    content = dashboard_js.read_text(encoding="utf-8")
+
+    assert "function updateSummaryCardLayout()" in content
+    assert "new ResizeObserver(updateSummaryCardLayout)" in content
+    assert "--summary-columns" in content
+    assert "--total-span" in content
+    assert 'row.dataset.layout = "featured-line";' in content
+    assert 'row.dataset.layout = "stacked-featured";' in content
+    assert 'row.style.setProperty("--total-span", String(featuredTotalSpan));' in content
+    assert 'row.style.setProperty("--total-span", String(columns));' in content
+    assert "--total-span\", \"1\"" not in content
+    assert "const featuredTotalSpan = 2;" in content
+    assert "const featuredColumns = platformCount + featuredTotalSpan;" in content
+    assert "const minPlatformWidth = 214;" in content
 
 
 def test_dashboard_api_and_test_api_share_realtime_payload() -> None:

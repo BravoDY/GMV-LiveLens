@@ -16,6 +16,20 @@ EDGE_PROFILE_DIR = DATA_DIR / "edge_profiles"
 DB_PATH = DATA_DIR / "gmv_livelens.sqlite3"
 CAPTURE_TASK_SHOP_UNIQUE_INDEX = "idx_capture_tasks_platform_shop_unique"
 
+_SQLITE_INT64_MAX = 2**63 - 1
+
+
+def _safe_sqlite_int(value: Any) -> int | None:
+    if value is None:
+        return None
+    try:
+        v = int(value)
+    except (ValueError, TypeError, OverflowError):
+        return None
+    if abs(v) > _SQLITE_INT64_MAX:
+        return None
+    return v
+
 
 def normalize_value_source(value_source: Any) -> str:
     text = str(value_source or "").strip().lower()
@@ -1223,6 +1237,10 @@ def update_task_runtime(task_id: int, updates: dict[str, Any]) -> None:
     safe = {key: value for key, value in updates.items() if key in allowed}
     if not safe:
         return
+    int_fields = {"last_trusted_value", "pending_value"}
+    for field in int_fields:
+        if field in safe:
+            safe[field] = _safe_sqlite_int(safe[field])
     assignments = ", ".join(f"{key} = ?" for key in safe)
     with connect() as conn:
         conn.execute(
@@ -1243,6 +1261,8 @@ def add_sample(
     screenshot_path: str,
     sample_meta: dict[str, Any] | None = None,
 ) -> None:
+    safe_selected = _safe_sqlite_int(selected_value)
+    safe_trusted = _safe_sqlite_int(trusted_value)
     meta = sample_meta or {}
     with connect() as conn:
         conn.execute(
@@ -1260,8 +1280,8 @@ def add_sample(
                 now_sql(),
                 ocr_text,
                 json.dumps(candidates, ensure_ascii=False),
-                selected_value,
-                trusted_value,
+                safe_selected,
+                safe_trusted,
                 status,
                 reason,
                 screenshot_path,

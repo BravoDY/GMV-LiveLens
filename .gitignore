@@ -40,6 +40,10 @@ data/*.log
 .env
 .env.local
 .env.production
+deploy/frp/frpc.toml
+deploy/frp/frps.toml
+deploy/frp/*.log
+deploy/frp-runtime/
 
 # === 系统文件 ===
 Thumbs.db

@@ -1,0 +1,31 @@
+﻿## master...origin/master
+ M .gitignore
+ M backend/services/scheduler.py
+ M backend/services/store.py
+ M data/.cache/period_gmv.json
+ M deploy/README-public-dashboard.md
+ M deploy/env.production.example
+ M deploy/nginx/gmv-livelens-dashboard.conf
+ M frontend/config.js
+ M frontend/dashboard-public.js
+ M frontend/dashboard-shared.js
+ M frontend/index.html
+ M frontend/styles.css
+ M frontend/test-dashboard/index.html
+ M requirements.txt
+ M tests/test_dashboard_regression.py
+?? .trae/documents/dashboard_refresh_button_plan.md
+?? .trae/documents/douyin_parse_failed_root_cause.md
+?? backups/platform-card-adaptive-before-20260518-101039/
+?? backups/summary-aligned-single-line-before-20260518-104921/
+?? backups/summary-fluid-scale-before-20260518-103329/
+?? backups/summary-grid-ratio-before-20260518-102714/
+?? backups/summary-total-complete-before-20260518-105456/
+?? deploy/env.local-public.example
+?? deploy/frp/
+?? deploy/nginx/gmv-livelens-frp-http.conf
+?? deploy/nginx/gmv-livelens-frp-https.conf
+?? deploy/nginx/snippets/
+?? deploy/scripts/
+?? deploy/systemd/frps-gmv-livelens.service
+?? "\347\254\2542\346\255\245_\345\220\257\345\212\250\345\205\254\347\275\221\351\232\247\351\201\223.bat"

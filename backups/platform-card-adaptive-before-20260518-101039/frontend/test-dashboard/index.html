@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GMV-LiveLens 测试看板</title>
+    <link rel="icon" type="image/png" href="/static/assets/descente-logo.png?v=20260430-0005" />
+    <link rel="stylesheet" href="/static/assets/open-props.min.css" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260517-mobile-two-col-0003" />
+    <link rel="stylesheet" href="/static/test-dashboard/styles.css?v=20260515-nav-center-0004" />
+  </head>
+  <body class="dashboard-page">
+    <header class="app-header">
+      <div class="header-brand">
+        <img class="header-logo" src="/static/assets/descente-logo.png?v=20260430-0005" alt="DESCENTE LOGO" />
+        <h1 class="header-title">迪桑特 · 测试看板</h1>
+      </div>
+      <div class="test-dataset-nav-row" id="testDatasetNavRow">
+        <div id="testDatasetNav" class="test-dataset-bar"></div>
+      </div>
+      <div class="header-actions">
+        <button id="captureAllButton" class="collect-all-btn" type="button">采集全部</button>
+        <div class="control-group">
+          <div class="control-label">OCR引擎</div>
+          <select id="globalOcrEngine" class="control-select">
+            <option value="auto">自动 (RapidOCR优先)</option>
+            <option value="ddddocr">ddddocr</option>
+            <option value="rapidocr">RapidOCR</option>
+            <option value="paddleocr">PaddleOCR-v3</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <div class="control-label">正式采集频率</div>
+          <select id="globalInterval" class="control-select" style="min-width:90px;">
+            <option value="0.5">0.5秒</option>
+            <option value="1" selected>1秒</option>
+            <option value="2">2秒</option>
+            <option value="5">5秒</option>
+            <option value="10">10秒</option>
+            <option value="30">30秒</option>
+            <option value="60">60秒</option>
+          </select>
+        </div>
+        <button id="schedulerToggle" class="scheduler-button" type="button">启动采集</button>
+        <button id="debugPanelToggle" class="debug-toggle-button" type="button" title="部署与接口调试">调试</button>
+        <button id="fullscreenToggle" class="icon-button" type="button" title="全屏看板" style="display:none;">⛶</button>
+        <button id="refreshCacheBtn" class="test-dataset-refresh-btn" type="button" title="强制刷新周期数据缓存">刷新数据</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="dashboard" class="view active dashboard-view">
+        <section class="dashboard-top-frame">
+          <div id="summaryGrid" class="summary-grid"></div>
+        </section>
+
+        <section class="dashboard-section dashboard-brand-section">
+          <div id="dataStatusBanner" class="data-status-banner-container" style="display:none;"></div>
+          <div id="storeGrid" class="store-grid"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/static/core.js?v=20260515-shared-0011"></script>
+    <script src="/static/dashboard-shared.js?v=20260516-date-range-align-0018"></script>
+    <script src="/static/test-dashboard/dashboard.js?v=20260516-date-range-0002"></script>
+    <script src="/static/dashboard-public.js?v=20260516-unified-dashboard-0001"></script>
+    <script src="/static/test-dashboard/app.js?v=20260516-unified-dashboard-0001"></script>
+  </body>
+</html>

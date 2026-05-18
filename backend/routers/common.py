@@ -5,12 +5,15 @@ import base64
 import io
 import json as _json
 import logging
+import re
 import sqlite3
 from collections.abc import Callable
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from fastapi import HTTPException, WebSocket
+from fastapi.responses import HTMLResponse
 from PIL import Image
 from pydantic import BaseModel, Field, field_validator
 
@@ -21,8 +24,32 @@ from backend.services import edge_binding, shop_config, store
 ROOT_DIR = Path(__file__).resolve().parents[2]
 FRONTEND_DIR = ROOT_DIR / "frontend"
 _SHOPS_DEFAULT_PATH = ROOT_DIR / "data" / "shops_default.json"
+_STATIC_ASSET_RE = re.compile(r'(?P<url>/static/[^"\'<>\s?]+)(?:\?v=[^"\'<>\s]*)?')
 
 clients: set[WebSocket] = set()
+
+
+@lru_cache(maxsize=1)
+def frontend_static_version() -> str:
+    mtimes = [
+        path.stat().st_mtime_ns
+        for path in FRONTEND_DIR.rglob("*")
+        if path.is_file() and path.suffix.lower() in {".css", ".js"}
+    ]
+    return str(max(mtimes, default=0))
+
+
+def html_with_static_version(path: Path) -> HTMLResponse:
+    html = path.read_text(encoding="utf-8")
+    version = frontend_static_version()
+
+    def replace(match: re.Match[str]) -> str:
+        return f"{match.group('url')}?v={version}"
+
+    return HTMLResponse(
+        content=_STATIC_ASSET_RE.sub(replace, html),
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"},
+    )
 
 
 def screen_readonly_platform_unsupported_detail(task: CaptureTask) -> dict[str, Any]:

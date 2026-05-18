@@ -26,6 +26,7 @@ _SCREENSHOT_MAX_COUNT_PER_TASK = int(os.environ.get("GMV_SCREENSHOT_MAX_COUNT_PE
 _PREVIEW_MIN_INTERVAL_SECONDS = int(os.environ.get("GMV_PREVIEW_MIN_INTERVAL_SECONDS", "180"))
 _PREVIEW_MAX_INTERVAL_SECONDS = int(os.environ.get("GMV_PREVIEW_MAX_INTERVAL_SECONDS", "480"))
 _PREVIEW_MAX_WIDTH = int(os.environ.get("GMV_PREVIEW_MAX_WIDTH", "720"))
+_SQLITE_INT64_MAX = 2**63 - 1
 
 SnapshotCallback = Callable[[], Awaitable[None]]
 
@@ -468,6 +469,17 @@ class CaptureScheduler:
         reason_code = str(result.get("reason_code") or screen.get("reason_code") or "")
         message = str(result.get("message") or screen.get("message") or "")
         pay_amt = result.get("pay_amt", screen.get("pay_amt"))
+        if pay_amt is not None:
+            try:
+                safe_int = int(pay_amt)
+            except (ValueError, OverflowError):
+                safe_int = None
+            if safe_int is not None and abs(safe_int) > _SQLITE_INT64_MAX:
+                logger.warning(
+                    "screen_readonly pay_amt=%s 超过 SQLite INTEGER 上限，已忽略 task_id=%s platform=%s",
+                    pay_amt, task.id, task.platform,
+                )
+                pay_amt = None
         screen_platform_key = str(result.get("platform_key") or screen.get("platform_key") or "")
         response_marker_raw = (
             result.get("latest_response_end_seconds", screen.get("latest_response_end_seconds"))

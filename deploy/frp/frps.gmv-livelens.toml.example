@@ -1,0 +1,21 @@
+# GMV-LiveLens FRP server config.
+# Copy to /etc/frp/frps.toml on Tencent Cloud and replace the token.
+
+bindAddr = "0.0.0.0"
+bindPort = 7000
+
+# Keep dashboard traffic private to this Ubuntu host. Nginx is the only public
+# entrypoint and will proxy to 127.0.0.1:18100.
+proxyBindAddr = "127.0.0.1"
+allowPorts = [
+  { start = 18100, end = 18100 },
+]
+
+[auth]
+method = "token"
+token = "replace-with-a-strong-random-frp-token"
+
+[log]
+to = "/var/log/frp/frps.log"
+level = "info"
+maxDays = 7
