@@ -539,7 +539,10 @@ def run_section_c() -> None:
             )
         _check("C", "C4: delete_edge_session() 清空旧页面绑定并要求重绑", c4_delete_edge_session_resets_binding)
         def c5_screenshot_cleanup_count():
-            import tempfile, shutil
+            import shutil
+            import tempfile
+
+            import backend.services.scheduler as sched_mod
             from backend.services.scheduler import CaptureScheduler
 
             tmp = Path(tempfile.mkdtemp(prefix="gmv_test_"))
@@ -549,7 +552,6 @@ def run_section_c() -> None:
                 original_dir = store_mod.SCREENSHOT_DIR
                 store_mod.SCREENSHOT_DIR = tmp
                 # Override max count for test (module-level constant)
-                import backend.services.scheduler as sched_mod
                 old_max = sched_mod._SCREENSHOT_MAX_COUNT_PER_TASK
                 sched_mod._SCREENSHOT_MAX_COUNT_PER_TASK = 2
                 try:
@@ -935,15 +937,14 @@ def run_section_f() -> None:
         return ok, "ws/live 或 WebSocket 存在" if ok else "ws/live 未找到"
     _check("F", "F3: app.js 包含 /ws/live WebSocket 端点", f3_ws_endpoint)
 
-    def f4_api_settings():
-        """前端应包含 /api/settings 引用（支持动态拼接如 base+/api/settings）"""
-        for fname in ["core.js", "app.js", "config.js", "dashboard.js", "edge.js"]:
-            content = (frontend_dir / fname).read_text(encoding="utf-8", errors="replace")
-            # Match literal "/api/settings" or partial "api/settings"
-            if "/api/settings" in content or "api/settings" in content:
-                return True, f"在 {fname} 中找到"
-        return False, "api/settings 在前端未引用"
-    _check("F", "F4: 前端包含 /api/settings 调用", f4_api_settings)
+    def f4_dashboard_cache_refresh_uses_api():
+        """公共看板缓存刷新应走 api()，确保本机 Token 能随请求发送"""
+        content = (frontend_dir / "dashboard-public.js").read_text(encoding="utf-8", errors="replace")
+        uses_api = 'api("/api/dashboard-cache/refresh"' in content
+        uses_raw_fetch = 'fetch("/api/dashboard-cache/refresh"' in content
+        ok = uses_api and not uses_raw_fetch
+        return ok, "缓存刷新已使用 api() 包装" if ok else "缓存刷新未使用 api() Token 包装"
+    _check("F", "F4: 缓存刷新使用 api() Token 包装", f4_dashboard_cache_refresh_uses_api)
 
     def f5_no_hardcoded_port():
         """前端不应硬编码 8100 端口（应动态获取）"""

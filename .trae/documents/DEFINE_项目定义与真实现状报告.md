@@ -1,484 +1,151 @@
 # DEFINE_项目定义与真实现状报告
 
-> 生成时间：2026-05-16
-> 阶段：DEFINE（项目定义与真实现状）
-> 状态：只读分析，未修改任何业务代码
-> 所有结论均基于当前真实代码验证，README/历史文档仅作参考，不以之为准
-
----
+本报告按当前仓库真实代码与文件状态编写，优先采信 `backend/`、`frontend/`、`data/`、`tests/`、`scripts/`、`.github/`、`deploy/` 中的现有实现。README、历史 Markdown、旧 DEFINE 只能作为背景参考，其中“无 Git”“前端 5 个 JS 模块”等结论已与当前仓库不一致，视为可能过时。
 
 ## 1. 项目一句话定位
 
-**全渠道实时 GMV 采集看板系统**——通过 Playwright 控制 Microsoft Edge 浏览器 CDP 协议截图 + 多引擎 OCR 识别电商平台页面中的 GMV 数值，汇总展示在本地 Web 实时看板中。
-
----
+GMV-LiveLens 是一个运行在 Windows 本机的全渠道 GMV 实时监控工具：后端用 FastAPI 控制 Microsoft Edge CDP 会话采集电商大屏数据，前端用 Vanilla JS 静态看板展示实时 GMV、目标达成和周期同比，并通过 FRP + Nginx 对公网提供只读看板。
 
 ## 2. 当前项目真实目标
 
-| 维度 | 说明 |
-|------|------|
-| **业务目标** | 实时监控 DESCENTE（迪桑特）品牌在天猫、京东、抖音、得物、唯品会等多个电商平台的成交金额（GMV），汇总到统一看板 |
-| **核心用户** | 运营人员 / 数据监控人员，需要在一个屏幕上看到所有平台的实时 GMV 汇总 |
-| **使用场景** | 大促期间（双11/618等）或日常运营时，监控各平台销售额变化趋势 |
-| **当前状态** | **已可运行**，已从早期单体架构重构为模块化架构（routers/services/collectors分离），前端已包含实时看板 + 采集配置 + 任务管理三个视图 |
-
----
+- 统一监控 DESCENTE 相关店铺在天猫、京东、抖音、唯品、得物等平台的实时 GMV。
+- 通过 `data/shops.csv` 定义店铺、平台、目标值、默认业务页、Edge 会话和采集策略；当前 CSV 中 9 个店铺 `enabled` 为 `TRUE`。
+- 在本机服务启动时初始化 SQLite、同步店铺配置、启动采集调度器，并持续维护任务状态、采样记录和 Edge 会话状态。
+- 对支持的平台优先使用 Playwright CDP 的“大屏只读”读取链路；不支持或失败时保留 OCR 识别与人工配置能力。
+- 为内网/本机管理员提供采集配置、任务管理、Edge 启停与调试能力；为公网用户只开放只读看板、静态资源、只读数据接口和健康检查。
+- 支持周期数据和同比展示：实时数据来自本机采集，周期/历史数据来自 CSV 与可选 MySQL 查询缓存 `data/.cache/period_gmv.json`。
 
 ## 3. 核心用户与使用场景
 
-### 3.1 角色分类
-
-| 角色 | 典型操作 | 关注视图 |
-|------|----------|----------|
-| **运营监控人员** | 查看实时看板、启动/暂停采集、手动纠错 | 实时看板 |
-| **系统配置人员** | 配置店铺 Edge 会话、绑定页面、标定 OCR 区域 | 采集配置 + 任务管理 |
-| **运维排障人员** | 检查 Edge 会话健康、查看采样历史、排查 OCR 异常 | 任务管理 + 调试面板 |
-
-### 3.2 核心工作流
-
-```
-首次配置：shops.csv → 一键初始化 → 绑定Edge页面 → 标定OCR区域 → 启动采集 → 查看看板
-日常使用：启动服务 → 启动Edge(如已关闭) → 启动采集 → 监控看板
-```
-
----
+- **运营看板用户**：在大屏或浏览器访问 `/dashboard`，只查看 GMV 总览、平台分组、店铺明细、目标达成与同比，不参与采集配置。
+- **本机管理员/运营同学**：在 Windows 机器访问 `/`，维护采集配置、绑定 Edge 页面、启动/显示/隐藏店铺 Edge、切换 OCR/只读采集方式、执行单次或批量采集。
+- **开发/维护人员**：维护 FastAPI 路由、采集器、SQLite 数据结构、前端静态脚本、测试脚本、GitHub Actions、FRP/Nginx 部署配置。
+- **公网访问者**：经腾讯云 Nginx + FRP 访问公网只读看板；按 `deploy/README-public-dashboard.md` 设计，不应触达管理接口、Edge 控制接口和写接口。
 
 ## 4. 技术栈识别结果
 
-### 4.1 确认项（均由真实代码/文件验证）
-
-| 层级 | 技术 | 证据来源 |
-|------|------|----------|
-| **主语言** | Python 3.11+ | `pyproject.toml` requires-python = ">=3.11"；当前运行 3.14.3 |
-| **后端框架** | FastAPI 0.110.2 + Uvicorn 0.29.0 | `requirements.txt` + `backend/main.py` |
-| **数据库** | SQLite 3（标准库 `sqlite3`，无 ORM） | `backend/services/store.py` - `connect()` 使用 `sqlite3.connect` |
-| **浏览器控制** | Playwright 1.58.0（CDP 协议，同步 API） | `requirements.txt` + `backend/collectors/edge/_session.py` |
-| **图像采集兼容** | mss 10.1.0（Win32 窗口截图） | `requirements.txt` + `backend/collectors/window_capture.py` |
-| **OCR 引擎** | RapidOCR 3.8.1（首选）+ ddddocr 1.6.1（兜底） | `requirements.txt` + `backend/collectors/ocr_reader.py` |
-| **图像预处理** | OpenCV 4.13 + Pillow 12.2 | `requirements.txt` + `backend/collectors/ocr_reader.py` |
-| **实时推送** | WebSocket（`/ws/live`） | `backend/routers/system.py` |
-| **前端** | 原生 HTML5 + CSS3 + JavaScript（无构建工具，8 个 JS 模块） | `frontend/` 目录，按序加载 |
-| **前端 CSS 框架** | Open Props | `frontend/index.html` 引用 `open-props.min.css` |
-| **系统依赖** | Windows Win32 API（`ctypes`）+ Microsoft Edge | `backend/collectors/window_control.py`、`window_capture.py` |
-| **包管理** | pip + `requirements.txt` | 根目录 `requirements.txt` |
-| **虚拟环境** | `.venv/` (Windows venv) | `.venv/` 目录存在，含 `pyvenv.cfg` |
-| **Lint/Format** | Ruff (pyproject.toml 配置) | `pyproject.toml` `[tool.ruff]` 段 |
-| **环境变量** | python-dotenv 1.1.0 + `.env` | `backend/main.py` 调用 `load_dotenv()` |
-| **CI** | GitHub Actions (Windows Runner) | `.github/workflows/test.yml` |
-| **历史数据源(MySQL)** | PyMySQL 1.1.1 | `requirements.txt` + `backend/services/dashboard_query.py` |
-
-### 4.2 未确认项
-
-| 项目 | 状态 | 原因 |
-|------|------|------|
-| **Docker 支持** | ❌ 无 | 不存在 `Dockerfile` |
-| **版本控制** | ❌ 无 | 不存在 `.git/` 目录（历史基线报告已确认） |
-| **PaddleOCR** | ❌ 未安装 | `importlib.util.find_spec("paddleocr")` 返回 None |
-| **Tesseract** | ❌ 未安装 | 无 `pytesseract` 且 CLI 不可用 |
-| **部署方式** | 仅本地 | 只有 `.bat` 启动脚本，无容器化/守护进程/服务注册 |
-
----
+- **后端**：Python、FastAPI、Uvicorn；入口为 `backend/main.py`，FastAPI 应用版本为 `0.3.0`。
+- **前端**：Vanilla JS 静态页面，无构建工具；`frontend/index.html` 当前加载 8 个主页面 JS 模块：`core.js`、`dashboard-shared.js`、`dashboard.js`、`dashboard-public.js`、`edge.js`、`config.js`、`debug.js`、`app.js`。
+- **本地数据层**：SQLite 数据库 `data/gmv_livelens.sqlite3`，CSV 店铺配置 `data/shops.csv`，JSON 快照 `data/shops_default.json`、`data/shops_page_data.json`，周期缓存 `data/.cache/period_gmv.json`。
+- **可选缓存/外部数据源**：MySQL，通过 `pymysql` 与 `MYSQL_*` 环境变量读取周期 GMV，失败时写入/使用本地缓存。
+- **浏览器自动化**：Playwright CDP，目标浏览器为 Windows + Microsoft Edge，采集链路包括 Edge 会话管理、页面绑定、只读大屏读取和 OCR。
+- **OCR/图像依赖**：`rapidocr`、`onnxruntime`、`ddddocr`、`opencv-python`、`Pillow`、`mss`、`pywin32`。
+- **测试与质量**：pytest 依赖、自研 `tests/full_test.py`、`tests/smoke_edge.py`、`tests/smoke_api.py`、Ruff、GitHub Actions。
+- **部署**：本机 Windows 运行 FastAPI；公网只读部署依赖 FRP + Nginx，公网入口由腾讯云转发到 Windows `127.0.0.1:8100`。
+- **仓库状态**：当前目标目录是 Git 仓库，旧 DEFINE 中“无 Git”的判断已过时。
 
 ## 5. 项目目录与模块地图
 
-### 5.1 根目录结构
-
-```
-GMV-LiveLens/
-├── backend/                     # 后端 Python 代码
-│   ├── main.py                  # FastAPI 应用入口
-│   ├── models.py                # 数据类定义 (CaptureTask/EdgeSession/CandidateAmount)
-│   ├── logging_config.py        # 统一日志配置
-│   ├── collectors/              # 采集器层
-│   │   ├── edge/                #   Playwright Edge CDP 控制（含7个模块文件）
-│   │   │   ├── __init__.py      #     RemoteEdge 组合类 + RemoteEdgeManager 单例
-│   │   │   ├── _session.py      #     会话管理、连接、超时、线程模型
-│   │   │   ├── _page.py         #     页面管理、截图、URL匹配
-│   │   │   ├── _window.py       #     Edge 窗口启动/显示/隐藏/关闭
-│   │   │   ├── _actions.py      #     页面操作封装
-│   │   │   ├── _network.py      #     网络监听（大屏只读用）
-│   │   │   └── _readonly.py     #     大屏只读数据提取
-│   │   ├── remote_edge.py        #   对外暴露的统一接口（重导出）
-│   │   ├── ocr_reader.py         #   OCR 引擎封装 + 金额候选提取与评分
-│   │   ├── window_capture.py     #   Win32 窗口截图（兼容模式）
-│   │   └── window_control.py    #   Win32 Edge 窗口控制
-│   ├── core/                    # 核心基础设施层
-│   │   ├── __init__.py
-│   │   ├── config.py            #   环境变量配置（AppSettings dataclass）
-│   │   ├── errors.py            #   统一异常处理（HTTP/Validation/Unhandled）
-│   │   ├── middleware.py         #   RequestId + WriteToken 中间件
-│   │   ├── request_id.py        #   Request ID 上下文管理
-│   │   ├── response.py          #   统一响应格式（success/error）
-│   │   └── security.py          #   API Token 鉴权 + 路径白名单
-│   ├── routers/                 # 路由层（API 端点）
-│   │   ├── __init__.py          #   路由汇总导出
-│   │   ├── common.py            #   共用类型/工具函数/WS广播/Edge交互逻辑
-│   │   ├── system.py            #   健康检查/WebSocket/设置/首页等
-│   │   ├── tasks.py             #   任务 CRUD + 采集触发 + 手动纠错
-│   │   ├── dashboard.py         #   看板数据集 API
-│   │   ├── dashboard_test.py    #   测试看板页面 + 缓存刷新
-│   │   ├── edge_sessions.py     #   Edge 会话 CRUD + 启动/显示/隐藏/关闭
-│   │   ├── ocr.py               #   OCR 测试/引擎查询
-│   │   ├── shops.py             #   店铺配置/初始化/绑定
-│   │   └── platforms.py         #   平台批量 Edge 控制
-│   ├── services/                # 服务层（业务逻辑）
-│   │   ├── store.py             #   SQLite CRUD + Schema迁移 + 会话/任务同步
-│   │   ├── scheduler.py         #   定时采集调度器（asyncio + to_thread）
-│   │   ├── shop_config.py       #   shops.csv/JSON 解析 + ShopConfig 模型
-│   │   ├── edge_binding.py      #   Edge 页面绑定评分与恢复逻辑
-│   │   ├── dashboard_service.py #   看板数据聚合
-│   │   ├── dashboard_query.py   #   MySQL 历史数据查询 + 缓存
-│   │   └── dashboard_dataset.py #   数据集管理
-│   └── tools/                   # 测试与运维工具脚本
-│       ├── full_test.py         #   全功能测试（65项）
-│       ├── smoke_api.py         #   API 冒烟测试（14项）
-│       ├── smoke_edge_buttons.py#   Edge 四按钮冒烟测试
-│       ├── start_shop_edges.py  #   批量启动店铺 Edge
-│       └── find_ocr_anomalies.py#   OCR 异常监控
-├── frontend/                    # 前端静态文件
-│   ├── index.html               #   单页应用入口
-│   ├── styles.css               #   全局样式
-│   ├── core.js                  #   全局状态、工具函数、API 封装
-│   ├── dashboard.js             #   实时看板渲染
-│   ├── dashboard-shared.js      #   看板共享逻辑
-│   ├── dashboard-public.js      #   公开看板
-│   ├── config.js                #   采集配置面板
-│   ├── edge.js                  #   Edge 会话管理 UI
-│   ├── app.js                   #   任务管理 + 事件 + 调度器 + 初始化
-│   ├── debug.js                 #   调试面板
-│   ├── assets/                  #   静态资源（CSS/Logo）
-│   └── test-dashboard/          #   测试看板（独立入口）
-│       ├── index.html
-│       ├── app.js
-│       ├── dashboard.js
-│       └── styles.css
-├── data/                        # 数据与配置
-│   ├── shops.csv                #   店铺清单（GBK编码，主配置）
-│   ├── shops_default.json       #   店铺配置 JSON 备份
-│   ├── shops_page_data.json     #   额外店铺页面数据
-│   ├── shops_name.csv           #   店铺别名数据
-│   ├── target.csv               #   目标值数据
-│   ├── to_date.csv              #   周期截止日期数据
-│   ├── gmv_livelens.sqlite3     #   SQLite 数据库（运行时生成）
-│   ├── screenshots/             #   截图缩略图
-│   ├── edge_profiles/           #   各店铺独立 Edge user_data_dir
-│   ├── .cache/                  #   MySQL 查询缓存
-│   └── ocr_datasets/            #   OCR 训练数据集（自动采集）
-├── scripts/                     # 辅助脚本
-│   ├── ci_check.py              #   CI 检查入口
-│   └── ... (城市编码匹配相关脚本)
-├── .github/workflows/test.yml   # GitHub Actions CI 配置
-├── requirements.txt             # Python 依赖
-├── pyproject.toml               # 项目配置 + Ruff Lint 配置
-├── .env / .env.example          # 环境变量（.env 含真实 MySQL 密码）
-├── .gitignore                   # Git 忽略规则
-├── 第1步_启动GMV服务.bat          # 一键启动脚本（端口 8100）
-├── README.md                    # 项目说明
-├── AUDIT_*.md                   # 历史审计报告
-├── FULL_CHAIN_TEST_REPORT.md    # 全链路测试报告
-├── SMOKE_TEST_REPORT.md         # 冒烟测试报告
-└── .trae/documents/             # 项目文档（27+ 份计划/报告）
-```
-
-### 5.2 模块调用关系
-
-```
-main.py (FastAPI App)
-  ├── core/config.py          ← 环境变量配置
-  ├── core/middleware.py       ← RequestId + Token 中间件
-  ├── core/errors.py          ← 统一异常处理
-  ├── logging_config.py       ← 日志初始化
-  ├── services/store.py       ← SQLite CRUD + Schema迁移
-  │     └── services/shop_config.py  ← shops.csv/JSON 解析
-  ├── routers/                ← 8 个路由模块
-  │     ├── routers/common.py      ← 共用逻辑（WS广播/Edge交互/快照构建）
-  │     ├── routers/tasks.py       → services/store.py, scheduler.py, edge/
-  │     ├── routers/system.py      → scheduler.py, dashboard_query.py
-  │     ├── routers/edge_sessions.py → collectors/edge/ (RemoteEdgeManager)
-  │     └── ...
-  └── services/scheduler.py   ← 定时采集调度器
-        ├── collectors/edge/  ← Playwright CDP 浏览器控制
-        ├── collectors/ocr_reader.py  ← OCR 引擎
-        └── collectors/window_capture.py ← 窗口截图兼容模式
-```
-
-### 5.3 数据流向
-
-```
-shops.csv/JSON → shop_config.py → store.py (SQLite capture_tasks + edge_sessions)
-                                         ↓
-用户前端操作 → routers/*.py → store.py → SQLite 持久化
-                                         ↓
-scheduler.py (asyncio loop) → ThreadPoolExecutor → collectors/edge/ (CDP截图)
-                                         ↓                              ↓
-                                    ocr_reader.py (OCR识别)    _readonly.py (大屏只读)
-                                         ↓
-                                    store.py → SQLite (gmv_samples + task_runtime)
-                                         ↓
-                                    WebSocket /ws/live → 前端看板实时更新
-                                         ↓
-                          dashboard_query.py → MySQL (历史周期数据) → 看板聚合
-```
-
----
+- `backend/main.py`：应用入口，加载 `.env`，创建 FastAPI 实例，挂载静态目录，注册中间件、异常处理、路由、启动/关闭生命周期。
+- `backend/routers/`：API 路由集合，包含系统页与健康检查、任务管理、店铺配置、Edge 会话、OCR、平台级操作、看板数据集和测试看板接口。
+- `backend/core/`：配置、安全、响应、请求 ID、中间件和错误处理；`WriteTokenMiddleware` 在生产或强制 Token 时保护敏感写接口。
+- `backend/services/`：SQLite 存储、调度器、店铺配置解析、看板聚合、周期数据查询和缓存。
+- `backend/collectors/`：窗口截图、OCR、Edge CDP、只读大屏读取、窗口控制等采集底层能力。
+- `backend/tools/`：全量测试、API 冒烟、OCR 异常排查、Edge 启动辅助等命令行工具。
+- `frontend/index.html`：本机管理台与公网看板共用 HTML 入口，通过路径 `/dashboard` 切换公网只读模式。
+- `frontend/core.js`：全局状态、API 包装、Token 存储、任务/店铺辅助函数、WebSocket 连接、全局事件绑定。
+- `frontend/dashboard-shared.js`、`frontend/dashboard.js`、`frontend/dashboard-public.js`：看板渲染、公共看板轮询、周期数据集导航和刷新逻辑。
+- `frontend/config.js`、`frontend/edge.js`、`frontend/debug.js`、`frontend/app.js`：采集配置、Edge 控制、调试面板、应用入口和页面模式分流。
+- `data/`：当前运行数据和配置，含店铺 CSV、JSON 快照、SQLite、截图、Edge profiles、周期缓存。
+- `tests/`：pytest 回归文件和自研 smoke/full test 入口；当前 CI 调用脚本式测试为主。
+- `scripts/ci_check.py`：GitHub Actions 的主 CI 编排脚本。
+- `.github/workflows/test.yml`：Windows CI，安装 Python 3.11 依赖后运行 `python scripts/ci_check.py --with-api`。
+- `deploy/`：FRP、Nginx、systemd、Windows FRP 客户端安装脚本、公网只读部署说明和生产环境变量样例。
+- `第1步_启动GMV服务.bat`、`第2步_启动公网隧道.bat`：Windows 本机启动服务和公网隧道的操作入口。
 
 ## 6. 核心业务链路
 
-### 6.1 链路 1：服务启动与初始化
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | `第1步_启动GMV服务.bat` 或 `uvicorn backend.main:app --port 8100` |
-| **关键步骤** | `main.py:startup()` → `setup_logging()` → `store.init_db()` → `store.sync_tasks_with_shop_configs()` → `scheduler.start()` |
-| **依赖数据** | `shops.csv` (GBK编码) 或 `shops_default.json` / `shops_page_data.json` |
-| **输出结果** | SQLite 数据库初始化、Edge 会话按配置同步、采集调度器启动 |
-| **潜在失败点** | shops.csv 编码错误 → 启动跳过同步；端口 8100 占用 → .bat 自动杀进程重试；.venv 缺失 → 启动失败 |
-
-### 6.2 链路 2：店铺 Edge 会话配置
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | 前端「采集配置」→ 选择店铺 → 启动 Edge |
-| **关键函数** | `routers/edge_sessions.py:start_edge_session()` → `RemoteEdgeManager.get_client()` → `RemoteEdge._start_edge()` → `subprocess.Popen("msedge.exe ...")` |
-| **依赖数据** | `edge_sessions` 表（debug_port, user_data_dir, session_mode） |
-| **输出结果** | Edge 浏览器进程启动（隐藏到屏幕外 32000,y），CDP 端口打开 |
-| **潜在失败点** | debug_port 被占用 → 连接失败；user_data_dir 权限不足 → 启动异常；Edge 版本不兼容 |
-
-### 6.3 链路 3：页面绑定与 OCR 标定
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | 前端「采集配置」→ 扫描页签 → 选择页面 → 生成预览 → 框选区域 → 测试识别 → 保存 |
-| **关键函数** | `routers/tasks.py:task_page_candidates()` → `edge_binding.py:page_match_score()` → `routers/common.py:_build_task_page_candidates()` |
-| **依赖数据** | Edge 当前标签页列表、URL 匹配规则（url_patterns/url_must_contain） |
-| **输出结果** | task.page_id 写入 SQLite、x_ratio/y_ratio/... 标定坐标写入 |
-| **潜在失败点** | Edge 未启动/调试端口不通 → 扫描失败；页面 URL 不匹配 → 找不到目标页；截图尺寸与标定坐标不一致 |
-
-### 6.4 链路 4：定时 GMV 采集（核心主链路）
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | `services/scheduler.py:CaptureScheduler._run_loop()`（asyncio 事件循环） |
-| **关键函数** | `scheduler.capture_once(task_id)` → `RemoteEdge.screenshot_page()` → `window_capture.crop_by_ratio()` → `ocr_reader.read_text()` → `ocr_reader.extract_candidates()` → `scheduler._judge()` → `store.add_sample()` |
-| **依赖数据** | task 的 page_id、标定坐标（x_ratio/y_ratio/...）、keyword_hint、last_trusted_value |
-| **输出结果** | gmv_samples 表新增采样记录、capture_tasks 表更新 last_trusted_value/status |
-| **潜在失败点** | page_id 失效 → edge_session_not_found/remote_page_not_found；OCR 识别失败 → parse_failed/needs_recalibration；数值异常下降 → suspect；截图超时 → edge_action_timeout |
-
-### 6.5 链路 5：金额候选识别与连续确认
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | `ocr_reader.read_text(image, keyword_hint, last_value)` |
-| **关键函数** | 图像预处理（颜色/对比度/黄色提取/Otsu 二值化×4变体） → 多引擎 OCR（RapidOCR → ddddocr） → 形近字纠错 → 正则提取金额候选（排除日期/时间/百分比） → 评分（货币符号+35/逗号分隔+18/量级+20/关键词+25/历史值±分） → 连续确认 |
-| **依赖数据** | 截图区域、OCR 引擎可用性、历史可信值 |
-| **输出结果** | 排序后的候选金额列表 + 确认状态 |
-| **潜在失败点** | 页面样式变化 → OCR 精度下降；特殊字体 → ddddocr 误识别；数值跳变 → suspect |
-
-### 6.6 链路 6：大屏只读模式（非 OCR 采集）
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | `scheduler._capture_screen_readonly_once()` |
-| **关键函数** | `RemoteEdge.read_screen_pay_amount()` → 网络监听提取 `payAmt.value` |
-| **依赖数据** | 页面 JS 上下文中的 payAmt 对象 |
-| **输出结果** | 直接从页面 JS 读取支付金额（无 OCR 误差） |
-| **潜在失败点** | 目标平台不在支持列表（天猫/京东/唯品会/抖音/得物） → readonly_failed；页面尚未渲染大屏数据 → readonly_waiting；前端 JS 结构变化 → payAmt 提取失败 |
-
-### 6.7 链路 7：WebSocket 实时推送
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | `system.py:websocket_live()` → `clients.add(websocket)` |
-| **关键函数** | `scheduler.add_callback(broadcast_snapshot)` → 每次采集完成后 `broadcast_snapshot()` → `build_snapshot()` → `websocket.send_json(snapshot)` |
-| **依赖数据** | store.list_tasks() → task_to_dict() |
-| **输出结果** | 前端实时更新看板数据 |
-| **潜在失败点** | WS 连接断开 → 前端不更新；大量任务 → JSON 序列化开销 |
-
-### 6.8 链路 8：测试看板与历史数据查询
-
-| 环节 | 说明 |
-|------|------|
-| **入口** | `/dashboard-test` 页面 → MySQL 历史数据查询 |
-| **关键函数** | `dashboard_query.py:_query_mysql_or_range()` → PyMySQL 连接 → 查询 `descente_al店铺整体取数源` 表 |
-| **依赖数据** | MySQL 连接配置（.env 中的 MYSQL_* 变量）、to_date.csv |
-| **输出结果** | 历史 GMV 周期数据缓存 → 前端测试看板展示 |
-| **潜在失败点** | MySQL 连接失败 → 回退到本地缓存；网络不可达 → 查询超时；密码泄露风险（.env 含明文密码） |
-
----
+- **服务启动链路**：`第1步_启动GMV服务.bat` 使用 `.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8100` 启动服务；`backend/main.py` 在 startup 阶段初始化 SQLite、同步 `shops.csv` 店铺配置、注册实时快照广播回调，并按 `GMV_SCHEDULER_AUTOSTART` 启动调度器和周期缓存调度。
+- **店铺配置链路**：`backend/services/shop_config.py` 优先读取 `data/shops.csv`，其次读取 `shops_page_data.json`，最后读取 `shops_default.json`；当前因 CSV 存在，CSV 是真实店铺配置来源。
+- **采集配置链路**：管理员在 `/` 页面进入采集配置/任务管理，选择店铺 Edge 会话，扫描页面，绑定业务页，选择“大屏只读”或 OCR，保存任务。
+- **Edge 采集链路**：后端通过 Playwright CDP 连接 Microsoft Edge，管理独立或真实 Profile 会话；支持启动、显示、隐藏、关闭、页面列表、页面绑定和健康检查。
+- **只读大屏链路**：对天猫、京东、唯品会、抖音、得物识别目标大屏 URL，在页面上下文读取关键 GMV 字段或受控请求结果，减少 OCR 对截图和字体的依赖。
+- **OCR 链路**：对未使用只读或只读失败的任务，通过截图区域、OCR 引擎、确认次数和安全边界提取 GMV 数值。
+- **实时展示链路**：调度器更新 SQLite 任务运行态和采样记录，`build_snapshot()` 生成实时任务快照，WebSocket `/ws/live` 推送给管理台，`/api/dashboard` 为看板提供聚合模型。
+- **周期展示链路**：`build_dashboard_view()` 结合实时任务、目标 CSV、周期数据集和可选 MySQL/缓存，返回实时/周期看板 payload；前端 `dashboard-public.js` 每 1.2 秒轮询刷新。
+- **公网只读链路**：公网请求经腾讯云 Nginx -> Ubuntu 本地 FRP 端口 -> Windows FastAPI；Nginx 只放行 `/dashboard`、`/static/`、`/api/dashboard`、`/api/dashboard-datasets`、`/api/health`、`/favicon.ico`。
 
 ## 7. 数据流与调用关系
 
-### 7.1 数据层
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                    SQLite (gmv_livelens.sqlite3)          │
-├──────────────────┬───────────────────┬───────────────────┤
-│ capture_tasks    │  edge_sessions     │  app_settings     │
-│ (任务配置+状态)   │  (Edge会话配置)     │  (全局设置)       │
-├──────────────────┼───────────────────┼───────────────────┤
-│         gmv_samples (采集历史记录)                       │
-├──────────────────────────────────────────────────────────┤
-│                    MySQL (远程)                           │
-│         descente_al店铺整体取数源 (历史数据)               │
-└──────────────────────────────────────────────────────────┘
-```
-
-### 7.2 API 路由汇总
-
-| 路由模块 | 端点数 | 主要职责 |
-|----------|--------|----------|
-| system.py | ~15 | 健康检查、WebSocket、设置、首页、调试、看板 |
-| tasks.py | ~12 | 任务 CRUD、采集触发、手动纠错、页签扫描、登录恢复 |
-| edge_sessions.py | ~12 | 会话 CRUD、Edge 启动/显示/隐藏/关闭、页面操作 |
-| shops.py | ~5 | 店铺列表、初始化、页面匹配、批量绑定 |
-| platforms.py | ~4 | 平台批量 Edge 控制（启动/显示/隐藏/关闭） |
-| ocr.py | ~3 | OCR 测试、引擎查询 |
-| dashboard.py | ~1 | 看板数据集 |
-| dashboard_test.py | ~5 | 测试看板页面、缓存管理 |
-
-### 7.3 前端 JS 依赖关系
-
-```
-core.js (最先加载)
-  ├── dashboard-shared.js
-  ├── dashboard.js
-  ├── dashboard-public.js
-  ├── edge.js
-  ├── config.js
-  ├── debug.js
-  └── app.js (最后加载，依赖所有模块)
-```
-
----
+- `data/shops.csv` -> `shop_config.load_shop_configs()` -> `store.sync_tasks_with_shop_configs()` -> SQLite `capture_tasks` 与 `edge_sessions`。
+- 管理台配置动作 -> `/api/tasks`、`/api/shops/bind`、`/api/edge-sessions/*`、`/api/platforms/*` -> `store`、`scheduler`、`remote_edge_manager` -> SQLite 与 Edge CDP。
+- 调度器采集 -> Edge CDP/只读页面/OCR -> `store.update_task_runtime()`、`store.add_sample()` -> `build_snapshot()` -> `/api/realtime`、`/api/tasks`、`/ws/live`。
+- 看板 API -> `build_dashboard_view(dataset_id)` -> 实时 `build_snapshot()` + 目标/周期 CSV + MySQL 查询或 `data/.cache/period_gmv.json` -> `/api/dashboard`。
+- 前端管理台 -> `api()` 包装器自动带 `X-API-Token`；但 `dashboard-public.js` 中 `POST /api/dashboard-cache/refresh` 使用裸 `fetch`，不会自动携带 Token。
+- 公网只读部署 -> Nginx allowlist 控制外部可访问路径；后端自身默认未对读接口和 `/ws/live` 增加统一鉴权。
 
 ## 8. 启动方式与运行依赖
 
-### 8.1 启动入口
-
-| 方式 | 命令 | 说明 |
-|------|------|------|
-| **推荐** | 双击 `第1步_启动GMV服务.bat` | 自动检测端口占用、杀旧进程、启动服务 |
-| **命令行** | `.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8100` | 手动启动 |
-| **前端** | `http://127.0.0.1:8100` | 服务启动后浏览器访问 |
-
-### 8.2 运行依赖清单
-
-| 类型 | 依赖项 | 必需？ | 说明 |
-|------|--------|--------|------|
-| **Python** | 3.11+ | ✅ 必需 | pyproject.toml 声明，当前 3.14.3 |
-| **pip 包** | requirements.txt (16 个包) | ✅ 必需 | FastAPI/Uvicorn/Playwright/RapidOCR/OpenCV等 |
-| **浏览器驱动** | Playwright Chromium | ✅ 必需 | `playwright install chromium` |
-| **系统** | Windows | ✅ 必需 | 使用 Win32 API (ctypes.windll) |
-| **浏览器** | Microsoft Edge | ✅ 必需 | 仅支持 Edge，不支持 Chrome |
-| **数据库** | SQLite 3 | ✅ 必需 | 标准库自带 |
-| **MySQL** | 远程数据库 | ⚠️ 可选 | 仅测试看板历史数据查询需要 |
-
----
+- **本地服务**：在 Windows 仓库根目录运行 `第1步_启动GMV服务.bat`，要求 `.venv\Scripts\python.exe` 已存在；服务监听 `127.0.0.1:8100`。
+- **直接开发启动**：可用 `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8100`，但仍依赖 Windows、Edge、Playwright、OCR 依赖和 `data/` 下运行数据。
+- **环境变量**：`.env` 由 `python-dotenv` 加载；关键变量包括 `GMV_APP_ENV`、`GMV_API_TOKEN`、`GMV_REQUIRE_API_TOKEN`、`GMV_CORS_ORIGIN_REGEX`、`GMV_DEBUG_API_ENABLED`、`GMV_SCHEDULER_AUTOSTART` 和 `MYSQL_*`。
+- **Python 依赖**：`requirements.txt` 固定 FastAPI、Uvicorn、pytest、websockets、Playwright、OCR、pywin32、pymysql、python-dotenv 等版本；`pyproject.toml` 声明项目版本 `0.3.0`、Python `>=3.11`、Ruff 配置。
+- **前端依赖**：无 npm 构建依赖；`package.json` 当前 `npm test` 为占位失败命令，前端通过静态脚本直接由 FastAPI `/static` 服务。
+- **公网部署**：按 `deploy/README-public-dashboard.md`，Windows 本机运行采集服务和 FRP 客户端，腾讯云 Ubuntu 运行 FRP server 与 Nginx；公网只读入口当前包括 `http://124.223.70.233/dashboard`，备案和证书完成后切换域名 HTTPS。
 
 ## 9. 已有测试与验证方式
 
-### 9.1 测试文件清单
-
-| 文件 | 类型 | 规模 | 说明 |
-|------|------|------|------|
-| `backend/tools/full_test.py` | 单元+集成 | 65项 | 模块导入/业务逻辑/DB CRUD/OCR 管道/前端检查 |
-| `backend/tools/smoke_api.py` | API 集成 | 14项 | 需要服务运行，含健康/任务/Edge/OCR/WS |
-| `backend/tools/smoke_edge_buttons.py` | E2E | - | Edge 四按钮真实验证（需 Edge 在线） |
-| `backend/tools/find_ocr_anomalies.py` | 监控 | - | OCR 特征库异常监控 |
-| `scripts/ci_check.py` | CI | - | GitHub Actions 自动执行，含 lint + API 测试 |
-
-### 9.2 验证结果（基于历史基线报告）
-
-| 测试 | 结果 | 日期 |
-|------|------|------|
-| full_test.py (65项) | ✅ 47/47 PASS (100%) | 2026-05-08 |
-| smoke_api.py (14项) | ✅ 14/14 PASS | 2026-05-08 |
-| Ruff Lint | ✅ 通过（pyproject.toml 已配置） | - |
-
----
+- **GitHub Actions**：`.github/workflows/test.yml` 在 `windows-latest` 上安装 Python 3.11、`requirements.txt` 和 Ruff，然后运行 `python scripts/ci_check.py --with-api`。
+- **CI 编排内容**：`scripts/ci_check.py` 依次运行 Ruff、`tests/full_test.py --skip-api`、`tests/smoke_edge.py`，再启动 Uvicorn 并运行 `tests/smoke_api.py`。
+- **pytest 文件**：`tests/test_dashboard_regression.py` 覆盖看板 JS、HTML 静态版本、移动端样式、公共看板与测试看板 API 一致性等；`tests/test_screen_readonly_hardening.py` 覆盖只读金额边界、失败退避、抖音解析回归等。
+- **当前缺口**：上述两个 `test_*.py` 文件未被 `pytest` 命令纳入 CI 执行；CI 只通过 Ruff 检查这些文件语法/风格，不运行其中断言。
+- **部署验证**：`deploy/README-public-dashboard.md` 给出公网 curl 验证，预期只读接口成功、`POST /api/dashboard-cache/refresh` 和 `/api/tasks` 返回 `403`。
 
 ## 10. 当前主要风险
 
-### P0 风险（会导致项目无法启动、核心功能不可用、数据错误、严重安全风险）
+风险计数：P0 5 项、P1 9 项、P2 10 项。
 
-| 编号 | 风险描述 | 涉及文件/位置 | 详细说明 |
-|------|----------|---------------|----------|
-| **P0-1** | **`.env` 包含明文 MySQL 密码** | `.env` L34 | `MYSQL_PASSWORD=W8y...` 已写在 `.env` 文件中。虽然 `.gitignore` 排除了 `.env`，但当前无 Git 仓库，文件存在于本地目录中，任何能访问该目录的人都能看到密码 |
-| **P0-2** | **无版本控制 (Git)** | 根目录 | 不存在 `.git/` 目录，所有代码变更无历史记录，无法回滚。一旦出问题只能依赖手动备份 |
-| **P0-3** | **仅限 Windows + Edge** | 全局 | `window_control.py`/`window_capture.py` 使用 `ctypes.windll`，`scheduler.py` 使用 `tasklist/taskkill`。无法在任何其他 OS 运行，且必须安装 Microsoft Edge |
+- **P0-1：前端管理台可能因 `setWsStatus` 未定义直接中断初始化。** `app.js` 在 `startInternalDashboard()` 中直接调用 `setWsStatus()`，catch 分支也继续调用；若实际未定义，会导致管理台后续 `syncSchedulerButton()` 和 `connectLiveWebSocket()` 无法稳定执行。
+- **P0-2：生产安全过度依赖部署层路径阻断。** 后端读接口和 `/ws/live` 默认未鉴权，写接口只有在 `GMV_APP_ENV=production` 或 `GMV_REQUIRE_API_TOKEN=true` 时由 `WriteTokenMiddleware` 保护；一旦 Windows 端口、FRP 或 Nginx 配置误暴露，管理/实时数据边界会变弱。
+- **P0-3：公网/生产写操作链路与前端实现不一致。** `POST /api/dashboard-cache/refresh` 被列为敏感写接口，但前端用裸 `fetch` 不带 `X-API-Token`；公网 Nginx 又显式返回 `403`，按钮和接口策略容易形成用户可见失败。
+- **P0-4：Fresh clone 难以独立复现业务运行态。** 核心链路依赖 Windows、Microsoft Edge 登录态、CDP 端口、Edge profile、SQLite 运行数据、`.venv` 和本机路径；仅拉仓库无法立即重建真实采集环境。
+- **P0-5：运行数据、配置快照和缓存混在仓库 `data/` 内，缺少迁移/备份/恢复边界。** SQLite、Edge profiles、截图、JSON 快照、MySQL 缓存和 CSV 共同影响运行态，一旦误提交、误覆盖或环境迁移，可能直接影响采集和看板可信度。
 
-### P1 风险（影响稳定性、可维护性、局部功能正确性）
+- **P1-1：版本信息不一致。** `backend/main.py` FastAPI 版本为 `0.3.0`，`/api/health` 与 `/api/debug/status` 中版本仍显示 `0.2.0`，影响运维判断和发布追踪。
+- **P1-2：`setupDebugPanel()` 未在当前入口中明确调用。** `debug.js` 定义了 Token/调试面板事件绑定，但当前入口未看到调用，调试按钮、Token 保存和生产状态提示可能不可用。
+- **P1-3：管理台看板和任务管理存在数据双轨风险。** `app.js` 以 `preserveLocalSnapshot: true` 启动共享看板，可能让看板展示的聚合数据与管理任务快照不是同一条状态源。
+- **P1-4：CI 未执行两个 pytest 回归文件。** `tests/test_dashboard_regression.py` 与 `tests/test_screen_readonly_hardening.py` 内容较关键，但 GitHub Actions 当前没有运行 `pytest`，回归保护不足。
+- **P1-5：店铺配置来源存在优先级和状态差异。** 代码优先使用 `shops.csv`，而 `shops_page_data.json` 中可出现不同 `enabled` 状态和本机绝对路径，维护者容易误判真实生效配置。
+- **P1-6：MySQL 周期数据查询失败时降级较静默。** `dashboard_query.py` 捕获 MySQL 异常后返回空结果或缓存状态，缺少面向看板/运维的强提示，可能把外部数据失败误读为业务波动。
+- **P1-7：读类管理接口如果被部署层误放行会泄露运行信息。** `/api/tasks`、`/api/edge-sessions`、`/api/windows`、`/api/settings` 等 GET 接口不在 Token 中间件保护范围，可能暴露店铺、窗口、路径或运行状态。
+- **P1-8：公网只读页面仍包含部分本机管理 DOM 和脚本。** `/dashboard` 通过 CSS/JS 隐藏管理区，而不是独立最小化页面；若脚本异常或样式失效，用户可能看到不该出现的控制元素。
+- **P1-9：Edge 操作、只读读取和 OCR 链路对平台页面结构高度敏感。** 平台 URL、DOM、接口字段、登录态、页面 title 或 frame 变化都会影响采集，当前需要更系统的故障分类和恢复策略。
 
-| 编号 | 风险描述 | 涉及文件/位置 | 详细说明 |
-|------|----------|---------------|----------|
-| **P1-1** | **shops.csv 编码不稳定** | `data/shops.csv` | 文件使用 GBK 编码，部分中文字段在非 GBK 环境下显示乱码。`shop_config.py` 已实现 UTF-8/GB18030/GBK 多编码回退，但如果编码不一致会导致解析失败 |
-| **P1-2** | **Edge 会话状态恢复不稳定** | `collectors/edge/_session.py` | Edge 进程可能被意外关闭或崩溃，page_id 失效后需人工重绑。系统虽有自动恢复逻辑，但不能100%覆盖 |
-| **P1-3** | **OCR 精度受页面样式影响** | `collectors/ocr_reader.py` | 动态图表、动画数字、高对比度背景会影响识别。黄色数字提取（HSV 阈值）对非标准配色可能失效 |
-| **P1-4** | **连续确认阈值可能导致数据延迟** | `services/scheduler.py:_judge()` | confirm_count ≥ 2 时，新值需要连续 2 次相同才确认。异常跳变需要 3-4 次。在高频采集下影响小，但低频（>10s）时确认延迟可能数十秒 |
-| **P1-5** | **SQLite 并发连接模式** | `services/store.py:connect()` | 使用 `check_same_thread=False` + 每次操作新建连接，无连接池。高并发或多任务同时写入时存在性能瓶颈和潜在的 WAL 锁争用 |
-| **P1-6** | **跨天 GMV 重置逻辑单点** | `services/scheduler.py:_judge()` | `is_cross_day` 检测依赖 `task.last_success_at` 字段，通过 `datetime.strptime` 解析。如果该字段为 None 或格式异常（时间戳 vs 日期字符串），跨天检测会静默失败 |
-| **P1-7** | **截图存储膨胀** | `data/screenshots/` | 默认 1 天清理，但高频采集（0.5s）下 1 天可产生大量截图。当前清理仅按 mtime<cutoff 删除，无总量上限控制 |
-| **P1-8** | **前端 JS 文件无构建/压缩** | `frontend/*.js` | 8 个 JS 文件按顺序全局作用域加载，无模块化。任一文件加载失败会导致后续模块不可用，且无加载失败降级 |
-
-### P2 风险（代码规范、体验优化、结构优化、长期维护）
-
-| 编号 | 风险描述 | 涉及文件/位置 | 详细说明 |
-|------|----------|---------------|----------|
-| **P2-1** | **`app.js` (~1125 行) 和 `config.js` (~835 行) 规模较大** | `frontend/app.js`, `frontend/config.js` | 过大的 JS 文件增加维护难度，内部职责混杂 |
-| **P2-2** | **`store.py` (~1350 行) 职责过重** | `backend/services/store.py` | 包含 CRUD、Schema 迁移、数据去重、会话同步、任务诊断等，可考虑进一步拆分 |
-| **P2-3** | **`routers/common.py` 混合过多职责** | `backend/routers/common.py` | 包含类型定义、WS 广播、Edge 交互、快照构建、绑定恢复等，职责不够单一 |
-| **P2-4** | **`shops.csv` 中 enabled 全为 FALSE** | `data/shops.csv` | 当前 9 家店铺的 enabled 字段全为 FALSE，意味着初始化后所有任务默认暂停，需要手动启用 |
-| **P2-5** | **Shell/Bat 脚本路径硬编码** | `第1步_启动GMV服务.bat` | 使用 `%~dp0` 相对路径，工作正常但 `.venv\Scripts\python.exe` 路径假设 `.venv` 在项目根目录 |
-| **P2-6** | **部分历史文档可能过时** | `.trae/documents/` (27+ 份) | 如 `main.py 2347 行未拆分路由` 等描述已不适用当前架构（已拆分为 routers/） |
-| **P2-7** | **脚本目录混杂** | `scripts/` | 包含 CI 工具和城市编码匹配脚本（analyze_excel.py 等），后者与 GMV 项目核心功能无关 |
-| **P2-8** | **无 API 版本管理** | `routers/` | 所有 API 路径均为 `/api/*`，无版本号前缀（如 `/api/v1/*`），未来 API 变更难以兼容 |
-| **P2-9** | **data 目录混杂临时文件** | `data/` | 存在 `run_demo_test.err.log`、`.temp_analyze.py` 等临时/测试文件，未清理 |
-
----
+- **P2-1：README 和旧文档存在明显过时信息。** README 中前端模块数量等描述已不匹配当前 `index.html`，旧 DEFINE 的 Git 判断也不可信。
+- **P2-2：前端无构建、无类型检查、无模块边界。** 8 个全局脚本通过加载顺序共享函数和状态，新增功能容易引入隐式依赖或未定义函数。
+- **P2-3：`package.json` 测试脚本仍是占位失败命令。** 对新维护者而言，Node/npm 入口会误导验证方式。
+- **P2-4：部署说明和配置脚本分散，缺少一键环境检查。** 当前需要人工组合 `.env`、bat、FRP、Nginx、Edge 登录态和 curl 检查。
+- **P2-5：Windows 启动 bat 通过进程/端口强制清理，存在误杀或诊断不足。** 当前脚本会尝试结束已有端口进程，适合单机使用但不够商业化可观测。
+- **P2-6：日志、指标和告警体系不足。** 后端有 request id 和访问日志，但采集成功率、平台失败原因、缓存新鲜度、MySQL 状态、WebSocket 状态缺少统一监控面。
+- **P2-7：部署层只读 allowlist 没有自动化测试覆盖。** 文档列出 curl 预期，但 CI 未验证 Nginx 配置片段是否持续满足只读策略。
+- **P2-8：数据文件编码、CSV 字段和目标值格式仍主要靠运行时报错。** `shops.csv` 支持编码 fallback 和字段校验，但缺少独立 schema/fixture 验证命令。
+- **P2-9：仓库中存在 `backups/` 历史代码副本，容易干扰搜索和认知。** 当前 Glob 能搜索到备份 JS/测试文件，后续分析需明确排除备份目录。
+- **P2-10：发布版本未统一。** `pyproject.toml`、FastAPI app、`package.json`、健康检查和文档版本没有统一来源，发布后难以追溯。
 
 ## 11. 商业化代码规范差距
 
-### 11.1 检查结果汇总
-
-| 检查项 | 评分 | 说明 |
-|--------|------|------|
-| 代码结构清晰度 | ⭐⭐⭐⭐ | 后端已分层（routers/services/collectors/core），前端为原生模块化加载 |
-| 模块边界合理性 | ⭐⭐⭐ | `routers/common.py` 和 `services/store.py` 职责较重，但整体分层合理 |
-| 命名统一性 | ⭐⭐⭐⭐ | Python 代码命名风格统一（snake_case），前端 JS 使用 camelCase |
-| 大文件/大函数 | ⭐⭐⭐ | `store.py` 1350行、`app.js` 1125行、`config.js` 835行偏大但函数粒度尚可 |
-| 硬编码程度 | ⭐⭐⭐⭐ | 配置通过环境变量 + `.env` + `app_settings` 表管理，少量路径硬编码 |
-| 统一错误处理 | ⭐⭐⭐⭐⭐ | `core/errors.py` 统一 HTTP/Validation/Unhandled 异常处理，`core/response.py` 统一响应格式 |
-| 日志体系 | ⭐⭐⭐⭐ | `logging_config.py` 统一配置，RotatingFileHandler (10MB×5)，RequestId 中间件关联 |
-| 配置管理 | ⭐⭐⭐⭐ | `.env` + `AppSettings` dataclass + `app_settings` SQLite 表三重配置体系 |
-| 测试体系 | ⭐⭐⭐ | 有 full_test(65项) + smoke_api(14项) + CI 自动化，但缺少单元测试覆盖率和 E2E 测试 |
-| 启动说明 | ⭐⭐⭐⭐ | `README.md` 含启动命令 + `.bat` 一键启动脚本 |
-| 部署说明 | ⭐⭐ | 仅有本地启动说明，无容器化部署、无守护进程配置、无反向代理配置 |
-| 数据校验 | ⭐⭐⭐ | Pydantic BaseModel 用于请求体校验，但采集数据无格式校验（信任 OCR 输出） |
-| 异常兜底 | ⭐⭐⭐⭐ | 调度器循环有 try/except 保护，Edge 超时有降级重试，OCR 引擎有多级回退 |
-| 回滚思路 | ⭐⭐ | 无版本控制（无 Git），历史基线报告提及手动备份，但无自动化回滚机制 |
-
-### 11.2 主要差距
-
-1. **无版本控制**（P0）：这是商业化交付的最大阻塞项，没有 Git 意味着无法协作、无法回滚、无法审计
-2. **无容器化部署**（P1）：仅 Windows + .bat 启动，无法在服务器环境部署
-3. **前端无构建工具**（P1）：8 个 JS 文件直接加载，无 tree-shaking/压缩/模块化
-4. **无 API 版本管理**（P2）：未来 API 变更无兼容路径
-5. **测试覆盖率未知**（P1）：虽然有测试文件，但无覆盖率报告
-6. **部分大文件待拆分**（P2）：`store.py`/`common.py`/`app.js`/`config.js` 可进一步模块化
-
----
+- **安全边界**：生产依赖 Nginx allowlist 与写接口 Token 双层保护，但后端缺少统一的读接口鉴权策略、速率限制、WebSocket 鉴权、部署误配置兜底。
+- **可部署性**：项目强依赖 Windows + Edge + 本机登录态，尚未形成清晰的“开发环境、演示环境、生产环境”分层和可复现 bootstrap。
+- **数据治理**：运行数据、缓存、配置快照、截图和浏览器 profile 位于同一 `data/` 树下，缺少迁移、备份、脱敏、归档和敏感文件检查规范。
+- **测试治理**：关键 pytest 回归未进 CI；前端没有自动化浏览器测试、JS lint/type check；公网 Nginx allowlist 和 Token 策略没有自动化验证。
+- **前端工程化**：全局脚本和 DOM 直连方式能快速交付，但对商业化维护不友好；缺少模块导入、类型约束、错误边界和独立公网只读入口。
+- **运维观测**：缺少统一健康面板、采集 SLA、缓存状态、外部 MySQL 状态、平台页面变化告警和可追踪发布版本。
+- **文档一致性**：README、历史审计/DEFINE 与当前代码不同步，后续人员可能按照旧信息执行错误操作。
+- **配置管理**：`.env` 样例覆盖生产安全核心变量，但缺少启动前强校验，例如生产未设置 `GMV_API_TOKEN` 时是否应阻止启动。
 
 ## 12. 需要后续 PLAN 阶段重点处理的问题
 
-### 12.1 优先级排序
+- **优先方向 1：收敛 P0/P1 安全与入口风险。** 明确后端读/写/WebSocket/API 的安全模型，补齐生产启动强校验，修复缓存刷新 Token 链路，验证 Nginx allowlist 与后端防线一致。
+- **优先方向 2：修复前端初始化和数据源一致性。** 处理 `setWsStatus`、`setupDebugPanel()`、`preserveLocalSnapshot` 数据双轨、公共看板按钮暴露等问题，决定是否拆分公网只读入口。
+- **优先方向 3：把关键回归纳入 CI 并补齐部署验证。** 在 GitHub Actions 中运行 pytest，加入公网只读策略、Token 中间件、健康版本一致性、店铺配置 schema、MySQL 缓存降级的自动化检查。
+- 建议同时规划 `data/` 分层：区分源配置、运行态数据库、缓存、截图、Edge profile、密钥文件和可提交/不可提交边界。
+- 建议统一版本来源：FastAPI app、`pyproject.toml`、健康检查、调试接口、部署文档和发布说明使用一致版本。
+- 建议整理文档：README 与 DEFINE/PLAN/部署文档统一，以当前代码为真值删除或标记历史过时结论。
 
-| 优先级 | 问题 | 理由 |
-|--------|------|------|
-| **最高** | Git 初始化 + 版本控制 | 安全基线，一切改造的前提 |
-| **最高** | `.env` 安全加固（移除明文密码，使用密钥管理） | 安全风险 |
-| **高** | 补充单元测试覆盖率 | 后续改造的安全网 |
-| **高** | containers/ 云部署方案 | 脱离单 Windows 机器限制 |
-| **中** | `store.py` 拆分（读写分离、诊断独立） | 可维护性 |
-| **中** | 前端 JS 模块化（引入构建工具或至少 IIFE 隔离） | 前端稳定性 |
-|
+## 13. 当前阶段结论
+
+当前项目已经具备可运行的本机 GMV 采集和公网只读看板基础，也已经有 Windows CI、Ruff、自研 smoke/full test、FRP + Nginx 部署说明和部分 pytest 回归用例。
+
+可以进入 PLAN 阶段，但应优先规划 P0/P1 风险收敛。下一阶段前三个重点是：安全与公网入口收敛、前端初始化/数据源一致性修复、关键测试与部署验证纳入 CI。
+
+本阶段没有发现阻止进入 PLAN 的结构性阻塞；主要阻塞风险来自生产安全边界、运行环境不可复现和回归测试未完整执行，需要在 PLAN 阶段明确改造顺序和验收标准。

@@ -176,6 +176,12 @@ function bindManagerActionButtons() {
         }
       }, 1500);
     } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7322/ingest/74902c04-2c86-447b-b11e-113b7ea87782',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4e09f7'},body:JSON.stringify({sessionId:'4e09f7',runId:'pre-fix',hypothesisId:'H1,H4',location:'frontend/dashboard.js:bindManagerActionButtons:catch',message:'platform edge action failed before user-visible feedback',data:{platform,action,label,errorMessage:String(err?.message||''),hasShowMessage:typeof showMessage==='function',activeView:document.querySelector('.view.active')?.id||'',configMessageVisible:Boolean(document.getElementById('configMessage')?.offsetParent)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      const detail = parseApiErrorPayload(err);
+      const errorMsg = detail?.error || detail?.detail?.error || parseApiError(err) || `平台操作失败: ${label}`;
+      showMessage(errorMsg, true);
       console.error(`平台操作失败: ${label}`, err);
     } finally {
       btn.disabled = false;

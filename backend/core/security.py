@@ -16,6 +16,8 @@ SENSITIVE_WRITE_PATH_PREFIXES = (
     "/api/shops/bind",
     "/api/edge-sessions",
     "/api/platforms",
+    "/api/window-preview",
+    "/api/test-ocr",
     "/api/dashboard-cache/refresh",
 )
 

@@ -207,8 +207,37 @@ function statusClassSuffix(value) {
 
 function showMessage(text, isError = false) {
   const el = $("configMessage");
-  el.textContent = text;
-  el.classList.toggle("bad-text", isError);
+  // #region agent log
+  fetch('http://127.0.0.1:7322/ingest/74902c04-2c86-447b-b11e-113b7ea87782',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4e09f7'},body:JSON.stringify({sessionId:'4e09f7',runId:'pre-fix',hypothesisId:'H4',location:'frontend/core.js:showMessage',message:'showMessage target visibility',data:{text:String(text||''),isError:Boolean(isError),hasTarget:Boolean(el),activeView:document.querySelector('.view.active')?.id||'',targetVisible:Boolean(el?.offsetParent)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+  const message = String(text || "");
+  if (el) {
+    el.textContent = message;
+    el.classList.toggle("bad-text", isError);
+  }
+  if (el?.offsetParent) return;
+
+  let toast = $("globalMessage");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "globalMessage";
+    toast.className = "global-message";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.toggle("bad-text", isError);
+  toast.classList.toggle("show", Boolean(message));
+}
+
+function setWsStatus(text, tone = "ok") {
+  const el = $("wsStatus");
+  if (!el) return;
+  const dot = el.querySelector(".live-dot") || document.createElement("span");
+  dot.className = "live-dot";
+  el.replaceChildren(dot, document.createTextNode(String(text || "实时连接")));
+  el.classList.toggle("bad", tone === "bad");
 }
 
 function parseApiError(error) {
@@ -805,15 +834,63 @@ async function captureAllTasks() {
   try {
     showMessage("正在向所有启用的任务发送采集指令...");
     const tasks = liveTasks();
-    const promises = tasks.map(task => api(`/api/tasks/${task.id}/capture-once`, { method: "POST" }).catch(e => console.error(`Task ${task.id} capture failed`, e)));
-    await Promise.all(promises);
-    showMessage("所有启用任务均已发送采集指令。");
+    // #region agent log
+    fetch('http://127.0.0.1:7322/ingest/74902c04-2c86-447b-b11e-113b7ea87782',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4e09f7'},body:JSON.stringify({sessionId:'4e09f7',runId:'pre-fix',hypothesisId:'H2',location:'frontend/core.js:captureAllTasks:start',message:'capture all started',data:{taskCount:tasks.length,taskIds:tasks.map((task)=>task.id)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    const promises = tasks.map((task) =>
+      api(`/api/tasks/${task.id}/capture-once`, { method: "POST" })
+        .then((result) => ({ taskId: task.id, ok: true, status: result?.status || "", reason: result?.reason || result?.error || "" }))
+        .catch((e) => {
+          console.error(`Task ${task.id} capture failed`, e);
+          return { taskId: task.id, ok: false, status: "request_failed", reason: parseApiError(e) };
+        })
+    );
+    const results = await Promise.all(promises);
+    // #region agent log
+    fetch('http://127.0.0.1:7322/ingest/74902c04-2c86-447b-b11e-113b7ea87782',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4e09f7'},body:JSON.stringify({sessionId:'4e09f7',runId:'pre-fix',hypothesisId:'H2',location:'frontend/core.js:captureAllTasks:results',message:'capture all results before success message',data:{results,nonOk:results.filter((item)=>!item.ok||!['ok','pending_confirm','captured','success'].includes(String(item.status||'').toLowerCase()))},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    const failed = results.filter((item) => {
+      const status = String(item.status || "").toLowerCase();
+      return !item.ok || ["edge_debug_unavailable", "edge_debug_disconnected", "task_not_found", "parse_failed", "readonly_failed", "request_failed"].includes(status);
+    });
+    if (failed.length) {
+      showMessage(`采集指令已发送，但 ${failed.length}/${results.length} 个任务返回异常，请查看任务卡状态。`, true);
+    } else {
+      showMessage(`所有启用任务均已发送采集指令（${results.length} 个）。`);
+    }
     await loadTasks();
   } catch (error) {
     showMessage(parseApiError(error) || "采集全部失败", true);
   } finally {
     if (button) button.disabled = false;
   }
+}
+
+async function loadRuntimeSettings() {
+  const engineSelect = $("globalOcrEngine");
+  const intervalSelect = $("globalInterval");
+  if (!engineSelect && !intervalSelect) return;
+  try {
+    const settings = await api("/api/settings");
+    if (engineSelect && settings?.ocr_engine) engineSelect.value = settings.ocr_engine;
+    if (intervalSelect && settings?.interval_seconds !== undefined) {
+      const value = String(Number(settings.interval_seconds));
+      const option = Array.from(intervalSelect.options).find((item) => item.value === value);
+      if (option) intervalSelect.value = value;
+    }
+  } catch (error) {
+    console.warn("运行设置加载失败", error);
+  }
+}
+
+async function saveRuntimeSettingsFromControls() {
+  const engine = $("globalOcrEngine")?.value || "auto";
+  const intervalSeconds = currentGlobalIntervalSeconds();
+  await api("/api/settings", {
+    method: "POST",
+    body: JSON.stringify({ ocr_engine: engine, interval_seconds: intervalSeconds }),
+  });
+  showMessage("全局采集设置已保存。");
 }
 
 // ===== 全局事件绑定 =====
@@ -843,6 +920,17 @@ $("testOcr")?.addEventListener("click", () => testOcr().catch((err) => showMessa
       const parts = val.slice(7).split("::");
       if (parts.length === 2) focusSetupShopByIdentity(parts[0], parts[1]).catch((err) => showMessage(parseApiError(err), true));
     }
+  });
+
+  $("globalOcrEngine")?.addEventListener("change", function () {
+    // #region agent log
+    fetch('http://127.0.0.1:7322/ingest/74902c04-2c86-447b-b11e-113b7ea87782',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4e09f7'},body:JSON.stringify({sessionId:'4e09f7',runId:'pre-fix',hypothesisId:'H3',location:'frontend/core.js:globalOcrEngine:change',message:'OCR engine select changed without settings save handler',data:{selectedValue:this.value,activeView:document.querySelector('.view.active')?.id||''},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    saveRuntimeSettingsFromControls().catch((err) => showMessage(parseApiError(err), true));
+  });
+
+  $("globalInterval")?.addEventListener("change", function () {
+    saveRuntimeSettingsFromControls().catch((err) => showMessage(parseApiError(err), true));
   });
 
   $("bindSessionSelect")?.addEventListener("change", function () {

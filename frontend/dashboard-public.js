@@ -185,7 +185,7 @@ async function loadSharedDashboard(options = {}) {
   }
   const updatedAt = formatPublicDashboardUpdatedAt(dashboard.generated_at || payload?.timestamp);
   publicDashboardState.lastUpdatedAt = updatedAt;
-  setPublicDashboardStatus(`看板刷新：1.2秒 / 最后更新：${updatedAt}`);
+  setPublicDashboardStatus("实时连接");
   return payload;
 }
 
@@ -196,7 +196,7 @@ function startSharedDashboardPolling(options = {}) {
       await loadSharedDashboard({ syncSelectedFromPayload: true, preserveLocalSnapshot });
     } catch (error) {
       console.error("Dashboard refresh failed", error);
-      setPublicDashboardStatus(`看板刷新异常 / 上次成功更新：${publicDashboardState.lastUpdatedAt || "-"}`, "bad");
+      setPublicDashboardStatus("连接异常", "bad");
     }
   };
   poll();
@@ -229,13 +229,17 @@ function bindSharedRefreshButton(options = {}) {
     btn.classList.add("is-refreshing");
     btn.textContent = "刷新中...";
     try {
-      const res = await fetch("/api/dashboard-cache/refresh", { method: "POST", cache: "no-store" });
-      if (!res.ok) throw new Error(await res.text());
+      await api("/api/dashboard-cache/refresh", { method: "POST", cache: "no-store" });
       await loadSharedDashboard({ syncSelectedFromPayload: true, preserveLocalSnapshot: Boolean(options.preserveLocalSnapshot) });
       setPublicDashboardStatus("周期数据缓存刷新完成");
     } catch (error) {
       console.error("Dashboard cache refresh failed", error);
-      setPublicDashboardStatus("周期数据缓存刷新失败", "bad");
+      const detail = parseApiError(error);
+      const forbidden = String(detail || "").includes("403") || String(detail || "").toLowerCase().includes("forbidden");
+      const hint = forbidden
+        ? "当前入口禁止刷新，请在本机管理员页面填写 Token 后重试"
+        : (detail || "请确认 API Token 与部署入口权限");
+      setPublicDashboardStatus(`周期数据缓存刷新失败：${hint}`, "bad");
     } finally {
       btn.disabled = false;
       btn.classList.remove("is-refreshing");

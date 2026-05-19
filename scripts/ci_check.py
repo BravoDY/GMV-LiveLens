@@ -14,6 +14,10 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 HOST = "127.0.0.1"
 PORT = 8100
 HEALTH_URL = f"http://{HOST}:{PORT}/api/health"
+PYTEST_REGRESSION_FILES = [
+    "tests/test_dashboard_regression.py",
+    "tests/test_screen_readonly_hardening.py",
+]
 
 
 def resolve_ruff_command() -> list[str]:
@@ -100,6 +104,7 @@ def main() -> None:
             "scripts/ci_check.py",
         ],
     )
+    run_step("Run pytest regression tests", [sys.executable, "-m", "pytest", *PYTEST_REGRESSION_FILES])
     run_step("Run full_test (skip API)", [sys.executable, "tests/full_test.py", "--skip-api"])
     run_step("Run smoke_edge", [sys.executable, "tests/smoke_edge.py"])
 

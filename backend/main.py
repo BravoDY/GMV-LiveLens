@@ -26,11 +26,12 @@ from backend.routers.common import FRONTEND_DIR, broadcast_snapshot
 from backend.services import store
 from backend.services.dashboard_query import start_cache_scheduler, stop_cache_scheduler
 from backend.services.scheduler import scheduler
+from backend.version import APP_VERSION
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-app = FastAPI(title="GMV-LiveLens", version="0.3.0")
+app = FastAPI(title="GMV-LiveLens", version=APP_VERSION)
 app.add_middleware(RequestIdMiddleware)
 app.add_middleware(WriteTokenMiddleware)
 app.add_middleware(

@@ -5,10 +5,9 @@ import re
 from pathlib import Path
 from types import SimpleNamespace
 
-from backend.models import CaptureTask
 import backend.services.scheduler as scheduler_mod
+from backend.models import CaptureTask
 from backend.services.scheduler import CaptureScheduler
-
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 

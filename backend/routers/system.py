@@ -20,6 +20,7 @@ from backend.routers.common import (
 from backend.services import store
 from backend.services.dashboard_query import build_dashboard_view
 from backend.services.scheduler import scheduler
+from backend.version import APP_VERSION
 
 router = APIRouter()
 
@@ -96,7 +97,7 @@ async def health() -> dict[str, Any]:
     return success_response(
         {
             "status": "ok",
-            "version": "0.2.0",
+            "version": APP_VERSION,
             "scheduler": scheduler.status(),
         }
     )
@@ -122,7 +123,7 @@ async def debug_status() -> dict[str, Any]:
         {
             "app": {
                 "name": "GMV-LiveLens",
-                "version": "0.2.0",
+                "version": APP_VERSION,
                 "env": settings.app_env,
             },
             "security": public_security_status(),

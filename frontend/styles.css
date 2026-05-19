@@ -557,6 +557,11 @@ body.test-dashboard-mode .header-actions .test-dataset-refresh-btn {
   white-space: nowrap;
 }
 
+.live-pill.bad {
+  color: var(--bad);
+  background: rgba(255, 77, 104, 0.15);
+}
+
 @media (max-width: 1600px) {
   .app-header {
     grid-template-columns: minmax(280px, 360px) minmax(max-content, 1fr) auto;
@@ -626,6 +631,11 @@ body.test-dashboard-mode .header-actions .test-dataset-refresh-btn {
   border-radius: 50%;
   background: #20e6d3;
   box-shadow: 0 0 14px rgba(32, 230, 211, 0.85);
+}
+
+.live-pill.bad .live-dot {
+  background: var(--bad);
+  box-shadow: 0 0 14px rgba(255, 77, 104, 0.85);
 }
 
 .scheduler-button {
@@ -1200,6 +1210,34 @@ select {
 }
 
 .bad-text {
+  color: var(--bad);
+}
+
+.global-message {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9999;
+  max-width: min(420px, calc(100vw - 40px));
+  padding: 12px 16px;
+  border: 1px solid rgba(128, 154, 255, 0.32);
+  border-radius: 14px;
+  background: rgba(7, 13, 28, 0.92);
+  color: var(--text-primary);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.global-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.global-message.bad-text {
+  border-color: rgba(255, 93, 93, 0.42);
   color: var(--bad);
 }
 

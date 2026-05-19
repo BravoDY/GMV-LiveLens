@@ -316,12 +316,12 @@ class RemoteEdgeSessionMixin:
         effective_timeout = float(timeout_seconds or ACTION_TIMEOUTS.get(action_name, 20.0))
         try:
             self._jobs.put((action_name, func, result_queue, job_id), timeout=effective_timeout * 0.5)
-        except queue.Full:
+        except queue.Full as exc:
             self._stale = True
             self._stale_reason = f"job_queue_full:{action_name}"
             self._last_reason_code = "edge_action_timeout"
             self._last_error = f"Edge 任务队列已满，无法提交动作: {action_name}"
-            raise EdgeActionTimeoutError(action_name, "queue_full", effective_timeout)
+            raise EdgeActionTimeoutError(action_name, "queue_full", effective_timeout) from exc
         self._action_stage = f"{action_name}:waiting"
         try:
             ok, value = result_queue.get(timeout=effective_timeout)

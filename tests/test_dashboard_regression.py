@@ -1,12 +1,14 @@
+import tomllib
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from backend.core.config import get_settings
 from backend.main import app
 from backend.routers.common import frontend_static_version
 from backend.services.dashboard_dataset import TargetRow
 from backend.services.dashboard_query import build_dashboard_view
-
+from backend.version import APP_VERSION
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
@@ -50,6 +52,92 @@ def test_internal_dashboard_binds_nav_before_async_initialization() -> None:
     assert '<nav class="header-nav">' in html_content
 
 
+def test_ws_status_helper_is_defined_before_app_entry_uses_it() -> None:
+    core_js = ROOT_DIR / "frontend" / "core.js"
+    app_js = ROOT_DIR / "frontend" / "app.js"
+
+    core_content = core_js.read_text(encoding="utf-8")
+    app_content = app_js.read_text(encoding="utf-8")
+
+    assert "function setWsStatus(" in core_content
+    assert 'const el = $("wsStatus");' in core_content
+    assert "el.replaceChildren(dot, document.createTextNode" in core_content
+    assert 'setWsStatus("Local admin connected");' in app_content
+    assert 'setWsStatus("Local dashboard failed", "bad");' in app_content
+
+
+def test_internal_dashboard_initializes_debug_panel() -> None:
+    app_js = ROOT_DIR / "frontend" / "app.js"
+    debug_js = ROOT_DIR / "frontend" / "debug.js"
+
+    app_content = app_js.read_text(encoding="utf-8")
+    debug_content = debug_js.read_text(encoding="utf-8")
+
+    assert "function setupDebugPanel()" in debug_content
+    assert 'if (typeof setupDebugPanel === "function") {' in app_content
+    assert "setupDebugPanel();" in app_content
+    assert app_content.index("setupDebugPanel();") < app_content.index("await loadShopConfigs();")
+
+
+def test_dashboard_cache_refresh_uses_token_aware_api_wrapper() -> None:
+    dashboard_public_js = ROOT_DIR / "frontend" / "dashboard-public.js"
+    content = dashboard_public_js.read_text(encoding="utf-8")
+
+    assert 'fetch("/api/dashboard-cache/refresh"' not in content
+    assert 'await api("/api/dashboard-cache/refresh", { method: "POST", cache: "no-store" });' in content
+    assert "当前入口禁止刷新" in content
+    assert "请确认 API Token 与部署入口权限" in content
+
+
+def test_platform_edge_failures_show_user_visible_message() -> None:
+    dashboard_js = ROOT_DIR / "frontend" / "dashboard.js"
+    content = dashboard_js.read_text(encoding="utf-8")
+
+    assert "function bindManagerActionButtons()" in content
+    assert "await callPlatformEdgeAction(platform, action);" in content
+    assert "showMessage(errorMsg, true);" in content
+    assert "console.error(`平台操作失败: ${label}`, err);" in content
+
+
+def test_capture_all_reports_business_failures() -> None:
+    core_js = ROOT_DIR / "frontend" / "core.js"
+    content = core_js.read_text(encoding="utf-8")
+
+    assert "function showMessage(text, isError = false)" in content
+    assert 'toast.id = "globalMessage";' in content
+    assert "async function captureAllTasks()" in content
+    assert "const results = await Promise.all(promises);" in content
+    assert "const failed = results.filter((item) => {" in content
+    assert "个任务返回异常" in content
+    assert "所有启用任务均已发送采集指令（${results.length} 个）。" in content
+
+
+def test_global_ocr_engine_persists_runtime_settings() -> None:
+    core_js = ROOT_DIR / "frontend" / "core.js"
+    app_js = ROOT_DIR / "frontend" / "app.js"
+    content = core_js.read_text(encoding="utf-8")
+    app_content = app_js.read_text(encoding="utf-8")
+
+    assert "async function loadRuntimeSettings()" in content
+    assert "async function saveRuntimeSettingsFromControls()" in content
+    assert 'await api("/api/settings", {' in content
+    assert 'ocr_engine: engine' in content
+    assert 'interval_seconds: intervalSeconds' in content
+    assert '$("globalOcrEngine")?.addEventListener("change"' in content
+    assert 'await loadRuntimeSettings();' in app_content
+    assert app_content.index("await loadRuntimeSettings();") < app_content.index("await loadTasks();")
+
+
+def test_public_dashboard_polling_keeps_header_connection_label() -> None:
+    dashboard_public_js = ROOT_DIR / "frontend" / "dashboard-public.js"
+    content = dashboard_public_js.read_text(encoding="utf-8")
+
+    assert 'setPublicDashboardStatus("实时连接");' in content
+    assert "看板刷新：" not in content
+    assert "看板刷新异常" not in content
+    assert "最后更新：" not in content
+
+
 def test_dashboard_entries_share_public_dashboard_module() -> None:
     test_html = (ROOT_DIR / "frontend" / "test-dashboard" / "index.html").read_text(encoding="utf-8")
     test_app = (ROOT_DIR / "frontend" / "test-dashboard" / "app.js").read_text(encoding="utf-8")
@@ -79,6 +167,33 @@ def test_dashboard_html_responses_rewrite_static_asset_versions() -> None:
         assert f"/static/styles.css?v={version}" in response.text
         assert f"/static/dashboard-public.js?v={version}" in response.text
         assert "dashboard-public.js?v=20260516-unified-dashboard-0001" not in response.text
+
+
+def test_backend_version_matches_pyproject_and_health_payload(monkeypatch) -> None:
+    pyproject = tomllib.loads((ROOT_DIR / "pyproject.toml").read_text(encoding="utf-8"))
+    client = TestClient(app)
+
+    assert APP_VERSION == pyproject["project"]["version"]
+    assert app.version == APP_VERSION
+    assert client.get("/api/health").json()["data"]["version"] == APP_VERSION
+
+    monkeypatch.setenv("GMV_DEBUG_API_ENABLED", "true")
+    get_settings.cache_clear()
+    try:
+        debug_payload = client.get("/api/debug/status").json()["data"]
+    finally:
+        get_settings.cache_clear()
+    assert debug_payload["app"]["version"] == APP_VERSION
+
+
+def test_ci_check_runs_key_pytest_regressions() -> None:
+    ci_check = ROOT_DIR / "scripts" / "ci_check.py"
+    content = ci_check.read_text(encoding="utf-8")
+
+    assert "PYTEST_REGRESSION_FILES" in content
+    assert '"tests/test_dashboard_regression.py"' in content
+    assert '"tests/test_screen_readonly_hardening.py"' in content
+    assert '[sys.executable, "-m", "pytest", *PYTEST_REGRESSION_FILES]' in content
 
 
 def test_dashboard_mobile_responsive_rules_hide_time_and_prevent_overflow() -> None:
