@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>顶部区域视觉方案 Demo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #eef1f5;
+        color: #f7fbff;
+        font-family: Inter, "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      }
+
+      .page {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 28px 18px 40px;
+      }
+
+      .intro {
+        margin-bottom: 20px;
+        color: #1a2433;
+      }
+
+      .intro h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      .intro p {
+        margin: 0;
+        color: #586677;
+        line-height: 1.6;
+      }
+
+      .demo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .proposal {
+        border-radius: 18px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
+      }
+
+      .proposal-note {
+        padding: 14px 16px 16px;
+        color: #172033;
+      }
+
+      .proposal-note strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 16px;
+      }
+
+      .proposal-note span {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .viewport {
+        min-height: 520px;
+        padding: 18px;
+      }
+
+      .top-panel {
+        border-radius: 18px;
+        padding: 18px;
+        border: 1px solid var(--panel-border);
+        background: var(--panel-bg);
+        box-shadow: var(--panel-shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .top-panel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--panel-sheen);
+        pointer-events: none;
+      }
+
+      .top-panel > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #07111c;
+        font-weight: 950;
+        font-size: 13px;
+        letter-spacing: -0.4px;
+      }
+
+      .title {
+        font-size: 20px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .status {
+        height: 38px;
+        padding: 0 16px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--status-color);
+        background: var(--status-bg);
+        font-size: 15px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 12px currentColor;
+      }
+
+      .segmented {
+        display: flex;
+        justify-content: center;
+        gap: var(--seg-gap);
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .segment {
+        border: 1px solid var(--seg-border);
+        color: var(--seg-text);
+        background: var(--seg-bg);
+        min-height: 42px;
+        padding: 0 20px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        font-weight: 850;
+        box-shadow: var(--seg-shadow);
+      }
+
+      .segment.active {
+        color: var(--seg-active-text);
+        background: var(--seg-active-bg);
+        border-color: var(--seg-active-border);
+        box-shadow: var(--seg-active-shadow);
+      }
+
+      .date {
+        text-align: center;
+        color: var(--date-color);
+        font-size: 14px;
+        font-weight: 760;
+        letter-spacing: 0.2px;
+      }
+
+      .metric-card {
+        margin-top: 16px;
+        border-radius: 15px;
+        padding: 18px;
+        border: 1px solid var(--metric-border);
+        background: var(--metric-bg);
+        box-shadow: var(--metric-shadow);
+        overflow: hidden;
+      }
+
+      .metric-kicker {
+        margin-bottom: 8px;
+        font-size: 15px;
+        font-weight: 850;
+      }
+
+      .metric-value {
+        font-size: 46px;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -1.2px;
+      }
+
+      .metric-sub {
+        margin-top: 16px;
+        color: var(--date-color);
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .graphite {
+        --panel-bg:
+          radial-gradient(circle at 18% 0%, rgba(48, 226, 220, 0.12), transparent 36%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 34%),
+          linear-gradient(145deg, #151c24 0%, #101923 48%, #0c121a 100%);
+        --panel-border: rgba(148, 163, 184, 0.22);
+        --panel-shadow: 0 24px 70px rgba(4, 9, 16, 0.32), inset 0 1px rgba(255, 255, 255, 0.06);
+        --panel-sheen: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.035), transparent);
+        --status-bg: rgba(24, 217, 210, 0.14);
+        --status-color: #38f3e6;
+        --seg-gap: 10px;
+        --seg-bg: rgba(18, 28, 39, 0.68);
+        --seg-border: rgba(148, 163, 184, 0.24);
+        --seg-text: #9eacbf;
+        --seg-shadow: inset 0 1px rgba(255, 255, 255, 0.035);
+        --seg-active-bg: linear-gradient(180deg, rgba(24, 217, 210, 0.22), rgba(24, 217, 210, 0.12));
+        --seg-active-border: rgba(45, 245, 231, 0.62);
+        --seg-active-text: #f2ffff;
+        --seg-active-shadow: 0 0 0 1px rgba(24, 217, 210, 0.16) inset, 0 14px 30px rgba(24, 217, 210, 0.14);
+        --date-color: #9fb0c5;
+        --metric-bg: linear-gradient(145deg, rgba(18, 32, 46, 0.92), rgba(10, 20, 31, 0.94));
+        --metric-border: rgba(45, 245, 231, 0.44);
+        --metric-shadow: 0 20px 42px rgba(0, 0, 0, 0.26), 0 0 28px rgba(24, 217, 210, 0.08);
+      }
+
+      .glass {
+        --panel-bg:
+          radial-gradient(circle at 12% -5%, rgba(121, 205, 255, 0.18), transparent 34%),
+          linear-gradient(145deg, rgba(31, 43, 58, 0.92), rgba(19, 29, 43, 0.94));
+        --panel-border: rgba(198, 213, 232, 0.22);
+        --panel-shadow: 0 26px 72px rgba(18, 31, 47, 0.28), inset 0 1px rgba(255, 255, 255, 0.08);
+        --panel-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 45%);
+        --status-bg: rgba(115, 221, 255, 0.15);
+        --status-color: #9ae8ff;
+        --seg-gap: 8px;
+        --seg-bg: rgba(255, 255, 255, 0.045);
+        --seg-border: rgba(213, 226, 244, 0.2);
+        --seg-text: #b5c2d4;
+        --seg-shadow: inset 0 1px rgba(255, 255, 255, 0.06);
+        --seg-active-bg: rgba(232, 246, 255, 0.13);
+        --seg-active-border: rgba(169, 228, 255, 0.52);
+        --seg-active-text: #ffffff;
+        --seg-active-shadow: inset 0 1px rgba(255, 255, 255, 0.12), 0 12px 30px rgba(105, 196, 255, 0.12);
+        --date-color: #b7c6d8;
+        --metric-bg: rgba(13, 26, 40, 0.72);
+        --metric-border: rgba(169, 228, 255, 0.36);
+        --metric-shadow: 0 18px 38px rgba(4, 10, 18, 0.22);
+      }
+
+      .instrument {
+        --panel-bg:
+          radial-gradient(circle at 88% 18%, rgba(24, 217, 210, 0.20), transparent 32%),
+          linear-gradient(145deg, #06191d 0%, #07121a 56%, #091017 100%);
+        --panel-border: rgba(24, 217, 210, 0.2);
+        --panel-shadow: 0 24px 74px rgba(0, 32, 36, 0.34), inset 0 1px rgba(255, 255, 255, 0.045);
+        --panel-sheen: linear-gradient(90deg, rgba(24, 217, 210, 0.08), transparent 36%, rgba(255, 255, 255, 0.025));
+        --status-bg: rgba(24, 217, 210, 0.18);
+        --status-color: #20f5e9;
+        --seg-gap: 0;
+        --seg-bg: rgba(255, 255, 255, 0.025);
+        --seg-border: rgba(24, 217, 210, 0.18);
+        --seg-text: #7fa1a9;
+        --seg-shadow: none;
+        --seg-active-bg: linear-gradient(180deg, rgba(24, 217, 210, 0.24), rgba(24, 217, 210, 0.08));
+        --seg-active-border: rgba(24, 217, 210, 0.68);
+        --seg-active-text: #ffffff;
+        --seg-active-shadow: 0 0 22px rgba(24, 217, 210, 0.17);
+        --date-color: #90aeb7;
+        --metric-bg: linear-gradient(145deg, rgba(5, 28, 35, 0.92), rgba(6, 16, 24, 0.96));
+        --metric-border: rgba(24, 217, 210, 0.46);
+        --metric-shadow: 0 18px 44px rgba(0, 0, 0, 0.30), 0 0 36px rgba(24, 217, 210, 0.10);
+      }
+
+      .instrument .segment {
+        border-radius: 0;
+      }
+
+      .instrument .segment:first-child {
+        border-radius: 999px 0 0 999px;
+      }
+
+      .instrument .segment:last-child {
+        border-radius: 0 999px 999px 0;
+      }
+
+      @media (max-width: 980px) {
+        .demo-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .page {
+          padding: 16px 10px 28px;
+        }
+
+        .viewport {
+          padding: 10px;
+          min-height: 470px;
+        }
+
+        .top-panel {
+          padding: 16px 12px;
+        }
+
+        .brand-line {
+          align-items: flex-start;
+        }
+
+        .title {
+          font-size: 19px;
+        }
+
+        .status {
+          height: 34px;
+          padding: 0 12px;
+          font-size: 13px;
+        }
+
+        .segment {
+          padding: 0 16px;
+          min-height: 40px;
+          font-size: 14px;
+        }
+
+        .metric-value {
+          font-size: 42px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="intro">
+        <h1>顶部区域视觉方案 Demo</h1>
+        <p>这页只用于比较视觉方向，不会影响正式页面。我的推荐是方案 A：高级石墨灰，耐看、专业，也最贴合现在的数据卡。</p>
+      </section>
+
+      <section class="demo-grid">
+        <article class="proposal">
+          <div class="viewport graphite">
+            <section class="top-panel">
+              <div class="brand-line">
+                <div class="brand">
+                  <div class="logo">DST</div>
+                  <div class="title">平台GMV实时监控</div>
+                </div>
+                <div class="status"><span class="dot"></span>实时连接</div>
+              </div>
+              <nav class="segmented" aria-label="周期切换">
+                <span class="segment active">实时</span>
+                <span class="segment">集团全周期</span>
+                <span class="segment">第一波抢先购</span>
+              </nav>
+              <div class="date">[ 2026/5/18 ] 同比 [ 2025/5/21 ]</div>
+              <div class="metric-card">
+                <div class="metric-kicker">全渠道实时GMV</div>
+                <div class="metric-value">¥16,779,995</div>
+                <div class="metric-sub">总目标 ¥69,150,000<br />总达成进度 24%</div>
+              </div>
+            </section>
+          </div>
+          <div class="proposal-note">
+            <strong>A. 高级石墨灰，我最推荐</strong>
+            <span>用深石墨代替纯黑，加入极弱青色环境光。层次更贵，但不会抢数据卡的主视觉。</span>
+          </div>
+        </article>
+
+        <article class="proposal">
+          <div class="viewport glass">
+            <section class="top-panel">
+              <div class="brand-line">
+                <div class="brand">
+                  <div class="logo">DST</div>
+                  <div class="title">平台GMV实时监控</div>
+                </div>
+                <div class="status"><span class="dot"></span>实时连接</div>
+              </div>
+              <nav class="segmented" aria-label="周期切换">
+                <span class="segment active">实时</span>
+                <span class="segment">集团全周期</span>
+                <span class="segment">第一波抢先购</span>
+              </nav>
+              <div class="date">[ 2026/5/18 ] 同比 [ 2025/5/21 ]</div>
+              <div class="metric-card">
+                <div class="metric-kicker">全渠道实时GMV</div>
+                <div class="metric-value">¥16,779,995</div>
+                <div class="metric-sub">总目标 ¥69,150,000<br />总达成进度 24%</div>
+              </div>
+            </section>
+          </div>
+          <div class="proposal-note">
+            <strong>B. 雾面玻璃灰</strong>
+            <span>更轻、更通透，适合管理层汇报屏；但和现有深色卡片相比，会略微少一点大屏压场感。</span>
+          </div>
+        </article>
+
+        <article class="proposal">
+          <div class="viewport instrument">
+            <section class="top-panel">
+              <div class="brand-line">
+                <div class="brand">
+                  <div class="logo">DST</div>
+                  <div class="title">平台GMV实时监控</div>
+                </div>
+                <div class="status"><span class="dot"></span>实时连接</div>
+              </div>
+              <nav class="segmented" aria-label="周期切换">
+                <span class="segment active">实时</span>
+                <span class="segment">集团全周期</span>
+                <span class="segment">第一波抢先购</span>
+              </nav>
+              <div class="date">[ 2026/5/18 ] 同比 [ 2025/5/21 ]</div>
+              <div class="metric-card">
+                <div class="metric-kicker">全渠道实时GMV</div>
+                <div class="metric-value">¥16,779,995</div>
+                <div class="metric-sub">总目标 ¥69,150,000<br />总达成进度 24%</div>
+              </div>
+            </section>
+          </div>
+          <div class="proposal-note">
+            <strong>C. 青黑仪表盘</strong>
+            <span>分段控件更像操作台，视觉记忆点最强；缺点是科技感更重，长期看可能比 A 更刺激。</span>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

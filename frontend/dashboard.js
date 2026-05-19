@@ -31,7 +31,6 @@ function renderManagerGrid(tasks) {
     parse_failed: "识别失败",
     needs_recalibration: "需重标定",
     paused: "已暂停",
-    readonly_waiting: "等待大屏",
     readonly_failed: "只读失败",
     edge_debug_unavailable: "未连接",
     edge_debug_disconnected: "已断开",
@@ -46,6 +45,7 @@ function renderManagerGrid(tasks) {
   function statusTone(status) {
     const s = String(status || "").replace(/-/g, "_");
     if (s === "ok") return "tone-ok";
+    if (s === "readonly_no_new_data") return "tone-neutral";
     if (s === "paused") return "tone-neutral";
     if (s === "pending_confirm") return "tone-pending";
     if (s === "ok" || s === "paused") return "tone-neutral";
@@ -55,6 +55,7 @@ function renderManagerGrid(tasks) {
   function cardStatusClass(status) {
     const s = String(status || "").replace(/-/g, "_");
     if (s === "ok") return "status-ok";
+    if (s === "readonly_no_new_data") return "status-ok";
     if (s === "paused") return "is-paused";
     return "status-suspect";
   }
@@ -86,7 +87,11 @@ function renderManagerGrid(tasks) {
       const timeStr = time ? new Date(time).toLocaleTimeString("zh-CN", { hour12: false }) : "--";
       const sessionId = task.edge_session_id || "";
       const statusKey = String(task.status || "").replace(/-/g, "_");
-      const label = statusLabelMap[statusKey] || task.status || "未知";
+      const hiddenStatusLabels = new Set(["readonly_waiting", "readonly_no_new_data"]);
+      const label = hiddenStatusLabels.has(statusKey) ? "" : (statusLabelMap[statusKey] || task.status || "未知");
+      const statusHtml = label
+        ? `<span class="status ${statusTone(task.status)}">${escapeHtml(label)}</span>`
+        : "";
 
       html += `
       <div class="manager-card card-bg ${cardStatusClass(task.status)}" data-task-id="${task.id || ""}" data-editable="true">
@@ -94,7 +99,7 @@ function renderManagerGrid(tasks) {
         <div class="manager-value">${formatCurrency(gmv)}</div>
         ${progress.hasTarget ? `<div style="color:var(--muted);font-size:12px;margin:4px 0 0;">目标 ${formatCurrency(target)} · ${progress.progressText}</div>` : ""}
         <div class="task-badges" style="margin-top:10px;align-items:flex-start;">
-          <span class="status ${statusTone(task.status)}">${escapeHtml(label)}</span>
+          ${statusHtml}
           <span style="color:var(--muted);font-size:11px;">${escapeHtml(task.platform || "")} · ${escapeHtml(task.brand || "")} · ${timeStr}</span>
         </div>`;
 

@@ -110,8 +110,8 @@ def test_dashboard_mobile_responsive_rules_hide_time_and_prevent_overflow() -> N
     assert "overflow-x: auto;" in styles_content
     assert "clamp(18px, 5.6vw, 23px)" in styles_content
     assert "@media (max-width: 380px)" in styles_content
-    assert "20260518-mobile-store-rows-0007" in official_content
-    assert "20260518-mobile-store-rows-0007" in test_content
+    assert "20260518-mobile-yoy-line-offset-0013" in official_content
+    assert "20260518-mobile-yoy-line-offset-0013" in test_content
     assert ".store-status-tags-inline {\n    display: none;" in styles_content
     assert ".store-status-tags-mobile {\n    display: flex;" in styles_content
     assert ".store-card .card-badge" in styles_content

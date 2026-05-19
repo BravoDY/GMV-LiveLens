@@ -297,12 +297,43 @@ class RemoteEdgeReadonlyMixin:
               const pollingIntervalSeconds = resolvePollingIntervalSeconds();
               const normalizeNumberText = (value) => String(value || "")
                 .replace(/\s+/g, "")
-                .replace(/[^\d,.\-]/g, "");
+                .replace(/[^\d,.]/g, "");
+              const parseMoneyToken = (rawAmount, rawUnit = "", sourceText = "", startIndex = -1, endIndex = -1) => {
+                const amountText = normalizeNumberText(rawAmount);
+                if (!amountText || /e/i.test(amountText)) return null;
+                if (!/^(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?$/.test(amountText)) return null;
+                if (sourceText && startIndex >= 0 && endIndex >= startIndex) {
+                  const before = String(sourceText).slice(Math.max(0, startIndex - 2), startIndex);
+                  const after = String(sourceText).slice(endIndex, endIndex + 4);
+                  if (/\d\s*$/.test(before) || /^\s+\d/.test(after)) return null;
+                }
+                const digitsOnly = amountText.replace(/[,.]/g, "");
+                if (digitsOnly.length > 13) return null;
+                const parsed = Number(amountText.replace(/,/g, ""));
+                if (!Number.isFinite(parsed) || parsed < 0) return null;
+                const unit = String(rawUnit || "").trim();
+                const multiplier = unit === "亿" ? 100000000 : unit === "万" ? 10000 : 1;
+                const value = Math.round(parsed * multiplier);
+                if (!Number.isSafeInteger(value) || value < 0) return null;
+                return {
+                  amountText: `${amountText}${unit}`,
+                  unit,
+                  value,
+                };
+              };
+              const isStableFallbackAmount = (parsed) => {
+                if (!parsed) return false;
+                if (parsed.value === 0) return true;
+                if (parsed.unit) return true;
+                if (String(parsed.amountText || "").includes(",")) return true;
+                return String(parsed.amountText || "").replace(/[^\d]/g, "").length >= 4;
+              };
+              const amountTokenPattern = /(?:[¥￥]\s*)?((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)(万|亿)?/g;
               const parseMoney = (value) => {
-                const cleaned = normalizeNumberText(value);
-                if (!cleaned) return null;
-                const parsed = Number(cleaned.replace(/,/g, ""));
-                return Number.isFinite(parsed) ? parsed : null;
+                const match = amountTokenPattern.exec(String(value || ""));
+                amountTokenPattern.lastIndex = 0;
+                const parsed = match ? parseMoneyToken(match[1], match[2], String(value || ""), match.index, match.index + match[0].length) : null;
+                return parsed ? parsed.value : null;
               };
               const root = document.querySelector(".today-order-sum");
               if (!root) {
@@ -529,15 +560,48 @@ class RemoteEdgeReadonlyMixin:
               const targetPath = "compass.jinritemai.com/screen/shop/single";
               const normalizeNumberText = (value) => String(value || "")
                 .replace(/\s+/g, "")
-                .replace(/[^\d,.\-]/g, "");
+                .replace(/[^\d,.]/g, "");
               const escapeRegExp = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
               const compactText = (value) => String(value || "").replace(/\s+/g, "");
               const displayText = (value) => String(value || "").replace(/\s+/g, " ").trim();
+              const parseMoneyToken = (rawAmount, rawUnit = "", sourceText = "", startIndex = -1, endIndex = -1) => {
+                const amountText = normalizeNumberText(rawAmount);
+                if (!amountText || /e/i.test(amountText)) return null;
+                if (!/^(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?$/.test(amountText)) return null;
+                if (sourceText && startIndex >= 0 && endIndex >= startIndex) {
+                  const before = String(sourceText).slice(Math.max(0, startIndex - 2), startIndex);
+                  const after = String(sourceText).slice(endIndex, endIndex + 4);
+                  if (/\d\s*$/.test(before) || /^\s+\d/.test(after)) return null;
+                }
+                const digitsOnly = amountText.replace(/[,.]/g, "");
+                if (digitsOnly.length > 13) return null;
+                const parsed = Number(amountText.replace(/,/g, ""));
+                if (!Number.isFinite(parsed) || parsed < 0) return null;
+                const unit = String(rawUnit || "").trim();
+                const multiplier = unit === "亿" ? 100000000 : unit === "万" ? 10000 : 1;
+                const value = Math.round(parsed * multiplier);
+                if (!Number.isSafeInteger(value) || value < 0) return null;
+                return {
+                  amountText: `${amountText}${unit}`,
+                  unit,
+                  value,
+                };
+              };
+              const isStableFallbackAmount = (parsed) => {
+                if (!parsed) return false;
+                if (parsed.value === 0) return true;
+                if (parsed.unit) return true;
+                if (String(parsed.amountText || "").includes(",")) return true;
+                return String(parsed.amountText || "").replace(/[^\d]/g, "").length >= 4;
+              };
+              const amountTokenPattern = /(?:[¥￥]\s*)?((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)(万|亿)?/g;
               const parseMoney = (value) => {
-                const cleaned = normalizeNumberText(value);
-                if (!cleaned) return null;
-                const parsed = Number(cleaned.replace(/,/g, ""));
-                return Number.isFinite(parsed) ? parsed : null;
+                const match = amountTokenPattern.exec(String(value || ""));
+                amountTokenPattern.lastIndex = 0;
+                const parsed = match
+                  ? parseMoneyToken(match[1], match[2], String(value || ""), match.index, match.index + match[0].length)
+                  : null;
+                return parsed ? parsed.value : null;
               };
               const pageText = String(document.body?.innerText || "").replace(/\s+/g, " ").trim();
               const realtimeEntries = performance.getEntriesByType("resource")
@@ -602,6 +666,67 @@ class RemoteEdgeReadonlyMixin:
               const normalizedMetricLabel = compactText(metricLabel);
               const normalizedExcludedMetricLabel = compactText(excludedMetricLabel);
               const isExcludedText = (value) => compactText(value || "").includes(normalizedExcludedMetricLabel);
+              const trimMetricTail = (value) => String(value || "").split(/数据更新|更新时间|同比|环比|较昨日|昨日|近[37]日/)[0];
+              const findPrimaryMetricIndex = () => {
+                let searchFrom = 0;
+                while (searchFrom < pageText.length) {
+                  const index = pageText.indexOf(metricLabel, searchFrom);
+                  if (index < 0) {
+                    return -1;
+                  }
+                  if (pageText.slice(index, index + excludedMetricLabel.length) !== excludedMetricLabel) {
+                    return index;
+                  }
+                  searchFrom = index + metricLabel.length;
+                }
+                return -1;
+              };
+              const parseCurrencyAmountBlock = (value) => {
+                const source = String(value || "");
+                const currencyMatch = source.match(/[¥￥]/);
+                if (!currencyMatch) {
+                  return null;
+                }
+                let amountBlock = "";
+                for (let index = Number(currencyMatch.index || 0) + currencyMatch[0].length; index < source.length; index += 1) {
+                  const char = source[index];
+                  if (/[\d,.\s]/.test(char)) {
+                    amountBlock += char;
+                    continue;
+                  }
+                  if (char === "万" || char === "亿") {
+                    break;
+                  }
+                  if (amountBlock.trim()) {
+                    break;
+                  }
+                }
+                const amountText = amountBlock.replace(/\s+/g, "");
+                if (!amountText || !/\d/.test(amountText)) {
+                  return null;
+                }
+                const parsed = parseMoneyToken(amountText, "");
+                if (!parsed) {
+                  return null;
+                }
+                return {
+                  amountText,
+                  payAmt: parsed.value,
+                  amountCandidateCount: 1,
+                  sourceKind: "currency_block",
+                };
+              };
+              const parseCurrencyBlockMetricAmount = () => {
+                const startIndex = findPrimaryMetricIndex();
+                if (startIndex < 0) {
+                  return null;
+                }
+                const excludedIndex = pageText.indexOf(excludedMetricLabel, startIndex + metricLabel.length);
+                const tail = excludedIndex > startIndex
+                  ? pageText.slice(startIndex + metricLabel.length, excludedIndex)
+                  : pageText.slice(startIndex + metricLabel.length, startIndex + metricLabel.length + 180);
+                return parseCurrencyAmountBlock(trimMetricTail(tail));
+              };
               const collectAmountCandidates = (root) => {
                 if (!root) return [];
                 const elements = [root, ...root.querySelectorAll("div, span, p, strong, h1, h2, h3, h4, h5")];
@@ -610,20 +735,22 @@ class RemoteEdgeReadonlyMixin:
                 for (const element of elements) {
                   const text = displayText(element.textContent || "");
                   if (!text || compactText(text) === normalizedMetricLabel || isExcludedText(text)) continue;
-                  const matches = [...text.matchAll(/¥?\s*([\d,]+(?:\.\d+)?)/g)];
+                  const matches = [...text.matchAll(amountTokenPattern)];
                   for (const match of matches) {
-                    const amountText = String(match?.[1] || "").trim();
-                    const parsed = parseMoney(amountText);
-                    if (!Number.isFinite(parsed)) continue;
+                    const parsed = parseMoneyToken(match?.[1], match?.[2], text, match.index, match.index + match[0].length);
+                    if (!parsed) continue;
+                    if (!isStableFallbackAmount(parsed)) continue;
+                    const amountText = parsed.amountText;
                     const key = `${amountText}::${text}`;
                     if (seen.has(key)) continue;
                     seen.add(key);
                     candidates.push({
                       amountText,
-                      value: parsed,
+                      value: parsed.value,
                       textLength: text.length,
                     });
                   }
+                  amountTokenPattern.lastIndex = 0;
                 }
                 return candidates.sort((left, right) => left.textLength - right.textLength);
               };
@@ -639,26 +766,26 @@ class RemoteEdgeReadonlyMixin:
                 };
               };
               const parseLinearMetricAmount = () => {
-                const startIndex = pageText.indexOf(metricLabel);
+                const startIndex = findPrimaryMetricIndex();
                 if (startIndex < 0) {
                   return null;
                 }
                 const excludedIndex = pageText.indexOf(excludedMetricLabel, startIndex + metricLabel.length);
                 const tail = excludedIndex > startIndex
                   ? pageText.slice(startIndex + metricLabel.length, excludedIndex)
-                  : pageText.slice(startIndex + metricLabel.length, startIndex + metricLabel.length + 80);
-                const amountMatch = tail.match(/[¥￥]?\s*([0-9][\d\s,]*(?:\.\d+)?)\s*(万|亿)?/);
+                  : pageText.slice(startIndex + metricLabel.length, startIndex + metricLabel.length + 120);
+                const metricTail = trimMetricTail(tail);
+                const amountMatch = [...metricTail.matchAll(amountTokenPattern)]
+                  .map((match) => parseMoneyToken(match?.[1], match?.[2], metricTail, match.index, match.index + match[0].length))
+                  .filter((parsed) => isStableFallbackAmount(parsed))
+                  .find(Boolean);
+                amountTokenPattern.lastIndex = 0;
                 if (!amountMatch) {
                   return null;
                 }
-                const amountText = normalizeNumberText(amountMatch[1]).replace(/,/g, "");
-                const payAmt = parseMoney(amountText);
-                if (!Number.isFinite(payAmt)) {
-                  return null;
-                }
                 return {
-                  amountText,
-                  payAmt,
+                  amountText: amountMatch.amountText,
+                  payAmt: amountMatch.value,
                   amountCandidateCount: 1,
                   sourceKind: "linear_text",
                 };
@@ -758,9 +885,10 @@ class RemoteEdgeReadonlyMixin:
                   platform_key: "抖音",
                 };
               }
+              const currencyMetric = parseCurrencyBlockMetricAmount();
               const { metricRoot, amountText, amountCandidateCount } = resolveMetricCard();
               const linearMetric = parseLinearMetricAmount();
-              if (!metricRoot && !linearMetric) {
+              if (!currencyMetric && !metricRoot && !linearMetric) {
                 return {
                   ready: false,
                   reason_code: "douyin_screen_root_not_found",
@@ -777,9 +905,15 @@ class RemoteEdgeReadonlyMixin:
                   platform_key: "抖音",
                 };
               }
-              const payAmt = Number.isFinite(linearMetric?.payAmt) ? linearMetric.payAmt : parseMoney(amountText);
-              const resolvedDisplayValue = linearMetric?.amountText || amountText;
-              const resolvedCandidateCount = Number(linearMetric?.amountCandidateCount || amountCandidateCount || 0);
+              const payAmt = Number.isFinite(currencyMetric?.payAmt)
+                ? currencyMetric.payAmt
+                : Number.isFinite(linearMetric?.payAmt)
+                  ? linearMetric.payAmt
+                  : parseMoney(amountText);
+              const resolvedDisplayValue = currencyMetric?.amountText || linearMetric?.amountText || amountText;
+              const resolvedCandidateCount = Number(
+                currencyMetric?.amountCandidateCount || linearMetric?.amountCandidateCount || amountCandidateCount || 0
+              );
               const updateMatch = pageText.match(/数据更新\s*(20\d{2}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})/);
               const updateTime = updateMatch ? String(updateMatch[1]) : (realtimeTiming.latest_response_time || "");
               if (!Number.isFinite(payAmt)) {

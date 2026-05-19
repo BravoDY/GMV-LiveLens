@@ -12,7 +12,6 @@ const STATUS_BADGE_MAP = {
   suspect:                 '<span class="card-badge badge-warn">⚠ 异常</span>',
   parse_failed:            '<span class="card-badge badge-bad">识别失败</span>',
   needs_recalibration:     '<span class="card-badge badge-bad">需重标定</span>',
-  readonly_waiting:        '<span class="card-badge badge-info">等待大屏</span>',
   readonly_failed:         '<span class="card-badge badge-warn">只读失败</span>',
   edge_debug_unavailable:  '<span class="card-badge badge-muted">未连接</span>',
   edge_debug_disconnected: '<span class="card-badge badge-muted">已断开</span>',
@@ -193,7 +192,15 @@ function buildDashboardViewModel(tasks) {
 
 function formatDateRangeDisplay(dateRange) {
   if (!dateRange || !dateRange.mode) return "";
-  const fmt = (d) => (d || "").replace(/-/g, "/");
+  const fmt = (d) => {
+    if (!d) return "";
+    const parts = d.split("-");
+    if (parts.length !== 3) return d;
+    const yy = parts[0].slice(-2);
+    const mm = parts[1];
+    const dd = parts[2];
+    return `${yy}/${mm}/${dd}`;
+  };
   if (dateRange.mode === "realtime") {
     const cur = fmt(dateRange.cur);
     const ly = fmt(dateRange.ly);
@@ -206,6 +213,11 @@ function formatDateRangeDisplay(dateRange) {
 }
 
 function renderSummaryTimeRow(dateRange) {
+  const mobileYoyRow = document.getElementById("mobileYoyRow");
+  if (mobileYoyRow) {
+    mobileYoyRow.textContent = formatDateRangeDisplay(dateRange);
+  }
+
   return `
     <div class="summary-time-row">
       <span class="total-card-time-left"><span class="total-card-time-label">北京时间：</span><span class="total-card-time-value" id="beijingTimeValue">${formatBeijingNow()}</span></span>
@@ -347,7 +359,8 @@ function renderSummaryGrid(model, platformYoy, dateRange) {
 }
 
 function renderStoreCard(store, yoyText) {
-  const isAlert = store.status && !["ok", "pending_confirm"].includes(store.status);
+  const quietStatuses = ["ok", "pending_confirm", "readonly_waiting", "readonly_no_new_data"];
+  const isAlert = store.status && !quietStatuses.includes(store.status);
   const alertClass = isAlert ? " is-alert" : "";
   const badge = STATUS_BADGE_MAP[store.status] || "";
   const yoy = yoyText || "--";
@@ -358,7 +371,7 @@ function renderStoreCard(store, yoyText) {
       <div class="top-bloom"></div>
       <div class="store-card-header">
         <div class="store-title-wrap">
-          <span class="platform-badge ${store.className}">${escapeHtml(store.platformLabel)}</span>
+          <span class="platform-badge ${store.className}" title="${escapeHtml(store.platformLabel)}">${escapeHtml(store.icon)}</span>
           <span class="store-name" title="${escapeHtml(store.shopName)}">${escapeHtml(store.shopName)}</span>
           <span class="store-status-tags store-status-tags-inline">
             <span class="store-chip">${escapeHtml(store.valueSourceShortLabel)}</span>

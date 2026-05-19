@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import math
 import os
 import random
 import re
 import time
 from collections.abc import Awaitable, Callable
 from datetime import datetime
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +28,8 @@ _SCREENSHOT_MAX_COUNT_PER_TASK = int(os.environ.get("GMV_SCREENSHOT_MAX_COUNT_PE
 _PREVIEW_MIN_INTERVAL_SECONDS = int(os.environ.get("GMV_PREVIEW_MIN_INTERVAL_SECONDS", "180"))
 _PREVIEW_MAX_INTERVAL_SECONDS = int(os.environ.get("GMV_PREVIEW_MAX_INTERVAL_SECONDS", "480"))
 _PREVIEW_MAX_WIDTH = int(os.environ.get("GMV_PREVIEW_MAX_WIDTH", "720"))
+_SCREEN_READONLY_MAX_PAY_AMT = int(os.environ.get("GMV_SCREEN_READONLY_MAX_PAY_AMT", "1000000000000"))
+_SCREEN_READONLY_FAILURE_BACKOFF_SECONDS = float(os.environ.get("GMV_SCREEN_READONLY_FAILURE_BACKOFF_SECONDS", "10"))
 _SQLITE_INT64_MAX = 2**63 - 1
 
 SnapshotCallback = Callable[[], Awaitable[None]]
@@ -131,11 +135,14 @@ class CaptureScheduler:
                         task_id = int(task.id or 0)
                         self._last_run[task_id] = finished_at
                         if task.value_source == "screen_readonly":
-                            self._next_readonly_run[task_id] = finished_at + self._task_interval_seconds(
+                            readonly_interval = self._readonly_next_interval_seconds(
                                 task,
                                 global_interval,
+                                str((result or {}).get("status") or ""),
                             )
-                            if str((result or {}).get("status") or "") != "readonly_no_new_data":
+                            self._next_readonly_run[task_id] = finished_at + readonly_interval
+                            result_status = str((result or {}).get("status") or "")
+                            if result_status != "readonly_no_new_data" or task.status != "readonly_no_new_data":
                                 should_notify = True
                             continue
                         should_notify = True
@@ -207,6 +214,12 @@ class CaptureScheduler:
         except (TypeError, ValueError):
             task_interval = 0.0
         return max(0.5, task_interval or global_interval)
+
+    def _readonly_next_interval_seconds(self, task: CaptureTask, global_interval: float, status: str) -> float:
+        interval = self._task_interval_seconds(task, global_interval)
+        if status in {"ok", "readonly_no_new_data", "readonly_waiting", "skipped_window_op_in_progress"}:
+            return interval
+        return max(interval, _SCREEN_READONLY_FAILURE_BACKOFF_SECONDS)
 
     def _save_ocr_dataset(self, crop: Image.Image, task: CaptureTask, selected: int | None, ocr_text: str) -> None:
         try:
@@ -469,17 +482,37 @@ class CaptureScheduler:
         reason_code = str(result.get("reason_code") or screen.get("reason_code") or "")
         message = str(result.get("message") or screen.get("message") or "")
         pay_amt = result.get("pay_amt", screen.get("pay_amt"))
-        if pay_amt is not None:
-            try:
-                safe_int = int(pay_amt)
-            except (ValueError, OverflowError):
-                safe_int = None
-            if safe_int is not None and abs(safe_int) > _SQLITE_INT64_MAX:
-                logger.warning(
-                    "screen_readonly pay_amt=%s 超过 SQLite INTEGER 上限，已忽略 task_id=%s platform=%s",
-                    pay_amt, task.id, task.platform,
-                )
-                pay_amt = None
+        raw_pay_amt = pay_amt
+        coerced_pay_amt, invalid_reason = self._coerce_screen_readonly_amount(pay_amt)
+        if invalid_reason:
+            display_value = screen.get("display_value", result.get("display_value", ""))
+            metric_label = screen.get("metric_label", result.get("metric_label", ""))
+            logger.warning(
+                "screen_readonly invalid pay_amt ignored task_id=%s platform=%s shop=%s pay_amt=%r reason=%s "
+                "display_value=%r metric_label=%r",
+                task.id,
+                task.platform,
+                task.shop_name,
+                pay_amt,
+                invalid_reason,
+                display_value,
+                metric_label,
+            )
+            ready = False
+            pay_amt = None
+            reason_code = "screen_payamt_invalid"
+            message = "大屏只读返回了异常金额，已保留上次可信值。"
+            screen["ready"] = False
+            screen["pay_amt"] = None
+            screen["reason_code"] = reason_code
+            screen["message"] = message
+            screen["invalid_pay_amt"] = str(raw_pay_amt)
+            result["ready"] = False
+            result["pay_amt"] = None
+            result["reason_code"] = reason_code
+            result["message"] = message
+        elif coerced_pay_amt is not None:
+            pay_amt = coerced_pay_amt
         screen_platform_key = str(result.get("platform_key") or screen.get("platform_key") or "")
         response_marker_raw = (
             result.get("latest_response_end_seconds", screen.get("latest_response_end_seconds"))
@@ -492,6 +525,8 @@ class CaptureScheduler:
         except (TypeError, ValueError):
             response_marker = ""
         runtime_status = str(result.get("status") or ("ok" if ready else "readonly_failed"))
+        if reason_code == "screen_payamt_invalid":
+            runtime_status = "readonly_failed"
         if (
             ready
             and pay_amt is not None
@@ -501,9 +536,39 @@ class CaptureScheduler:
         ):
             previous_marker = self._readonly_response_markers.get(task.id, "")
             if previous_marker == response_marker:
+                reason = "京东前端尚未返回新一轮数据，保留上次正式值。"
+                if task.id is not None:
+                    store.update_task_runtime(
+                        task.id,
+                        {
+                            "status": "readonly_no_new_data",
+                            "last_sample_at": sampled_at,
+                            "last_reason": reason,
+                            "last_reason_code": "screen_readonly_no_new_data",
+                            "last_value_source": "screen_readonly",
+                            "last_screenshot_path": "",
+                            "pending_value": None,
+                            "pending_count": 0,
+                        },
+                    )
+                    store.add_sample(
+                        task.id,
+                        "",
+                        [],
+                        int(pay_amt),
+                        task.last_trusted_value,
+                        "readonly_no_new_data",
+                        reason,
+                        "",
+                        sample_meta={
+                            "selected_candidate_source_kind": "screen_readonly",
+                            "required_confirms": 1,
+                            "accepted_after_confirms": 0,
+                        },
+                    )
                 return {
                     "status": "readonly_no_new_data",
-                    "reason": "京东前端尚未返回新一轮数据，保留上次正式值。",
+                    "reason": reason,
                     "reason_code": "screen_readonly_no_new_data",
                     "selected_value": int(pay_amt),
                     "trusted_value": task.last_trusted_value,
@@ -596,6 +661,41 @@ class CaptureScheduler:
             "screen": screen,
             "page": result.get("page") or {},
         }
+
+    @staticmethod
+    def _coerce_screen_readonly_amount(value: Any) -> tuple[int | None, str]:
+        if value is None:
+            return None, ""
+        if isinstance(value, bool):
+            return None, "not_numeric"
+        if isinstance(value, int):
+            amount = value
+        elif isinstance(value, float):
+            if not math.isfinite(value):
+                return None, "not_finite"
+            amount = int(value)
+        elif isinstance(value, str):
+            text = value.strip().replace(",", "")
+            if not text:
+                return None, "empty"
+            if "e" in text.lower():
+                return None, "scientific_notation"
+            try:
+                decimal_value = Decimal(text)
+            except InvalidOperation:
+                return None, "not_numeric"
+            if not decimal_value.is_finite():
+                return None, "not_finite"
+            amount = int(decimal_value)
+        else:
+            return None, "not_numeric"
+        if amount < 0:
+            return None, "negative"
+        if amount > _SQLITE_INT64_MAX:
+            return None, "sqlite_int64_overflow"
+        if amount > _SCREEN_READONLY_MAX_PAY_AMT:
+            return None, "business_limit_exceeded"
+        return amount, ""
 
     def refresh_page_preview_once(self, task_id: int) -> dict:
         task = store.get_task(task_id)

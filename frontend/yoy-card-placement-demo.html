@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>同比日期位置 Demo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #eef1f5;
+        color: #f7fbff;
+        font-family: Inter, "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      }
+
+      .page {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px 14px 40px;
+      }
+
+      .intro {
+        color: #172033;
+        margin-bottom: 18px;
+      }
+
+      .intro h1 {
+        margin: 0 0 6px;
+        font-size: 24px;
+      }
+
+      .intro p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.6;
+      }
+
+      .compare {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 390px));
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .phone {
+        overflow: hidden;
+        border-radius: 24px;
+        background: #07111d;
+        box-shadow: 0 28px 80px rgba(15, 23, 42, 0.22);
+      }
+
+      .label {
+        padding: 12px 14px;
+        background: #ffffff;
+        color: #172033;
+        border-bottom: 1px solid #dbe2ea;
+      }
+
+      .label strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .label span {
+        display: block;
+        margin-top: 3px;
+        color: #64748b;
+        font-size: 12px;
+      }
+
+      .screen {
+        min-height: 760px;
+        background:
+          radial-gradient(circle at 18% 0%, rgba(0, 190, 255, 0.10), transparent 30%),
+          linear-gradient(180deg, #050914 0%, #07111d 100%);
+      }
+
+      .app-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "brand actions"
+          "nav nav"
+          "yoy yoy";
+        gap: 8px 10px;
+        align-items: center;
+        padding: 12px 12px 14px;
+        background:
+          radial-gradient(circle at 18% 0%, rgba(48, 226, 220, 0.12), transparent 36%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 34%),
+          linear-gradient(145deg, #151c24 0%, #101923 48%, #0c121a 100%);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+        box-shadow:
+          0 24px 70px rgba(4, 9, 16, 0.32),
+          0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+      }
+
+      .recommended .app-header {
+        grid-template-areas:
+          "brand actions"
+          "nav nav";
+        padding-bottom: 10px;
+      }
+
+      .current .app-header {
+        padding-bottom: 0;
+      }
+
+      .brand {
+        grid-area: brand;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #07111c;
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: -0.3px;
+        flex: 0 0 auto;
+      }
+
+      .title {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .actions {
+        grid-area: actions;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .refresh {
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 9px;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        background: rgba(18, 28, 39, 0.68);
+        color: #9eacbf;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .live {
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #38f3e6;
+        background: rgba(24, 217, 210, 0.14);
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 12px currentColor;
+      }
+
+      .segments {
+        grid-area: nav;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 0;
+        margin-top: 2px;
+        padding-top: 8px;
+      }
+
+      .segments::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 16px;
+        right: 16px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(148, 163, 184, 0.22),
+          rgba(45, 245, 231, 0.15),
+          rgba(148, 163, 184, 0.22),
+          transparent
+        );
+      }
+
+      .segment {
+        min-height: 38px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 70%),
+          rgba(18, 28, 39, 0.68);
+        color: #9eacbf;
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .segment.active {
+        color: #f2ffff;
+        border-color: rgba(45, 245, 231, 0.62);
+        background: linear-gradient(180deg, rgba(24, 217, 210, 0.22), rgba(24, 217, 210, 0.12));
+        box-shadow:
+          0 0 0 1px rgba(24, 217, 210, 0.16) inset,
+          0 14px 30px rgba(24, 217, 210, 0.14);
+      }
+
+      .header-yoy {
+        grid-area: yoy;
+        position: relative;
+        color: #9fb0c5;
+        font-size: 13px;
+        font-weight: 760;
+        text-align: center;
+        margin-top: 0;
+        padding: 7px 0 4px;
+        white-space: nowrap;
+      }
+
+      .current .header-yoy::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 16px;
+        right: 16px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(148, 163, 184, 0.26),
+          rgba(45, 245, 231, 0.18),
+          rgba(148, 163, 184, 0.26),
+          transparent
+        );
+      }
+
+      .content {
+        padding: 10px;
+      }
+
+      .top-frame {
+        border-radius: 13px;
+        padding: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background:
+          radial-gradient(circle at 18% 0%, rgba(48, 226, 220, 0.12), transparent 36%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 34%),
+          linear-gradient(145deg, #151c24 0%, #101923 48%, #0c121a 100%);
+      }
+
+      .total-card {
+        min-height: 254px;
+        border-radius: 13px;
+        padding: 16px;
+        border: 1px solid rgba(45, 245, 231, 0.44);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 42%),
+          linear-gradient(145deg, rgba(18, 32, 46, 0.92), rgba(10, 20, 31, 0.94));
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.035) inset,
+          0 20px 42px rgba(0, 0, 0, 0.26),
+          0 0 28px rgba(24, 217, 210, 0.08);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .total-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #15d5e0, #2df5e7);
+        box-shadow: 0 0 18px rgba(21, 213, 224, 0.7);
+      }
+
+      .card-yoy {
+        margin: 3px 0 12px;
+        color: #9fb0c5;
+        font-size: 13px;
+        font-weight: 760;
+        white-space: nowrap;
+      }
+
+      .total-title {
+        margin-bottom: 9px;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .total-gmv {
+        color: #ffffff;
+        font-size: 48px;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -1px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 14px;
+        margin-top: 22px;
+      }
+
+      .metric-label {
+        margin-bottom: 5px;
+        color: #aab7c9;
+        font-size: 12px;
+      }
+
+      .metric-value {
+        color: #ffffff;
+        font-size: 24px;
+        line-height: 1;
+        font-weight: 950;
+      }
+
+      .metric-value.warn {
+        color: #ff4d68;
+      }
+
+      .track {
+        height: 9px;
+        border-radius: 999px;
+        margin-top: 14px;
+        background: rgba(255, 255, 255, 0.10);
+        overflow: hidden;
+      }
+
+      .fill {
+        width: 68%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #19d7df, #2df5e7);
+      }
+
+      .store-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .store-card {
+        min-height: 148px;
+        border-radius: 12px;
+        padding: 12px 10px;
+        border: 1px solid rgba(255, 59, 79, 0.75);
+        background: linear-gradient(145deg, rgba(12, 24, 40, 0.96), rgba(7, 13, 24, 0.96));
+      }
+
+      .store-card.jd {
+        border-color: rgba(255, 107, 24, 0.75);
+      }
+
+      .store-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .badge {
+        width: 27px;
+        height: 27px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background: #ff3652;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 950;
+      }
+
+      .jd .badge {
+        background: #ff7a18;
+      }
+
+      .store-name {
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .store-gmv {
+        font-size: 24px;
+        line-height: 1;
+        font-weight: 950;
+      }
+
+      @media (max-width: 860px) {
+        .compare {
+          grid-template-columns: minmax(0, 390px);
+        }
+      }
+
+      @media (max-width: 430px) {
+        .page {
+          padding: 12px 0 24px;
+        }
+
+        .phone {
+          border-radius: 0;
+        }
+
+        .label {
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="intro">
+        <h1>同比日期位置 Demo</h1>
+        <p>左侧是当前移动端节奏，右侧是推荐方案：同比日期进入全渠道卡片，顶部筛选区少一行。</p>
+      </section>
+
+      <section class="compare">
+        <article class="phone current">
+          <div class="label">
+            <strong>当前版</strong>
+            <span>同比日期在顶部筛选区下方，header 更高。</span>
+          </div>
+          <div class="screen">
+            <header class="app-header">
+              <div class="brand">
+                <div class="logo">DST</div>
+                <div class="title">平台GMV实时监控</div>
+              </div>
+              <div class="actions">
+                <button class="refresh">刷新数据</button>
+                <div class="live"><span class="dot"></span>实时连接</div>
+              </div>
+              <nav class="segments">
+                <button class="segment active">实时</button>
+                <button class="segment">集团全周期</button>
+                <button class="segment">第一波抢先购</button>
+              </nav>
+              <div class="header-yoy">[ 2026/5/18 ] 同比 [ 2025/5/21 ]</div>
+            </header>
+            <div class="content">
+              <section class="top-frame">
+                <article class="total-card">
+                  <div class="total-title">全渠道实时GMV</div>
+                  <div class="total-gmv">¥17,783,968</div>
+                  <div class="metrics">
+                    <div>
+                      <div class="metric-label">总目标</div>
+                      <div class="metric-value">¥26,270,000</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div class="metric-label">同比</div>
+                      <div class="metric-value">99%</div>
+                    </div>
+                    <div>
+                      <div class="metric-label">总达成进度</div>
+                      <div class="metric-value warn">68%</div>
+                    </div>
+                  </div>
+                  <div class="track"><div class="fill"></div></div>
+                </article>
+              </section>
+              <section class="store-grid">
+                <article class="store-card">
+                  <div class="store-head"><span class="badge">猫</span><span class="store-name">天猫</span></div>
+                  <div class="store-gmv">¥10,774,612</div>
+                </article>
+                <article class="store-card jd">
+                  <div class="store-head"><span class="badge">京</span><span class="store-name">京东</span></div>
+                  <div class="store-gmv">¥2,655,003</div>
+                </article>
+              </section>
+            </div>
+          </div>
+        </article>
+
+        <article class="phone recommended">
+          <div class="label">
+            <strong>推荐版</strong>
+            <span>同比日期放进全渠道卡片，筛选区明显更短。</span>
+          </div>
+          <div class="screen">
+            <header class="app-header">
+              <div class="brand">
+                <div class="logo">DST</div>
+                <div class="title">平台GMV实时监控</div>
+              </div>
+              <div class="actions">
+                <button class="refresh">刷新数据</button>
+                <div class="live"><span class="dot"></span>实时连接</div>
+              </div>
+              <nav class="segments">
+                <button class="segment active">实时</button>
+                <button class="segment">集团全周期</button>
+                <button class="segment">第一波抢先购</button>
+              </nav>
+            </header>
+            <div class="content">
+              <section class="top-frame">
+                <article class="total-card">
+                  <div class="card-yoy">[ 2026/5/18 ] 同比 [ 2025/5/21 ]</div>
+                  <div class="total-title">全渠道实时GMV</div>
+                  <div class="total-gmv">¥17,783,968</div>
+                  <div class="metrics">
+                    <div>
+                      <div class="metric-label">总目标</div>
+                      <div class="metric-value">¥26,270,000</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div class="metric-label">同比</div>
+                      <div class="metric-value">99%</div>
+                    </div>
+                    <div>
+                      <div class="metric-label">总达成进度</div>
+                      <div class="metric-value warn">68%</div>
+                    </div>
+                  </div>
+                  <div class="track"><div class="fill"></div></div>
+                </article>
+              </section>
+              <section class="store-grid">
+                <article class="store-card">
+                  <div class="store-head"><span class="badge">猫</span><span class="store-name">天猫</span></div>
+                  <div class="store-gmv">¥10,774,612</div>
+                </article>
+                <article class="store-card jd">
+                  <div class="store-head"><span class="badge">京</span><span class="store-name">京东</span></div>
+                  <div class="store-gmv">¥2,655,003</div>
+                </article>
+              </section>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
