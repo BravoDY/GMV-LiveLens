@@ -1,4 +1,5 @@
 import tomllib
+from datetime import datetime
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -6,7 +7,7 @@ from fastapi.testclient import TestClient
 from backend.core.config import get_settings
 from backend.main import app
 from backend.routers.common import frontend_static_version
-from backend.services.dashboard_dataset import TargetRow
+from backend.services.dashboard_dataset import DashboardDatasetRow, TargetRow
 from backend.services.dashboard_query import build_dashboard_view
 from backend.version import APP_VERSION
 
@@ -81,11 +82,18 @@ def test_internal_dashboard_initializes_debug_panel() -> None:
 
 def test_dashboard_cache_refresh_uses_token_aware_api_wrapper() -> None:
     dashboard_public_js = ROOT_DIR / "frontend" / "dashboard-public.js"
+    styles_css = ROOT_DIR / "frontend" / "styles.css"
     content = dashboard_public_js.read_text(encoding="utf-8")
+    styles_content = styles_css.read_text(encoding="utf-8")
 
     assert 'fetch("/api/dashboard-cache/refresh"' not in content
     assert 'await api("/api/dashboard-cache/refresh", { method: "POST", cache: "no-store" });' in content
-    assert "当前入口禁止刷新" in content
+    assert 'refreshCacheBtn.dataset.publicReadonly = "1";' in content
+    assert 'btn.dataset.publicReadonly === "1"' in content
+    assert "body.public-dashboard-mode .header-actions .test-dataset-refresh-btn" in styles_content
+    assert "body.test-dashboard-mode .header-actions .test-dataset-refresh-btn" in styles_content
+    assert "公网看板为只读入口，请在本机管理员页面刷新周期缓存" in content
+    assert "当前入口禁止刷新，请在本机管理员页面填写 Token 后重试" not in content
     assert "请确认 API Token 与部署入口权限" in content
 
 
@@ -271,7 +279,29 @@ def test_dashboard_api_and_test_api_share_realtime_payload() -> None:
     assert {key: dashboard_realtime_payload.get(key) for key in keys} == {key: test_payload.get(key) for key in keys}
 
 
-def test_dashboard_api_and_test_api_share_period_payload() -> None:
+def test_dashboard_api_and_test_api_share_period_payload(monkeypatch) -> None:
+    import backend.routers.common as common
+
+    monkeypatch.setattr(
+        common,
+        "build_snapshot",
+        lambda: {
+            "updated_at": "2026-05-21 12:00:00",
+            "tasks": [
+                {
+                    "id": 1,
+                    "enabled": True,
+                    "companyshop_name": "shop-a",
+                    "shop_name": "shop-a",
+                    "platform": "tmall",
+                    "brand": "main",
+                    "last_trusted_value": 12345,
+                    "status": "ok",
+                }
+            ],
+        },
+    )
+
     client = TestClient(app)
     datasets = client.get("/api/dashboard-datasets").json()["data"]["datasets"]
     period = next((item for item in datasets if item.get("type") == "period"), None)
@@ -284,6 +314,95 @@ def test_dashboard_api_and_test_api_share_period_payload() -> None:
 
     keys = ["mode", "summary", "shops", "platforms", "datasets", "selected_dataset_id"]
     assert {key: dashboard_payload.get(key) for key in keys} == {key: test_payload.get(key) for key in keys}
+
+
+def test_period_payload_accumulates_only_effective_to_date_rows(monkeypatch) -> None:
+    import backend.services.dashboard_query as dashboard_query
+
+    class FixedDateTime:
+        @classmethod
+        def now(cls):
+            return datetime(2026, 5, 21, 12, 0, 0)
+
+        strptime = staticmethod(datetime.strptime)
+
+    first_rows = [
+        DashboardDatasetRow("First Wave", "618第一波", "2026/5/13", "2025/5/16"),
+        DashboardDatasetRow("First Wave", "618第一波", "2026/5/20", "2025/5/20"),
+    ]
+    second_rows = [
+        DashboardDatasetRow("second Wave", "618第二波", "2026/5/21", "2025/5/21"),
+        DashboardDatasetRow("second Wave", "618第二波", "2026/5/22", "2025/5/22"),
+    ]
+    rows = [*first_rows, *second_rows]
+    overview = {
+        "by_product": {
+            "618第一波": {
+                "dataset_id": "product:618第一波",
+                "type": "period",
+                "dates": [row.date for row in first_rows],
+            },
+            "618第二波": {
+                "dataset_id": "product:618第二波",
+                "type": "period",
+                "dates": [row.date for row in second_rows],
+            },
+        }
+    }
+    cache = {
+        "query_ok": True,
+        "date_index": {
+            "2026-05-13": {"shop-a": 100},
+            "2026-05-20": {"shop-a": 200},
+            "2026-05-21": {"shop-a": 400},
+        },
+        "to_index": {
+            "2025-05-16": {"shop-a": 70},
+            "2025-05-20": {"shop-a": 30},
+            "2025-05-21": {"shop-a": 350},
+        },
+    }
+    tasks = [
+        {
+            "id": 1,
+            "enabled": True,
+            "companyshop_name": "shop-a",
+            "shop_name": "shop-a",
+            "platform": "tmall",
+            "brand": "main",
+            "last_trusted_value": 1000,
+            "status": "ok",
+        }
+    ]
+
+    monkeypatch.setattr(dashboard_query, "datetime", FixedDateTime)
+    monkeypatch.setattr(dashboard_query, "build_dataset_overview", lambda: overview)
+    monkeypatch.setattr(dashboard_query, "load_to_date_rows", lambda: rows)
+    monkeypatch.setattr(
+        dashboard_query,
+        "load_target_rows",
+        lambda: [
+            TargetRow("shop-a", "2026/5/13", 10),
+            TargetRow("shop-a", "2026/5/20", 20),
+            TargetRow("shop-a", "2026/5/21", 40),
+        ],
+    )
+    monkeypatch.setattr(dashboard_query, "_load_cache", lambda: cache)
+    monkeypatch.setattr(dashboard_query, "_is_cache_stale", lambda *_: (False, ""))
+    monkeypatch.setattr(dashboard_query, "_refresh_cache", lambda: True)
+
+    first_payload = dashboard_query._build_period_payload("product:618第一波", tasks)
+    second_payload = dashboard_query._build_period_payload("product:618第二波", tasks)
+
+    assert first_payload["date_range"] == {"start": "2026-05-13", "end": "2026-05-20"}
+    assert first_payload["to_date_range"] == {"start": "2025-05-16", "end": "2025-05-20"}
+    assert first_payload["summary"]["total_gmv"] == 300
+    assert first_payload["summary"]["total_target"] == 30
+
+    assert second_payload["date_range"] == {"start": "2026-05-21", "end": "2026-05-21"}
+    assert second_payload["to_date_range"] == {"start": "2025-05-21", "end": "2025-05-21"}
+    assert second_payload["summary"]["total_gmv"] == 1400
+    assert second_payload["summary"]["total_target"] == 40
 
 
 def test_realtime_dashboard_test_payload_contains_shops(monkeypatch) -> None:

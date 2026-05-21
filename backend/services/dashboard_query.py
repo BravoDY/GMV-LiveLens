@@ -478,10 +478,40 @@ def _build_period_payload(dataset_id: str, tasks: list[dict[str, Any]]) -> dict[
             "shops": [],
         }
 
-    parsed_dates = [d for d in (_parse_date(d) for d in dates) if d is not None]
-    start_date = min(parsed_dates).strftime("%Y-%m-%d")
     today_date = datetime.now().date()
-    end_date = today_date.strftime("%Y-%m-%d")
+    today_key = today_date.strftime("%Y-%m-%d")
+
+    to_date_rows = load_to_date_rows()
+    period_rows: list[tuple[Any, Any]] = []
+    for row in to_date_rows:
+        if row.chinese_product != chinese_key:
+            continue
+        parsed = _parse_date(row.date)
+        if parsed is not None and parsed <= today_date:
+            period_rows.append((row, parsed))
+
+    if not period_rows:
+        return {
+            "mode": "period",
+            "dataset_id": dataset_id,
+            "date_range": {"start": "", "end": ""},
+            "to_date_range": {"start": "", "end": ""},
+            "data_status": "no_data",
+            "status_message": "period_not_started",
+            "summary": {
+                "total_gmv": 0,
+                "total_target": 0,
+                "yoy": "--",
+            },
+            "platforms": [],
+            "shops": [],
+        }
+
+    period_dates = [parsed for _, parsed in period_rows]
+    period_date_keys = {d.strftime("%Y-%m-%d") for d in period_dates}
+    start_date = min(period_dates).strftime("%Y-%m-%d")
+    end_date = max(period_dates).strftime("%Y-%m-%d")
+    include_today_live = today_key in period_date_keys
 
     cache = _load_cache()
     stale, stale_reason = _is_cache_stale(str(cache.get("cached_at") or "") if cache else "", str(cache.get("to_date_hash") or "") if cache else "")
@@ -493,56 +523,49 @@ def _build_period_payload(dataset_id: str, tasks: list[dict[str, Any]]) -> dict[
 
     target_rows = load_target_rows()
     target_map: dict[str, int] = defaultdict(int)
-    date_set = set(dates)
     for row in target_rows:
-        if row.date not in date_set:
-            continue
         parsed = _parse_date(row.date)
         if parsed is None:
             continue
-        if parsed <= today_date:
+        if parsed.strftime("%Y-%m-%d") in period_date_keys:
             target_map[row.companyshop_name] += row.target
 
     today_gmv_map: dict[str, int] = {}
-    for task in tasks:
-        if not task.get("enabled"):
-            continue
-        csn = str(task.get("companyshop_name") or "").strip()
-        if csn:
-            today_gmv_map[csn] = int(task.get("last_trusted_value") or 0)
+    if include_today_live:
+        for task in tasks:
+            if not task.get("enabled"):
+                continue
+            csn = str(task.get("companyshop_name") or "").strip()
+            if csn:
+                today_gmv_map[csn] = int(task.get("last_trusted_value") or 0)
 
     to_date_range_default = {"start": "", "end": ""}
     if cache and cache.get("query_ok"):
-        cache_periods = cache.get("periods", {})
-        current_map: dict[str, float] = {str(k): float(v) for k, v in cache_periods.get(chinese_key, {}).items()}
-        to_date_rows = load_to_date_rows()
-        filtered_rows: list[Any] = []
-        for r in to_date_rows:
-            if r.chinese_product == chinese_key:
-                pd = _parse_date(r.date)
-                if pd is not None and pd <= today_date:
-                    filtered_rows.append(r)
-        if filtered_rows:
-            ly_dates = []
-            for r in filtered_rows:
-                td = _parse_date(r.to_date)
-                if td is not None:
-                    ly_dates.append(td)
-            if ly_dates:
-                ly_start_d = min(ly_dates)
-                ly_end_d = max(ly_dates)
-                to_date_range_default = {"start": ly_start_d.strftime("%Y-%m-%d"), "end": ly_end_d.strftime("%Y-%m-%d")}
-            ly_to_dates = {d.strftime("%Y-%m-%d") for d in ly_dates}
-            to_idx = cache.get("to_index", {})
-            ly_acc: dict[str, float] = defaultdict(float)
-            for d in ly_to_dates:
-                for csn, amt in to_idx.get(d, {}).items():
-                    ly_acc[csn] += amt
-            ly_map = dict(ly_acc)
-        else:
-            ly_map = {}
-        data_status = "ok" if current_map else "no_data"
-        status_message = "" if current_map else "该周期暂无历史数据"
+        date_idx = cache.get("date_index", {})
+        current_acc: dict[str, float] = defaultdict(float)
+        for d in period_date_keys:
+            for csn, amt in date_idx.get(d, {}).items():
+                current_acc[str(csn)] += float(amt or 0)
+        current_map = dict(current_acc)
+
+        ly_dates = []
+        for r, _ in period_rows:
+            td = _parse_date(r.to_date)
+            if td is not None:
+                ly_dates.append(td)
+        if ly_dates:
+            ly_start_d = min(ly_dates)
+            ly_end_d = max(ly_dates)
+            to_date_range_default = {"start": ly_start_d.strftime("%Y-%m-%d"), "end": ly_end_d.strftime("%Y-%m-%d")}
+        ly_to_dates = {d.strftime("%Y-%m-%d") for d in ly_dates}
+        to_idx = cache.get("to_index", {})
+        ly_acc: dict[str, float] = defaultdict(float)
+        for d in ly_to_dates:
+            for csn, amt in to_idx.get(d, {}).items():
+                ly_acc[str(csn)] += float(amt or 0)
+        ly_map = dict(ly_acc)
+        data_status = "ok" if current_map or any(today_gmv_map.values()) else "no_data"
+        status_message = "" if data_status == "ok" else "该周期暂无历史数据"
     elif cache and not cache.get("query_ok"):
         current_map = {}
         ly_map = {}

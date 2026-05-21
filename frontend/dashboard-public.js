@@ -209,6 +209,12 @@ function applyPublicDashboardMode() {
   document.querySelectorAll(".header-nav, #config, #manager").forEach((el) => {
     if (el) el.style.display = "none";
   });
+  const refreshCacheBtn = document.querySelector("#refreshCacheBtn");
+  if (refreshCacheBtn) {
+    refreshCacheBtn.dataset.publicReadonly = "1";
+    refreshCacheBtn.disabled = true;
+    refreshCacheBtn.style.display = "none";
+  }
   document.querySelectorAll("#captureAllButton, #schedulerToggle, #debugPanelToggle, #debugStatusPanel").forEach((el) => {
     if (el) el.style.display = "none";
   });
@@ -221,7 +227,7 @@ function applyPublicDashboardMode() {
 
 function bindSharedRefreshButton(options = {}) {
   const btn = document.querySelector("#refreshCacheBtn");
-  if (!btn || btn.dataset.sharedRefreshBound === "1") return;
+  if (!btn || btn.dataset.sharedRefreshBound === "1" || btn.dataset.publicReadonly === "1") return;
   btn.dataset.sharedRefreshBound = "1";
   btn.addEventListener("click", async () => {
     if (btn.disabled) return;
@@ -237,7 +243,7 @@ function bindSharedRefreshButton(options = {}) {
       const detail = parseApiError(error);
       const forbidden = String(detail || "").includes("403") || String(detail || "").toLowerCase().includes("forbidden");
       const hint = forbidden
-        ? "当前入口禁止刷新，请在本机管理员页面填写 Token 后重试"
+        ? "公网看板为只读入口，请在本机管理员页面刷新周期缓存"
         : (detail || "请确认 API Token 与部署入口权限");
       setPublicDashboardStatus(`周期数据缓存刷新失败：${hint}`, "bad");
     } finally {
