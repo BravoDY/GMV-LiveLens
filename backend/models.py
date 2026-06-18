@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+AUTO_REFRESH_STATUS_IDLE = "idle"
+AUTO_REFRESH_STATUS_RUNNING = "running"
+AUTO_REFRESH_STATUS_OBSERVING = "observing"
+AUTO_REFRESH_STATUS_COOLDOWN = "cooldown"
+
+AUTO_REFRESH_RESULT_NONE = "none"
+AUTO_REFRESH_RESULT_SUCCESS = "success"
+AUTO_REFRESH_RESULT_FAILURE = "failure"
+AUTO_REFRESH_RESULT_SKIPPED = "skipped"
+
 
 @dataclass
 class CaptureTask:
@@ -49,6 +59,17 @@ class CaptureTask:
     last_page_preview_at: str | None = None
     last_page_preview_status: str = "pending"
     last_page_preview_reason: str = ""
+    auto_refresh_status: str = AUTO_REFRESH_STATUS_IDLE
+    auto_refresh_reason_code: str = ""
+    auto_refresh_reason: str = ""
+    auto_refresh_anchor_at: str | None = None
+    auto_refresh_started_at: str | None = None
+    auto_refresh_observe_until: str | None = None
+    auto_refresh_cooldown_until: str | None = None
+    auto_refresh_last_result: str = AUTO_REFRESH_RESULT_NONE
+    auto_refresh_last_result_at: str | None = None
+    auto_refresh_last_success_at: str | None = None
+    auto_refresh_manual_protect_until: str | None = None
 
 
 @dataclass

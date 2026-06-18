@@ -18,7 +18,12 @@ from PIL import Image
 from backend.collectors.ocr_reader import candidates_to_dicts, extract_candidates, read_text
 from backend.collectors.remote_edge import EdgeActionTimeoutError, remote_edge_manager
 from backend.collectors.window_capture import capture_window, crop_by_ratio, find_window, save_thumbnail
-from backend.models import CaptureTask
+from backend.models import (
+    AUTO_REFRESH_STATUS_OBSERVING,
+    AUTO_REFRESH_STATUS_COOLDOWN,
+    AUTO_REFRESH_STATUS_RUNNING,
+    CaptureTask,
+)
 from backend.services import edge_binding, shop_config, store
 
 logger = logging.getLogger(__name__)
@@ -30,6 +35,10 @@ _PREVIEW_MAX_INTERVAL_SECONDS = int(os.environ.get("GMV_PREVIEW_MAX_INTERVAL_SEC
 _PREVIEW_MAX_WIDTH = int(os.environ.get("GMV_PREVIEW_MAX_WIDTH", "720"))
 _SCREEN_READONLY_MAX_PAY_AMT = int(os.environ.get("GMV_SCREEN_READONLY_MAX_PAY_AMT", "1000000000000"))
 _SCREEN_READONLY_FAILURE_BACKOFF_SECONDS = float(os.environ.get("GMV_SCREEN_READONLY_FAILURE_BACKOFF_SECONDS", "10"))
+_AUTO_REFRESH_MIN_RUNTIME_SECONDS = int(os.environ.get("GMV_AUTO_REFRESH_MIN_RUNTIME_SECONDS", "10800"))
+_AUTO_REFRESH_STAGGER_SECONDS = int(os.environ.get("GMV_AUTO_REFRESH_STAGGER_SECONDS", "600"))
+_AUTO_REFRESH_OBSERVE_SECONDS = int(os.environ.get("GMV_AUTO_REFRESH_OBSERVE_SECONDS", "60"))
+_AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS = int(os.environ.get("GMV_AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS", "7200"))
 _SQLITE_INT64_MAX = 2**63 - 1
 
 SnapshotCallback = Callable[[], Awaitable[None]]
@@ -45,6 +54,7 @@ class CaptureScheduler:
         self._next_readonly_run: dict[int, float] = {}
         self._readonly_response_markers: dict[int, str] = {}
         self._next_preview_run: dict[int, float] = {}
+        self._auto_refresh_skip_markers: dict[int, str] = {}
         self._callbacks: list[SnapshotCallback] = []
         self._running = False
         self._cached_global_interval_seconds = 1.0
@@ -72,12 +82,14 @@ class CaptureScheduler:
         self._running = True
 
     def status(self) -> dict:
+        auto_refresh = store.get_auto_refresh_global_state()
         return {
             "running": self._running,
             "loop_alive": self._runner is not None and not self._runner.done(),
             "tracked_tasks": len(self._last_run),
             "tracked_readonly_tasks": len(self._next_readonly_run),
             "tracked_preview_tasks": len(self._next_preview_run),
+            "auto_refresh": auto_refresh,
         }
 
     def _restore_remote_task_binding(self, task: CaptureTask, client: Any, session_id: str) -> CaptureTask:
@@ -152,6 +164,12 @@ class CaptureScheduler:
                 if preview_id is not None:
                     await asyncio.to_thread(self.refresh_page_preview_once, preview_id)
                     await self._notify()
+                refreshed_tasks = store.list_tasks(include_disabled=False)
+                if await asyncio.to_thread(self._finalize_due_auto_refreshs, refreshed_tasks):
+                    await self._notify()
+                    refreshed_tasks = store.list_tasks(include_disabled=False)
+                if await asyncio.to_thread(self._maybe_trigger_auto_refresh, refreshed_tasks):
+                    await self._notify()
                 await asyncio.sleep(0.2)
             except asyncio.CancelledError:
                 raise
@@ -195,6 +213,9 @@ class CaptureScheduler:
         self._next_preview_run = {
             task_id: value for task_id, value in self._next_preview_run.items() if task_id in active_ids
         }
+        self._auto_refresh_skip_markers = {
+            task_id: value for task_id, value in self._auto_refresh_skip_markers.items() if task_id in active_ids
+        }
 
     def _global_interval_seconds(self, now: float) -> float:
         if now - self._global_interval_loaded_at < 1.0:
@@ -220,6 +241,426 @@ class CaptureScheduler:
         if status in {"ok", "readonly_no_new_data", "readonly_waiting", "skipped_window_op_in_progress"}:
             return interval
         return max(interval, _SCREEN_READONLY_FAILURE_BACKOFF_SECONDS)
+
+    @staticmethod
+    def _auto_refresh_sort_key(task: CaptureTask) -> tuple[datetime, int]:
+        baseline = (
+            store.parse_sql_time(task.auto_refresh_last_success_at)
+            or store.parse_sql_time(task.auto_refresh_last_result_at)
+            or store.parse_sql_time(task.auto_refresh_anchor_at)
+            or datetime.min
+        )
+        return baseline, int(task.id or 0)
+
+    def _sync_auto_refresh_global_state(self, tasks: list[CaptureTask]) -> None:
+        state = store.get_auto_refresh_global_state()
+        active_task_id = int(state.get("active_task_id") or 0)
+        if active_task_id <= 0:
+            return
+        task_map = {int(task.id): task for task in tasks if task.id is not None}
+        active_task = task_map.get(active_task_id)
+        if active_task is None or active_task.auto_refresh_status not in {
+            AUTO_REFRESH_STATUS_RUNNING,
+            AUTO_REFRESH_STATUS_OBSERVING,
+        }:
+            store.clear_auto_refresh_global_run()
+
+    def _record_auto_refresh_skip(self, task: CaptureTask, reason_code: str, reason: str) -> bool:
+        if task.id is None:
+            return False
+        marker = f"{reason_code}:{reason}"
+        if self._auto_refresh_skip_markers.get(task.id) == marker:
+            return False
+        self._auto_refresh_skip_markers[task.id] = marker
+        store.mark_task_auto_refresh_skip(task.id, reason_code=reason_code, reason=reason)
+        self._log_auto_refresh_event(
+            "skip",
+            task,
+            result="skipped",
+            reason_code=reason_code,
+            reason=reason,
+        )
+        return True
+
+    def _clear_auto_refresh_skip_marker(self, task_id: int | None) -> None:
+        if task_id is None:
+            return
+        self._auto_refresh_skip_markers.pop(task_id, None)
+
+    def _log_auto_refresh_event(
+        self,
+        stage: str,
+        task: CaptureTask,
+        *,
+        level: int = logging.INFO,
+        session_id: str = "",
+        page_id: str = "",
+        status: str = "",
+        result: str = "",
+        reason_code: str = "",
+        reason: str = "",
+        started_at: str = "",
+        observe_until: str = "",
+        cooldown_until: str = "",
+    ) -> None:
+        logger.log(
+            level,
+            "auto_refresh_event stage=%s task_id=%s session=%s platform=%s shop=%s page_id=%s "
+            "status=%s result=%s reason_code=%s started_at=%s observe_until=%s cooldown_until=%s reason=%s",
+            stage,
+            task.id,
+            session_id or task.edge_session_id,
+            task.platform,
+            task.shop_name,
+            page_id or task.page_id,
+            status or task.auto_refresh_status,
+            result or task.auto_refresh_last_result,
+            reason_code,
+            started_at,
+            observe_until,
+            cooldown_until,
+            reason,
+        )
+
+    def _auto_refresh_candidate_reason(self, task: CaptureTask, now_dt: datetime) -> tuple[str, str]:
+        if task.capture_mode != "remote_edge":
+            return store.AUTO_REFRESH_REASON_NOT_REMOTE_EDGE, "当前任务不是网页直连模式。"
+        if not str(task.page_id or "").strip():
+            return store.AUTO_REFRESH_REASON_PAGE_NOT_BOUND, "当前任务还没有绑定有效页面。"
+        observe_until = store.parse_sql_time(task.auto_refresh_observe_until)
+        if observe_until is not None and observe_until > now_dt:
+            return store.AUTO_REFRESH_REASON_OBSERVING, "当前任务仍处于自动刷新观察期。"
+        manual_until = store.parse_sql_time(task.auto_refresh_manual_protect_until)
+        if manual_until is not None and manual_until > now_dt:
+            return store.AUTO_REFRESH_REASON_MANUAL_PROTECTED, "当前任务仍在人工保护期内。"
+        cooldown_until = store.parse_sql_time(task.auto_refresh_cooldown_until)
+        if cooldown_until is not None and cooldown_until > now_dt:
+            return store.AUTO_REFRESH_REASON_FAILURE_COOLDOWN, "当前任务仍在自动刷新失败冷却期内。"
+        anchor_at = store.parse_sql_time(task.auto_refresh_anchor_at)
+        if anchor_at is None:
+            return "anchor_not_ready", "当前任务还没有建立自动刷新计时基线。"
+        if (now_dt - anchor_at).total_seconds() < _AUTO_REFRESH_MIN_RUNTIME_SECONDS:
+            return "not_due_yet", "当前任务距离上次自动刷新基线尚未满 3 小时。"
+        return store.AUTO_REFRESH_REASON_ELIGIBLE, ""
+
+    def _select_auto_refresh_candidate(self, tasks: list[CaptureTask]) -> CaptureTask | None:
+        now_dt = datetime.now()
+        candidates: list[CaptureTask] = []
+        for task in tasks:
+            if task.id is None:
+                continue
+            reason_code, _reason = self._auto_refresh_candidate_reason(task, now_dt)
+            if reason_code == store.AUTO_REFRESH_REASON_ELIGIBLE:
+                candidates.append(task)
+        if not candidates:
+            return None
+        candidates.sort(key=self._auto_refresh_sort_key)
+        return candidates[0]
+
+    def _maybe_trigger_auto_refresh(self, tasks: list[CaptureTask]) -> bool:
+        self._sync_auto_refresh_global_state(tasks)
+        global_state = store.get_auto_refresh_global_state()
+        if global_state.get("running"):
+            return False
+        last_started_at = store.parse_sql_time(global_state.get("last_started_at"))
+        if last_started_at is not None and (datetime.now() - last_started_at).total_seconds() < _AUTO_REFRESH_STAGGER_SECONDS:
+            return False
+        candidate = self._select_auto_refresh_candidate(tasks)
+        if candidate is None:
+            return False
+        return self._trigger_auto_refresh(candidate)
+
+    def _trigger_auto_refresh(self, task: CaptureTask) -> bool:
+        if task.id is None:
+            return False
+        session = store.get_edge_session(task.edge_session_id or "default_real_edge")
+        if session is None:
+            return self._record_auto_refresh_skip(
+                task,
+                store.AUTO_REFRESH_REASON_EDGE_SESSION_NOT_FOUND,
+                "自动刷新跳过：没有找到绑定的 Edge 会话。",
+            )
+        try:
+            client = remote_edge_manager.get_client(
+                session.session_id,
+                name=session.name,
+                debug_port=session.debug_port,
+                user_data_dir=session.user_data_dir,
+                session_mode=session.session_mode,
+            )
+        except Exception:
+            return self._record_auto_refresh_skip(
+                task,
+                store.AUTO_REFRESH_REASON_EDGE_DEBUG_UNAVAILABLE,
+                "自动刷新跳过：当前 Edge 调试链路不可用。",
+            )
+        if client.is_window_op_running:
+            return self._record_auto_refresh_skip(
+                task,
+                store.AUTO_REFRESH_REASON_WINDOW_OP_IN_PROGRESS,
+                "自动刷新跳过：当前 Edge 窗口操作正在进行中。",
+            )
+        task = self._restore_remote_task_binding(task, client, session.session_id)
+        if not str(task.page_id or "").strip():
+            return self._record_auto_refresh_skip(
+                task,
+                store.AUTO_REFRESH_REASON_BINDING_INVALIDATED,
+                "自动刷新跳过：当前任务的页面绑定已失效，等待重新绑定。",
+            )
+        page_info = client.find_page(task.page_id)
+        if page_info is None:
+            return self._record_auto_refresh_skip(
+                task,
+                store.AUTO_REFRESH_REASON_REMOTE_PAGE_NOT_FOUND,
+                "自动刷新跳过：当前绑定页签已不存在。",
+            )
+        _score, flags = edge_binding.page_match_score(
+            task,
+            {"page_id": page_info.page_id, "url": page_info.url, "title": page_info.title},
+        )
+        if flags.get("is_login_page") or task.status == "edge_login_page_bound":
+            return self._record_auto_refresh_skip(
+                task,
+                store.AUTO_REFRESH_REASON_LOGIN_PAGE,
+                "自动刷新跳过：当前页仍处于登录页或待登录状态。",
+            )
+        if task.status == "edge_page_bound" and not flags.get("matches_target_url"):
+            return self._record_auto_refresh_skip(
+                task,
+                store.AUTO_REFRESH_REASON_LOGIN_REQUIRED,
+                "自动刷新跳过：当前页尚未回到目标业务页。",
+            )
+
+        started_at = store.now_sql()
+        self._log_auto_refresh_event(
+            "candidate",
+            task,
+            session_id=session.session_id,
+            page_id=task.page_id,
+            status=AUTO_REFRESH_STATUS_RUNNING,
+            result=task.auto_refresh_last_result,
+            reason_code=store.AUTO_REFRESH_REASON_ELIGIBLE,
+            reason="满足自动刷新条件，已选中当前任务进入 reload 流程。",
+            started_at=started_at,
+        )
+        store.start_task_auto_refresh(
+            task.id,
+            started_at=started_at,
+            reason_code=store.AUTO_REFRESH_REASON_ELIGIBLE,
+            reason="满足自动刷新条件，准备触发页面 reload。",
+        )
+        store.start_auto_refresh_global_run(task.id, started_at=started_at)
+        try:
+            client.reload_page(task.page_id)
+        except Exception as exc:
+            store.mark_task_auto_refresh_failure(
+                task.id,
+                finished_at=store.now_sql(),
+                cooldown_seconds=_AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS,
+                reason_code=store.AUTO_REFRESH_REASON_RELOAD_TRIGGER_FAILED,
+                reason=f"自动刷新失败：触发 reload 失败（{exc}）。",
+            )
+            store.clear_auto_refresh_global_run()
+            self._clear_auto_refresh_skip_marker(task.id)
+            self._log_auto_refresh_event(
+                "failure",
+                task,
+                level=logging.WARNING,
+                session_id=session.session_id,
+                page_id=task.page_id,
+                status=AUTO_REFRESH_STATUS_COOLDOWN,
+                result="failure",
+                reason_code=store.AUTO_REFRESH_REASON_RELOAD_TRIGGER_FAILED,
+                reason=f"自动刷新失败：触发 reload 失败（{exc}）。",
+                started_at=started_at,
+                cooldown_until=store.sql_after_seconds(started_at, _AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS),
+            )
+            return True
+
+        observe_until = store.sql_after_seconds(started_at, _AUTO_REFRESH_OBSERVE_SECONDS)
+        store.mark_task_auto_refresh_observing(
+            task.id,
+            started_at=started_at,
+            observe_seconds=_AUTO_REFRESH_OBSERVE_SECONDS,
+            reason_code=store.AUTO_REFRESH_REASON_OBSERVING,
+            reason="已触发页面 reload，进入 60 秒观察期。",
+        )
+        self._clear_auto_refresh_skip_marker(task.id)
+        self._log_auto_refresh_event(
+            "start",
+            task,
+            session_id=session.session_id,
+            page_id=task.page_id,
+            status=AUTO_REFRESH_STATUS_OBSERVING,
+            result=task.auto_refresh_last_result,
+            reason_code=store.AUTO_REFRESH_REASON_OBSERVING,
+            reason="已触发页面 reload，进入自动刷新观察期。",
+            started_at=started_at,
+            observe_until=observe_until,
+        )
+        return True
+
+    def _finalize_due_auto_refreshs(self, tasks: list[CaptureTask]) -> bool:
+        self._sync_auto_refresh_global_state(tasks)
+        now_dt = datetime.now()
+        changed = False
+        for task in tasks:
+            if task.id is None or task.auto_refresh_status != AUTO_REFRESH_STATUS_OBSERVING:
+                continue
+            observe_until = store.parse_sql_time(task.auto_refresh_observe_until)
+            if observe_until is None or observe_until > now_dt:
+                continue
+            if self._finalize_auto_refresh(task):
+                changed = True
+        return changed
+
+    def _finalize_auto_refresh(self, task: CaptureTask) -> bool:
+        if task.id is None:
+            return False
+        latest = store.get_task(task.id)
+        if latest is None:
+            store.clear_auto_refresh_global_run()
+            return False
+        finished_at = store.now_sql()
+        started_at = store.parse_sql_time(latest.auto_refresh_started_at)
+        session = store.get_edge_session(latest.edge_session_id or "default_real_edge")
+        if session is None:
+            store.mark_task_auto_refresh_failure(
+                latest.id,
+                finished_at=finished_at,
+                cooldown_seconds=_AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS,
+                reason_code=store.AUTO_REFRESH_REASON_EDGE_SESSION_NOT_FOUND,
+                reason="自动刷新观察期结束，但当前任务缺少可用的 Edge 会话。",
+            )
+            store.clear_auto_refresh_global_run()
+            return True
+        try:
+            client = remote_edge_manager.get_client(
+                session.session_id,
+                name=session.name,
+                debug_port=session.debug_port,
+                user_data_dir=session.user_data_dir,
+                session_mode=session.session_mode,
+            )
+            if client.is_window_op_running:
+                raise RuntimeError(store.AUTO_REFRESH_REASON_WINDOW_OP_IN_PROGRESS)
+            if not str(latest.page_id or "").strip():
+                raise RuntimeError(store.AUTO_REFRESH_REASON_OBSERVE_PAGE_INVALID)
+            page_info = client.find_page(latest.page_id)
+            if page_info is None:
+                raise RuntimeError(store.AUTO_REFRESH_REASON_OBSERVE_PAGE_INVALID)
+            _score, flags = edge_binding.page_match_score(
+                latest,
+                {"page_id": page_info.page_id, "url": page_info.url, "title": page_info.title},
+            )
+            if flags.get("is_login_page") or latest.status == "edge_login_page_bound":
+                raise RuntimeError(store.AUTO_REFRESH_REASON_OBSERVE_LOGIN_REQUIRED)
+        except Exception as exc:
+            reason_code = str(exc) or store.AUTO_REFRESH_REASON_OBSERVE_PAGE_INVALID
+            store.mark_task_auto_refresh_failure(
+                latest.id,
+                finished_at=finished_at,
+                cooldown_seconds=_AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS,
+                reason_code=reason_code,
+                reason="自动刷新观察期结束，但页面未恢复到可继续采集状态。",
+            )
+            store.clear_auto_refresh_global_run()
+            self._log_auto_refresh_event(
+                "failure",
+                latest,
+                level=logging.WARNING,
+                page_id=latest.page_id,
+                status=AUTO_REFRESH_STATUS_COOLDOWN,
+                result="failure",
+                reason_code=reason_code,
+                reason="自动刷新观察期结束，但页面未恢复到可继续采集状态。",
+                started_at=latest.auto_refresh_started_at or "",
+                cooldown_until=store.sql_after_seconds(finished_at, _AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS),
+            )
+            return True
+
+        unhealthy_statuses = {
+            "parse_failed",
+            "needs_recalibration",
+            "readonly_failed",
+            "edge_login_page_bound",
+            "remote_page_not_found",
+            "edge_session_not_found",
+            "edge_debug_unavailable",
+            "edge_debug_disconnected",
+        }
+        unhealthy_reason_codes = {
+            "remote_page_not_found",
+            "binding_invalidated",
+            "waiting_manual_bind",
+            "edge_session_deleted_requires_rebind",
+        }
+        sample_at = store.parse_sql_time(latest.last_sample_at)
+        if latest.status in unhealthy_statuses or latest.last_reason_code in unhealthy_reason_codes:
+            reason_code = store.AUTO_REFRESH_REASON_OBSERVE_CAPTURE_UNHEALTHY
+            reason = "自动刷新观察期结束，但页面采集状态仍不健康。"
+            store.mark_task_auto_refresh_failure(
+                latest.id,
+                finished_at=finished_at,
+                cooldown_seconds=_AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS,
+                reason_code=reason_code,
+                reason=reason,
+            )
+            store.clear_auto_refresh_global_run()
+            self._log_auto_refresh_event(
+                "failure",
+                latest,
+                level=logging.WARNING,
+                page_id=latest.page_id,
+                status=AUTO_REFRESH_STATUS_COOLDOWN,
+                result="failure",
+                reason_code=reason_code,
+                reason=reason,
+                started_at=latest.auto_refresh_started_at or "",
+                cooldown_until=store.sql_after_seconds(finished_at, _AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS),
+            )
+            return True
+        if started_at is not None and (sample_at is None or sample_at < started_at):
+            store.mark_task_auto_refresh_failure(
+                latest.id,
+                finished_at=finished_at,
+                cooldown_seconds=_AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS,
+                reason_code=store.AUTO_REFRESH_REASON_OBSERVE_TIMEOUT,
+                reason="自动刷新观察期结束，但未观测到新的成功采样。",
+            )
+            store.clear_auto_refresh_global_run()
+            self._log_auto_refresh_event(
+                "failure",
+                latest,
+                level=logging.WARNING,
+                page_id=latest.page_id,
+                status=AUTO_REFRESH_STATUS_COOLDOWN,
+                result="failure",
+                reason_code=store.AUTO_REFRESH_REASON_OBSERVE_TIMEOUT,
+                reason="自动刷新观察期结束，但未观测到新的成功采样。",
+                started_at=latest.auto_refresh_started_at or "",
+                cooldown_until=store.sql_after_seconds(finished_at, _AUTO_REFRESH_FAILURE_COOLDOWN_SECONDS),
+            )
+            return True
+
+        store.mark_task_auto_refresh_success(
+            latest.id,
+            finished_at=finished_at,
+            reason_code="",
+            reason="自动刷新观察期结束，页面已恢复采样。",
+        )
+        store.clear_auto_refresh_global_run()
+        self._clear_auto_refresh_skip_marker(latest.id)
+        self._log_auto_refresh_event(
+            "success",
+            latest,
+            page_id=latest.page_id,
+            status=store.AUTO_REFRESH_STATUS_IDLE,
+            result="success",
+            reason="自动刷新观察期结束，页面已恢复采样。",
+            started_at=latest.auto_refresh_started_at or "",
+        )
+        return True
 
     def _save_ocr_dataset(self, crop: Image.Image, task: CaptureTask, selected: int | None, ocr_text: str) -> None:
         try:

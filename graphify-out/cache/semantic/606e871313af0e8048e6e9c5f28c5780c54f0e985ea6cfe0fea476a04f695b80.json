@@ -1,0 +1,1 @@
+{"nodes": [], "edges": [{"source": "backup_summary_featured_main", "target": "frontend_index_html", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "backups/summary-featured-main-before-20260518-110312/git-status.txt", "source_location": null, "weight": 1.0}], "hyperedges": []}

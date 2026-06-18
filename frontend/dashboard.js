@@ -2,6 +2,92 @@
 // 看板渲染函数在 dashboard-shared.js 中（三个页面共享）
 // 此处仅包含 / 页面的独有功能
 
+function parseTaskDateTime(value) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  const normalized = text.includes("T") ? text : text.replace(" ", "T");
+  const parsed = new Date(normalized);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function formatTaskDateTimeShort(value) {
+  const parsed = parseTaskDateTime(value);
+  if (!parsed) return "--";
+  const now = new Date();
+  const sameDay = parsed.getFullYear() === now.getFullYear()
+    && parsed.getMonth() === now.getMonth()
+    && parsed.getDate() === now.getDate();
+  return sameDay
+    ? parsed.toLocaleTimeString("zh-CN", { hour12: false })
+    : parsed.toLocaleString("zh-CN", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+}
+
+function latestAutoRefreshTime(task) {
+  return task?.auto_refresh_started_at
+    || task?.auto_refresh_last_result_at
+    || task?.auto_refresh_last_success_at
+    || "";
+}
+
+function autoRefreshResultLabel(task) {
+  const status = String(task?.auto_refresh_status || "").trim();
+  if (status === "running") return "执行中";
+  if (status === "observing") return "观察中";
+  const result = String(task?.auto_refresh_last_result || "").trim();
+  if (result === "success") return "成功";
+  if (result === "failure") return "失败";
+  if (result === "skipped") return "跳过";
+  return "未触发";
+}
+
+function activeAutoRefreshPhase(task) {
+  const now = Date.now();
+  const observeUntil = parseTaskDateTime(task?.auto_refresh_observe_until);
+  if (observeUntil && observeUntil.getTime() > now) {
+    return {
+      tone: "tone-pending",
+      label: `观察期至 ${formatTaskDateTimeShort(task.auto_refresh_observe_until)}`,
+    };
+  }
+  const cooldownUntil = parseTaskDateTime(task?.auto_refresh_cooldown_until);
+  if (cooldownUntil && cooldownUntil.getTime() > now) {
+    return {
+      tone: "tone-bad",
+      label: `冷却至 ${formatTaskDateTimeShort(task.auto_refresh_cooldown_until)}`,
+    };
+  }
+  return null;
+}
+
+function renderAutoRefreshSummary(task) {
+  if (task?.capture_mode !== "remote_edge") return "";
+  const latestAt = latestAutoRefreshTime(task);
+  const resultLabel = autoRefreshResultLabel(task);
+  const phase = activeAutoRefreshPhase(task);
+  const resultTone = resultLabel === "成功"
+    ? "tone-ok"
+    : resultLabel === "未触发"
+      ? "tone-neutral"
+      : resultLabel === "跳过" || resultLabel === "观察中" || resultLabel === "执行中"
+      ? "tone-pending"
+      : "tone-bad";
+  const phaseHtml = phase
+    ? `<span class="status ${phase.tone}" style="margin-top:4px;">${escapeHtml(phase.label)}</span>`
+    : "";
+  return `
+    <div style="margin-top:8px;color:var(--muted);font-size:11px;line-height:1.5;">
+      <div>自动刷新：${escapeHtml(latestAt ? formatTaskDateTimeShort(latestAt) : "暂无")} <span class="status ${resultTone}" style="margin-left:6px;">${escapeHtml(resultLabel)}</span></div>
+      ${phaseHtml}
+    </div>
+  `;
+}
+
 function renderManagerGrid(tasks) {
   const allTasks = Array.isArray(tasks) ? tasks : [];
   const activeFilter = managerState.filter || "all";
@@ -92,6 +178,7 @@ function renderManagerGrid(tasks) {
       const statusHtml = label
         ? `<span class="status ${statusTone(task.status)}">${escapeHtml(label)}</span>`
         : "";
+      const autoRefreshHtml = renderAutoRefreshSummary(task);
 
       html += `
       <div class="manager-card card-bg ${cardStatusClass(task.status)}" data-task-id="${task.id || ""}" data-editable="true">
@@ -101,7 +188,8 @@ function renderManagerGrid(tasks) {
         <div class="task-badges" style="margin-top:10px;align-items:flex-start;">
           ${statusHtml}
           <span style="color:var(--muted);font-size:11px;">${escapeHtml(task.platform || "")} · ${escapeHtml(task.brand || "")} · ${timeStr}</span>
-        </div>`;
+        </div>
+        ${autoRefreshHtml}`;
 
       if (sessionId) {
         html += `

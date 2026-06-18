@@ -1,0 +1,1 @@
+{"nodes": [], "edges": [{"source": "backup_platform_gmv_overflow", "target": "frontend_index_html", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "backups/platform-gmv-overflow-before-20260516-185201/index.html", "source_location": null, "weight": 1.0}], "hyperedges": []}

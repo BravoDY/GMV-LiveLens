@@ -1,0 +1,29 @@
+{
+  "exclude": [
+    "**/.git",
+    "**/.venv",
+    "**/venv",
+    "**/env",
+    "**/__pycache__",
+    "**/.pytest_cache",
+    "**/.mypy_cache",
+    "**/.ruff_cache",
+    "**/node_modules",
+    "**/dist",
+    "**/build",
+    "**/.next",
+    "**/.nuxt",
+    "**/out",
+    "**/coverage",
+    "**/logs",
+    "**/log",
+    "**/tmp",
+    "**/temp",
+    "**/data",
+    "**/downloads",
+    "**/.trae",
+    "**/.cursor",
+    "**/.vscode",
+    "**/*.egg-info"
+  ]
+}

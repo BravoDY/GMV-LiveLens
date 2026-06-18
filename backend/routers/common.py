@@ -5,6 +5,7 @@ import base64
 import io
 import json as _json
 import logging
+import os
 import re
 import sqlite3
 from collections.abc import Callable
@@ -27,6 +28,8 @@ _SHOPS_DEFAULT_PATH = ROOT_DIR / "data" / "shops_default.json"
 _STATIC_ASSET_RE = re.compile(r'(?P<url>/static/[^"\'<>\s?]+)(?:\?v=[^"\'<>\s]*)?')
 
 clients: set[WebSocket] = set()
+logger = logging.getLogger(__name__)
+_AUTO_REFRESH_MANUAL_PROTECT_SECONDS = int(os.environ.get("GMV_AUTO_REFRESH_MANUAL_PROTECT_SECONDS", "3600"))
 
 
 @lru_cache(maxsize=1)
@@ -259,6 +262,63 @@ def edge_client_for(session_id: str):
         user_data_dir=session.user_data_dir,
         session_mode=session.session_mode,
     )
+
+
+def protect_task_for_manual_intervention(
+    task: CaptureTask,
+    *,
+    source: str,
+    reason: str,
+    protect_seconds: int = _AUTO_REFRESH_MANUAL_PROTECT_SECONDS,
+) -> bool:
+    if task.id is None or task.capture_mode != "remote_edge":
+        return False
+    protected_at = store.now_sql()
+    protect_until = store.sql_after_seconds(protected_at, protect_seconds)
+    store.protect_task_auto_refresh_manually(
+        task.id,
+        protected_at=protected_at,
+        protect_seconds=protect_seconds,
+        reason=reason,
+    )
+    logger.info(
+        "auto_refresh_manual_protect source=%s task_id=%s session=%s platform=%s shop=%s page_id=%s "
+        "protected_at=%s protect_until=%s protect_seconds=%s reason=%s",
+        source,
+        task.id,
+        task.edge_session_id,
+        task.platform,
+        task.shop_name,
+        task.page_id,
+        protected_at,
+        protect_until,
+        protect_seconds,
+        reason,
+    )
+    return True
+
+
+def protect_session_tasks_for_manual_intervention(
+    session_id: str,
+    *,
+    source: str,
+    reason: str,
+    protect_seconds: int = _AUTO_REFRESH_MANUAL_PROTECT_SECONDS,
+) -> list[int]:
+    protected_task_ids: list[int] = []
+    for task in store.list_tasks(include_disabled=True):
+        if task.id is None or task.capture_mode != "remote_edge":
+            continue
+        if (task.edge_session_id or "default_real_edge") != (session_id or "default_real_edge"):
+            continue
+        if protect_task_for_manual_intervention(
+            task,
+            source=source,
+            reason=reason,
+            protect_seconds=protect_seconds,
+        ):
+            protected_task_ids.append(int(task.id))
+    return protected_task_ids
 
 
 async def edge_health_payload(session_id: str) -> dict[str, Any]:
@@ -872,6 +932,12 @@ async def run_platform_edge_action(
             session_mode=session.session_mode,
         )
         try:
+            if action in {"start", "launch", "show"}:
+                protect_task_for_manual_intervention(
+                    task,
+                    source=f"platform_edge_{action}",
+                    reason=f"用户触发平台级 {action} Edge，预留人工登录/验证码处理保护期。",
+                )
             result = await asyncio.to_thread(runner, client, task)
             auto_rebound_tasks: list[dict[str, Any]] = []
             if getattr(result, "debug_available", False):

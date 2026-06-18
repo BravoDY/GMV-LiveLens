@@ -11,6 +11,7 @@ from backend.routers.common import (
     _load_shops_default,
     _task_runtime_for_bound_page,
     broadcast_snapshot,
+    protect_task_for_manual_intervention,
     safe_upsert_task,
 )
 from backend.services import shop_config, store
@@ -142,6 +143,11 @@ async def shops_bind(payload: ShopsBindPayload) -> dict[str, Any]:
                 automatic=False,
             )
             store.update_task_runtime(saved.id, runtime)
+        protect_task_for_manual_intervention(
+            saved,
+            source="shops_bind",
+            reason="用户已通过店铺绑定入口手动确认页面，自动刷新进入人工保护期。",
+        )
         results.append({"task_id": task_id, "status": "ok", "page_id": page_id})
     await broadcast_snapshot()
     return {"bound": len([r for r in results if r["status"] == "ok"]), "results": results}

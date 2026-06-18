@@ -19,6 +19,7 @@ from backend.routers.common import (
     edge_control_unavailable_detail,
     edge_health_payload,
     edge_timeout_detail,
+    protect_session_tasks_for_manual_intervention,
     reconcile_edge_session_task_runtime,
 )
 from backend.services import store
@@ -65,6 +66,11 @@ async def start_edge_session(session_id: str, launch_url: str = Query(default=""
     client = edge_client_for(session_id)
     resolved_launch_url = (launch_url or "").strip() or store.preferred_launch_url_for_session(session_id)
     try:
+        protect_session_tasks_for_manual_intervention(
+            session_id,
+            source="edge_session_start",
+            reason="用户触发启动 Edge，自动刷新进入人工登录/验证码处理保护期。",
+        )
         health = await asyncio.to_thread(client.start_edge, resolved_launch_url)
         if health.debug_available:
             try:
@@ -118,6 +124,11 @@ async def show_edge_session(session_id: str, launch_url: str = Query(default="")
         )
     resolved_launch_url = (launch_url or "").strip() or store.preferred_launch_url_for_session(session_id)
     try:
+        protect_session_tasks_for_manual_intervention(
+            session_id,
+            source="edge_session_show",
+            reason="用户触发显示 Edge，自动刷新进入人工登录/验证码处理保护期。",
+        )
         result = await asyncio.to_thread(client.show_edge, resolved_launch_url)
     except EdgeActionTimeoutError as exc:
         detail = await edge_timeout_detail(

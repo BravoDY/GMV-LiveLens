@@ -3,10 +3,22 @@ from __future__ import annotations
 import json
 import sqlite3
 import time
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from backend.models import CaptureTask, EdgeSession
+from backend.models import (
+    AUTO_REFRESH_RESULT_FAILURE,
+    AUTO_REFRESH_RESULT_NONE,
+    AUTO_REFRESH_RESULT_SKIPPED,
+    AUTO_REFRESH_RESULT_SUCCESS,
+    AUTO_REFRESH_STATUS_COOLDOWN,
+    AUTO_REFRESH_STATUS_IDLE,
+    AUTO_REFRESH_STATUS_OBSERVING,
+    AUTO_REFRESH_STATUS_RUNNING,
+    CaptureTask,
+    EdgeSession,
+)
 from backend.services import shop_config
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -17,6 +29,29 @@ DB_PATH = DATA_DIR / "gmv_livelens.sqlite3"
 CAPTURE_TASK_SHOP_UNIQUE_INDEX = "idx_capture_tasks_platform_shop_unique"
 
 _SQLITE_INT64_MAX = 2**63 - 1
+AUTO_REFRESH_GLOBAL_ACTIVE_TASK_ID_KEY = "auto_refresh_active_task_id"
+AUTO_REFRESH_GLOBAL_LAST_STARTED_AT_KEY = "auto_refresh_last_started_at"
+
+AUTO_REFRESH_REASON_ELIGIBLE = "eligible"
+AUTO_REFRESH_REASON_MANUAL_PROTECTED = "manual_protected"
+AUTO_REFRESH_REASON_FAILURE_COOLDOWN = "failure_cooldown"
+AUTO_REFRESH_REASON_OBSERVING = "observe_pending"
+AUTO_REFRESH_REASON_PAGE_NOT_BOUND = "page_not_bound"
+AUTO_REFRESH_REASON_NOT_REMOTE_EDGE = "not_remote_edge"
+AUTO_REFRESH_REASON_EDGE_SESSION_NOT_FOUND = "edge_session_not_found"
+AUTO_REFRESH_REASON_EDGE_DEBUG_UNAVAILABLE = "edge_debug_unavailable"
+AUTO_REFRESH_REASON_WINDOW_OP_IN_PROGRESS = "window_op_in_progress"
+AUTO_REFRESH_REASON_LOGIN_PAGE = "login_page_bound"
+AUTO_REFRESH_REASON_LOGIN_REQUIRED = "login_required"
+AUTO_REFRESH_REASON_BINDING_INVALIDATED = "binding_invalidated"
+AUTO_REFRESH_REASON_RELOAD_TRIGGER_FAILED = "reload_trigger_failed"
+AUTO_REFRESH_REASON_REMOTE_PAGE_NOT_FOUND = "remote_page_not_found"
+AUTO_REFRESH_REASON_OBSERVE_LOGIN_REQUIRED = "observe_login_required"
+AUTO_REFRESH_REASON_OBSERVE_PAGE_INVALID = "observe_page_invalid"
+AUTO_REFRESH_REASON_OBSERVE_CAPTURE_UNHEALTHY = "observe_capture_unhealthy"
+AUTO_REFRESH_REASON_OBSERVE_TIMEOUT = "observe_timeout"
+AUTO_REFRESH_REASON_GLOBAL_BUSY = "global_busy"
+AUTO_REFRESH_REASON_GLOBAL_STAGGER_WAIT = "global_stagger_wait"
 
 
 def _safe_sqlite_int(value: Any) -> int | None:
@@ -45,6 +80,53 @@ def normalize_runtime_value_source(value_source: Any) -> str:
     if text in {"ocr", "manual"}:
         return text
     return ""
+
+
+def normalize_auto_refresh_status(value: Any) -> str:
+    text = str(value or "").strip().lower()
+    if text in {
+        AUTO_REFRESH_STATUS_IDLE,
+        AUTO_REFRESH_STATUS_RUNNING,
+        AUTO_REFRESH_STATUS_OBSERVING,
+        AUTO_REFRESH_STATUS_COOLDOWN,
+    }:
+        return text
+    return AUTO_REFRESH_STATUS_IDLE
+
+
+def normalize_auto_refresh_result(value: Any) -> str:
+    text = str(value or "").strip().lower()
+    if text in {
+        AUTO_REFRESH_RESULT_NONE,
+        AUTO_REFRESH_RESULT_SUCCESS,
+        AUTO_REFRESH_RESULT_FAILURE,
+        AUTO_REFRESH_RESULT_SKIPPED,
+    }:
+        return text
+    return AUTO_REFRESH_RESULT_NONE
+
+
+def parse_sql_time(value: Any) -> datetime | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(text, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def format_sql_time(value: datetime | None) -> str | None:
+    if value is None:
+        return None
+    return value.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def sql_after_seconds(base: Any, seconds: int) -> str:
+    parsed = parse_sql_time(base) or datetime.now()
+    return format_sql_time(parsed + timedelta(seconds=int(seconds))) or now_sql()
 
 
 def normalize_session_mode(session_mode: Any, user_data_dir: str, session_id: str = "") -> str:
@@ -313,6 +395,7 @@ def init_db() -> None:
         )
         conn.execute("CREATE INDEX IF NOT EXISTS idx_samples_task_time ON gmv_samples(task_id, sampled_at DESC)")
         _ensure_columns(conn)
+        _initialize_auto_refresh_runtime(conn)
         _ensure_default_edge_session(conn)
         configs = shop_config.load_shop_configs()
         _migrate_legacy_group_sessions(conn, configs)
@@ -352,6 +435,17 @@ def _ensure_columns(conn: sqlite3.Connection) -> None:
         "last_page_preview_reason": "TEXT NOT NULL DEFAULT ''",
         "target": "INTEGER NOT NULL DEFAULT 0",
         "sort_order": "INTEGER NOT NULL DEFAULT 0",
+        "auto_refresh_status": f"TEXT NOT NULL DEFAULT '{AUTO_REFRESH_STATUS_IDLE}'",
+        "auto_refresh_reason_code": "TEXT NOT NULL DEFAULT ''",
+        "auto_refresh_reason": "TEXT NOT NULL DEFAULT ''",
+        "auto_refresh_anchor_at": "TEXT",
+        "auto_refresh_started_at": "TEXT",
+        "auto_refresh_observe_until": "TEXT",
+        "auto_refresh_cooldown_until": "TEXT",
+        "auto_refresh_last_result": f"TEXT NOT NULL DEFAULT '{AUTO_REFRESH_RESULT_NONE}'",
+        "auto_refresh_last_result_at": "TEXT",
+        "auto_refresh_last_success_at": "TEXT",
+        "auto_refresh_manual_protect_until": "TEXT",
     }
     for name, ddl in additions.items():
         if name not in columns:
@@ -369,6 +463,63 @@ def _ensure_columns(conn: sqlite3.Connection) -> None:
     for name, ddl in sample_additions.items():
         if name not in sample_columns:
             conn.execute(f"ALTER TABLE gmv_samples ADD COLUMN {name} {ddl}")
+
+
+def _initialize_auto_refresh_runtime(conn: sqlite3.Connection) -> None:
+    initialized_at = now_sql()
+    conn.execute(
+        """
+        UPDATE capture_tasks
+        SET auto_refresh_anchor_at = COALESCE(auto_refresh_anchor_at, ?)
+        WHERE capture_mode = 'remote_edge'
+          AND TRIM(COALESCE(page_id, '')) != ''
+          AND (auto_refresh_anchor_at IS NULL OR TRIM(auto_refresh_anchor_at) = '')
+        """,
+        (initialized_at,),
+    )
+    conn.execute(
+        """
+        UPDATE capture_tasks
+        SET auto_refresh_status = ?,
+            auto_refresh_observe_until = NULL,
+            auto_refresh_started_at = NULL
+        WHERE auto_refresh_status IN (?, ?)
+          AND (auto_refresh_observe_until IS NULL OR TRIM(auto_refresh_observe_until) = '')
+        """,
+        (
+            AUTO_REFRESH_STATUS_IDLE,
+            AUTO_REFRESH_STATUS_RUNNING,
+            AUTO_REFRESH_STATUS_OBSERVING,
+        ),
+    )
+    conn.execute(
+        """
+        UPDATE capture_tasks
+        SET auto_refresh_status = ?
+        WHERE auto_refresh_status NOT IN (?, ?, ?, ?)
+        """,
+        (
+            AUTO_REFRESH_STATUS_IDLE,
+            AUTO_REFRESH_STATUS_IDLE,
+            AUTO_REFRESH_STATUS_RUNNING,
+            AUTO_REFRESH_STATUS_OBSERVING,
+            AUTO_REFRESH_STATUS_COOLDOWN,
+        ),
+    )
+    conn.execute(
+        """
+        UPDATE capture_tasks
+        SET auto_refresh_last_result = ?
+        WHERE auto_refresh_last_result NOT IN (?, ?, ?, ?)
+        """,
+        (
+            AUTO_REFRESH_RESULT_NONE,
+            AUTO_REFRESH_RESULT_NONE,
+            AUTO_REFRESH_RESULT_SUCCESS,
+            AUTO_REFRESH_RESULT_FAILURE,
+            AUTO_REFRESH_RESULT_SKIPPED,
+        ),
+    )
 
 
 def _delete_task_with_conn(conn: sqlite3.Connection, task_id: int) -> None:
@@ -719,6 +870,31 @@ def row_to_task(row: sqlite3.Row) -> CaptureTask:
         last_page_preview_at=row["last_page_preview_at"],
         last_page_preview_status=row["last_page_preview_status"],
         last_page_preview_reason=row["last_page_preview_reason"],
+        auto_refresh_status=normalize_auto_refresh_status(
+            row["auto_refresh_status"] if "auto_refresh_status" in row.keys() else AUTO_REFRESH_STATUS_IDLE
+        ),
+        auto_refresh_reason_code=row["auto_refresh_reason_code"] if "auto_refresh_reason_code" in row.keys() else "",
+        auto_refresh_reason=row["auto_refresh_reason"] if "auto_refresh_reason" in row.keys() else "",
+        auto_refresh_anchor_at=row["auto_refresh_anchor_at"] if "auto_refresh_anchor_at" in row.keys() else None,
+        auto_refresh_started_at=row["auto_refresh_started_at"] if "auto_refresh_started_at" in row.keys() else None,
+        auto_refresh_observe_until=(
+            row["auto_refresh_observe_until"] if "auto_refresh_observe_until" in row.keys() else None
+        ),
+        auto_refresh_cooldown_until=(
+            row["auto_refresh_cooldown_until"] if "auto_refresh_cooldown_until" in row.keys() else None
+        ),
+        auto_refresh_last_result=normalize_auto_refresh_result(
+            row["auto_refresh_last_result"] if "auto_refresh_last_result" in row.keys() else AUTO_REFRESH_RESULT_NONE
+        ),
+        auto_refresh_last_result_at=(
+            row["auto_refresh_last_result_at"] if "auto_refresh_last_result_at" in row.keys() else None
+        ),
+        auto_refresh_last_success_at=(
+            row["auto_refresh_last_success_at"] if "auto_refresh_last_success_at" in row.keys() else None
+        ),
+        auto_refresh_manual_protect_until=(
+            row["auto_refresh_manual_protect_until"] if "auto_refresh_manual_protect_until" in row.keys() else None
+        ),
         target=int(row["target"] if "target" in row.keys() else 0),
         sort_order=int(row["sort_order"] if "sort_order" in row.keys() else 0),
     )
@@ -1118,6 +1294,72 @@ def sync_tasks_with_shop_configs(prune_stale: bool = False) -> dict[str, Any]:
     }
 
 
+def _default_auto_refresh_runtime(*, anchor_at: str | None = None) -> dict[str, Any]:
+    return {
+        "auto_refresh_status": AUTO_REFRESH_STATUS_IDLE,
+        "auto_refresh_reason_code": "",
+        "auto_refresh_reason": "",
+        "auto_refresh_anchor_at": anchor_at,
+        "auto_refresh_started_at": None,
+        "auto_refresh_observe_until": None,
+        "auto_refresh_cooldown_until": None,
+        "auto_refresh_last_result": AUTO_REFRESH_RESULT_NONE,
+        "auto_refresh_last_result_at": None,
+        "auto_refresh_last_success_at": None,
+        "auto_refresh_manual_protect_until": None,
+    }
+
+
+def _resolved_auto_refresh_runtime(
+    existing_task: CaptureTask | None,
+    payload: dict[str, Any],
+    *,
+    capture_mode: str,
+    page_id: str,
+    edge_session_id: str,
+) -> dict[str, Any]:
+    runtime = (
+        {
+            "auto_refresh_status": existing_task.auto_refresh_status,
+            "auto_refresh_reason_code": existing_task.auto_refresh_reason_code,
+            "auto_refresh_reason": existing_task.auto_refresh_reason,
+            "auto_refresh_anchor_at": existing_task.auto_refresh_anchor_at,
+            "auto_refresh_started_at": existing_task.auto_refresh_started_at,
+            "auto_refresh_observe_until": existing_task.auto_refresh_observe_until,
+            "auto_refresh_cooldown_until": existing_task.auto_refresh_cooldown_until,
+            "auto_refresh_last_result": existing_task.auto_refresh_last_result,
+            "auto_refresh_last_result_at": existing_task.auto_refresh_last_result_at,
+            "auto_refresh_last_success_at": existing_task.auto_refresh_last_success_at,
+            "auto_refresh_manual_protect_until": existing_task.auto_refresh_manual_protect_until,
+        }
+        if existing_task is not None
+        else _default_auto_refresh_runtime()
+    )
+    for key in tuple(runtime.keys()):
+        if key in payload:
+            runtime[key] = payload.get(key)
+    runtime["auto_refresh_status"] = normalize_auto_refresh_status(runtime.get("auto_refresh_status"))
+    runtime["auto_refresh_last_result"] = normalize_auto_refresh_result(runtime.get("auto_refresh_last_result"))
+
+    binding_changed = existing_task is not None and (
+        (existing_task.capture_mode or "").strip() != capture_mode
+        or (existing_task.page_id or "").strip() != page_id
+        or (existing_task.edge_session_id or "").strip() != edge_session_id
+    )
+    if capture_mode != "remote_edge" or not page_id:
+        anchor_at = None
+        if runtime.get("auto_refresh_anchor_at") and capture_mode == "remote_edge" and not page_id:
+            anchor_at = None
+        runtime.update(_default_auto_refresh_runtime(anchor_at=anchor_at))
+        return runtime
+    if existing_task is None or binding_changed:
+        runtime.update(_default_auto_refresh_runtime(anchor_at=now_sql()))
+        return runtime
+    if not runtime.get("auto_refresh_anchor_at"):
+        runtime["auto_refresh_anchor_at"] = now_sql()
+    return runtime
+
+
 def upsert_task(payload: dict[str, Any]) -> CaptureTask:
     payload = dict(payload)
     session_id = str(payload.get("edge_session_id") or payload.get("browser_profile") or "").strip()
@@ -1148,16 +1390,28 @@ def upsert_task(payload: dict[str, Any]) -> CaptureTask:
     sort_order = payload.get("sort_order", None)
     if existing_task is not None and sort_order is None:
         sort_order = existing_task.sort_order
+    capture_mode = payload.get("capture_mode", "window_capture").strip() or "window_capture"
+    page_id = payload.get("page_id", "").strip()
+    edge_session_id = (
+        payload.get("edge_session_id", payload.get("browser_profile", "default_real_edge")).strip()
+        or "default_real_edge"
+    )
+    auto_refresh_fields = _resolved_auto_refresh_runtime(
+        existing_task,
+        payload,
+        capture_mode=capture_mode,
+        page_id=page_id,
+        edge_session_id=edge_session_id,
+    )
     fields = {
-        "capture_mode": payload.get("capture_mode", "window_capture").strip() or "window_capture",
+        "capture_mode": capture_mode,
         "value_source": normalize_value_source(value_source),
-        "page_id": payload.get("page_id", "").strip(),
+        "page_id": page_id,
         "page_url": payload.get("page_url", "").strip(),
         "target_page_url": str(target_page_url or "").strip(),
         "page_title": payload.get("page_title", "").strip(),
         "browser_profile": payload.get("browser_profile", "default").strip() or "default",
-        "edge_session_id": payload.get("edge_session_id", payload.get("browser_profile", "default_real_edge")).strip()
-        or "default_real_edge",
+        "edge_session_id": edge_session_id,
         "platform": platform,
         "shop_name": shop_name,
         "window_keyword": payload["window_keyword"].strip(),
@@ -1178,6 +1432,7 @@ def upsert_task(payload: dict[str, Any]) -> CaptureTask:
         "confirm_count": max(1, int(payload.get("confirm_count", 2))),
         "target": int(target or 0),
         "sort_order": int(sort_order or 0),
+        **auto_refresh_fields,
     }
     with connect() as conn:
         if task_id:
@@ -1248,6 +1503,203 @@ def update_task_runtime(task_id: int, updates: dict[str, Any]) -> None:
             list(safe.values()) + [now_sql(), task_id],
         )
         conn.commit()
+
+
+def _update_task_auto_refresh_fields(task_id: int, updates: dict[str, Any]) -> None:
+    allowed = {
+        "auto_refresh_status",
+        "auto_refresh_reason_code",
+        "auto_refresh_reason",
+        "auto_refresh_anchor_at",
+        "auto_refresh_started_at",
+        "auto_refresh_observe_until",
+        "auto_refresh_cooldown_until",
+        "auto_refresh_last_result",
+        "auto_refresh_last_result_at",
+        "auto_refresh_last_success_at",
+        "auto_refresh_manual_protect_until",
+    }
+    safe = {key: value for key, value in updates.items() if key in allowed}
+    if not safe:
+        return
+    if "auto_refresh_status" in safe:
+        safe["auto_refresh_status"] = normalize_auto_refresh_status(safe["auto_refresh_status"])
+    if "auto_refresh_last_result" in safe:
+        safe["auto_refresh_last_result"] = normalize_auto_refresh_result(safe["auto_refresh_last_result"])
+    assignments = ", ".join(f"{key} = ?" for key in safe)
+    with connect() as conn:
+        conn.execute(
+            f"UPDATE capture_tasks SET {assignments}, updated_at = ? WHERE id = ?",
+            list(safe.values()) + [now_sql(), task_id],
+        )
+        conn.commit()
+
+
+def get_task_auto_refresh_state(task_id: int) -> dict[str, Any]:
+    task = get_task(task_id)
+    if task is None:
+        return {}
+    return {
+        "task_id": task.id,
+        "status": task.auto_refresh_status,
+        "reason_code": task.auto_refresh_reason_code,
+        "reason": task.auto_refresh_reason,
+        "anchor_at": task.auto_refresh_anchor_at,
+        "started_at": task.auto_refresh_started_at,
+        "observe_until": task.auto_refresh_observe_until,
+        "cooldown_until": task.auto_refresh_cooldown_until,
+        "last_result": task.auto_refresh_last_result,
+        "last_result_at": task.auto_refresh_last_result_at,
+        "last_success_at": task.auto_refresh_last_success_at,
+        "manual_protect_until": task.auto_refresh_manual_protect_until,
+    }
+
+
+def start_task_auto_refresh(task_id: int, *, started_at: str | None = None, reason_code: str = "", reason: str = "") -> None:
+    started_at = started_at or now_sql()
+    _update_task_auto_refresh_fields(
+        task_id,
+        {
+            "auto_refresh_status": AUTO_REFRESH_STATUS_RUNNING,
+            "auto_refresh_reason_code": reason_code,
+            "auto_refresh_reason": reason,
+            "auto_refresh_started_at": started_at,
+            "auto_refresh_observe_until": None,
+        },
+    )
+
+
+def mark_task_auto_refresh_observing(
+    task_id: int,
+    *,
+    started_at: str | None = None,
+    observe_seconds: int,
+    reason_code: str = "",
+    reason: str = "",
+) -> None:
+    started_at = started_at or now_sql()
+    _update_task_auto_refresh_fields(
+        task_id,
+        {
+            "auto_refresh_status": AUTO_REFRESH_STATUS_OBSERVING,
+            "auto_refresh_reason_code": reason_code,
+            "auto_refresh_reason": reason,
+            "auto_refresh_started_at": started_at,
+            "auto_refresh_observe_until": sql_after_seconds(started_at, observe_seconds),
+        },
+    )
+
+
+def mark_task_auto_refresh_success(task_id: int, *, finished_at: str | None = None, reason_code: str = "", reason: str = "") -> None:
+    finished_at = finished_at or now_sql()
+    _update_task_auto_refresh_fields(
+        task_id,
+        {
+            "auto_refresh_status": AUTO_REFRESH_STATUS_IDLE,
+            "auto_refresh_reason_code": reason_code,
+            "auto_refresh_reason": reason,
+            "auto_refresh_anchor_at": finished_at,
+            "auto_refresh_started_at": None,
+            "auto_refresh_observe_until": None,
+            "auto_refresh_cooldown_until": None,
+            "auto_refresh_last_result": AUTO_REFRESH_RESULT_SUCCESS,
+            "auto_refresh_last_result_at": finished_at,
+            "auto_refresh_last_success_at": finished_at,
+        },
+    )
+
+
+def mark_task_auto_refresh_failure(
+    task_id: int,
+    *,
+    finished_at: str | None = None,
+    cooldown_seconds: int,
+    reason_code: str = "",
+    reason: str = "",
+) -> None:
+    finished_at = finished_at or now_sql()
+    _update_task_auto_refresh_fields(
+        task_id,
+        {
+            "auto_refresh_status": AUTO_REFRESH_STATUS_COOLDOWN,
+            "auto_refresh_reason_code": reason_code,
+            "auto_refresh_reason": reason,
+            "auto_refresh_anchor_at": finished_at,
+            "auto_refresh_started_at": None,
+            "auto_refresh_observe_until": None,
+            "auto_refresh_cooldown_until": sql_after_seconds(finished_at, cooldown_seconds),
+            "auto_refresh_last_result": AUTO_REFRESH_RESULT_FAILURE,
+            "auto_refresh_last_result_at": finished_at,
+        },
+    )
+
+
+def mark_task_auto_refresh_skip(task_id: int, *, skipped_at: str | None = None, reason_code: str = "", reason: str = "") -> None:
+    skipped_at = skipped_at or now_sql()
+    _update_task_auto_refresh_fields(
+        task_id,
+        {
+            "auto_refresh_status": AUTO_REFRESH_STATUS_IDLE,
+            "auto_refresh_reason_code": reason_code,
+            "auto_refresh_reason": reason,
+            "auto_refresh_started_at": None,
+            "auto_refresh_observe_until": None,
+            "auto_refresh_last_result": AUTO_REFRESH_RESULT_SKIPPED,
+            "auto_refresh_last_result_at": skipped_at,
+        },
+    )
+
+
+def protect_task_auto_refresh_manually(
+    task_id: int,
+    *,
+    protected_at: str | None = None,
+    protect_seconds: int,
+    reason_code: str = AUTO_REFRESH_REASON_MANUAL_PROTECTED,
+    reason: str = "",
+) -> None:
+    protected_at = protected_at or now_sql()
+    _update_task_auto_refresh_fields(
+        task_id,
+        {
+            "auto_refresh_reason_code": reason_code,
+            "auto_refresh_reason": reason,
+            "auto_refresh_manual_protect_until": sql_after_seconds(protected_at, protect_seconds),
+        },
+    )
+
+
+def get_auto_refresh_global_state() -> dict[str, Any]:
+    raw_task_id = str(get_setting(AUTO_REFRESH_GLOBAL_ACTIVE_TASK_ID_KEY, "") or "").strip()
+    active_task_id: int | None
+    try:
+        active_task_id = int(raw_task_id) if raw_task_id else None
+    except ValueError:
+        active_task_id = None
+    last_started_at = str(get_setting(AUTO_REFRESH_GLOBAL_LAST_STARTED_AT_KEY, "") or "").strip() or None
+    return {
+        "running": active_task_id is not None,
+        "active_task_id": active_task_id,
+        "last_started_at": last_started_at,
+    }
+
+
+def start_auto_refresh_global_run(task_id: int, *, started_at: str | None = None) -> None:
+    started_at = started_at or now_sql()
+    with connect() as conn:
+        conn.execute(
+            "INSERT INTO app_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            (AUTO_REFRESH_GLOBAL_ACTIVE_TASK_ID_KEY, str(task_id)),
+        )
+        conn.execute(
+            "INSERT INTO app_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            (AUTO_REFRESH_GLOBAL_LAST_STARTED_AT_KEY, started_at),
+        )
+        conn.commit()
+
+
+def clear_auto_refresh_global_run() -> None:
+    set_setting(AUTO_REFRESH_GLOBAL_ACTIVE_TASK_ID_KEY, "")
 
 
 def add_sample(
@@ -1360,6 +1812,17 @@ def task_to_dict(task: CaptureTask) -> dict[str, Any]:
         "last_page_preview_at": task.last_page_preview_at,
         "last_page_preview_status": task.last_page_preview_status,
         "last_page_preview_reason": task.last_page_preview_reason,
+        "auto_refresh_status": task.auto_refresh_status,
+        "auto_refresh_reason_code": task.auto_refresh_reason_code,
+        "auto_refresh_reason": task.auto_refresh_reason,
+        "auto_refresh_anchor_at": task.auto_refresh_anchor_at,
+        "auto_refresh_started_at": task.auto_refresh_started_at,
+        "auto_refresh_observe_until": task.auto_refresh_observe_until,
+        "auto_refresh_cooldown_until": task.auto_refresh_cooldown_until,
+        "auto_refresh_last_result": task.auto_refresh_last_result,
+        "auto_refresh_last_result_at": task.auto_refresh_last_result_at,
+        "auto_refresh_last_success_at": task.auto_refresh_last_success_at,
+        "auto_refresh_manual_protect_until": task.auto_refresh_manual_protect_until,
         "target": task.target,
         "sort_order": task.sort_order,
         "page_preview_url": _preview_url(task),

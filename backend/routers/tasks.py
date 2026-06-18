@@ -23,6 +23,7 @@ from backend.routers.common import (
     edge_control_unavailable_detail,
     edge_session_for,
     edge_timeout_detail,
+    protect_task_for_manual_intervention,
     lightweight_reconcile_and_auto_restore,
     reconcile_edge_session_task_runtime,
     safe_upsert_task,
@@ -86,6 +87,11 @@ async def rebind_page(task_id: int, payload: RebindPagePayload) -> dict[str, Any
         )
         store.update_task_runtime(saved.id, runtime)
         saved = store.get_task(saved.id) or saved
+    protect_task_for_manual_intervention(
+        saved,
+        source="task_rebind_page",
+        reason="用户已手动重新绑定页面，自动刷新进入人工保护期。",
+    )
     await broadcast_snapshot()
     return store.task_to_dict(saved)
 
@@ -121,6 +127,11 @@ async def resume_after_login(task_id: int) -> dict[str, Any]:
                 "recovery_hint": "只有待登录、待切业务页或已恢复到业务页的任务，才可执行“登录后自动继续”。",
             },
         )
+    protect_task_for_manual_intervention(
+        task,
+        source="task_resume_after_login",
+        reason="用户进入登录后自动继续流程，自动刷新进入人工登录/验证码保护期。",
+    )
 
     session = edge_session_for(task.edge_session_id or "default_real_edge")
     client = edge_client_for(session.session_id)

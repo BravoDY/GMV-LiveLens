@@ -1,0 +1,1 @@
+{"nodes": [], "edges": [{"source": "backup_platform_card_adaptive", "target": "frontend_index_html", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "backups/platform-card-adaptive-before-20260518-101039/git-status.txt", "source_location": null, "weight": 1.0}], "hyperedges": []}
