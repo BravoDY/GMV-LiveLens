@@ -336,7 +336,10 @@ body.test-dashboard-mode .test-dataset-nav-row {
   white-space: nowrap;
 }
 
-body.public-dashboard-mode .header-actions .test-dataset-refresh-btn,
+body.public-dashboard-mode .header-actions .test-dataset-refresh-btn {
+  display: none;
+}
+
 body.test-dashboard-mode .header-actions .test-dataset-refresh-btn {
   display: inline-flex;
   align-items: center;
